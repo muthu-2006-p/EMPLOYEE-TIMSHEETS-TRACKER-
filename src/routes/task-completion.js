@@ -7,7 +7,7 @@ const Notification = require('../models/Notification');
 const { auth, permit } = require('../middleware/auth');
 
 // ===== EMPLOYEE: SUBMIT COMPLETION PROOF =====
-router.post('/submit-completion-proof', auth, permit('employee'), async(req, res) => {
+router.post('/submit-completion-proof', auth, permit('employee'), async (req, res) => {
     try {
         const { taskId, githubLink, videoLink, attachments, completionNotes } = req.body;
 
@@ -81,7 +81,7 @@ router.post('/submit-completion-proof', auth, permit('employee'), async(req, res
         if (!task.assignments[assignmentIndex].reviewCycle || isRework) {
             task.assignments[assignmentIndex].reviewCycle = {
                 reviewStatus: 'pending_review',
-                defectCount: task.assignments[assignmentIndex].reviewCycle ?.defectCount || 0,
+                defectCount: task.assignments[assignmentIndex].reviewCycle?.defectCount || 0,
                 reworkRequired: false
             };
         }
@@ -130,11 +130,11 @@ router.post('/submit-completion-proof', auth, permit('employee'), async(req, res
 });
 
 // ===== EMPLOYEE: GET MY TASK STATUS =====
-router.get('/my-status', auth, permit('employee'), async(req, res) => {
+router.get('/my-status', auth, permit('employee'), async (req, res) => {
     try {
         const tasks = await Task.find({
-                'assignments.employee': req.user._id
-            })
+            'assignments.employee': req.user._id
+        })
             .populate('project', 'name')
             .populate('assignments.employee', 'name email')
             .populate('assignments.reviewCycle.reviewedBy', 'name role')
@@ -193,7 +193,7 @@ router.get('/my-status', auth, permit('employee'), async(req, res) => {
 });
 
 // ===== MANAGER/ADMIN: GET PENDING REVIEWS =====
-router.get('/pending-reviews', auth, permit('manager', 'admin'), async(req, res) => {
+router.get('/pending-reviews', auth, permit('manager', 'admin'), async (req, res) => {
     try {
         // Query for tasks with any proof submissions (pending, approved, or rejected)
         let query = {
@@ -205,10 +205,14 @@ router.get('/pending-reviews', auth, permit('manager', 'admin'), async(req, res)
             }
         };
 
-        // If manager, filter by their projects
+        // If manager, filter by their projects (only if they have projects)
         if (req.user.role === 'manager') {
             const managerProjects = await mongoose.model('Project').find({ manager: req.user._id });
-            query.project = { $in: managerProjects.map(p => p._id) };
+            // Only add project filter if manager has projects, otherwise show all
+            if (managerProjects.length > 0) {
+                query.project = { $in: managerProjects.map(p => p._id) };
+            }
+            console.log(`📋 Task reviews query: ${managerProjects.length} projects for manager`);
         }
 
         const tasks = await Task.find(query)
@@ -233,7 +237,7 @@ router.get('/pending-reviews', auth, permit('manager', 'admin'), async(req, res)
                         proofSubmission: assignment.proofSubmission,
                         reviewCycle: assignment.reviewCycle,
                         reviewStatus: assignment.status, // Include status for filtering
-                        defectCount: assignment.reviewCycle ?.defectCount || 0
+                        defectCount: assignment.reviewCycle?.defectCount || 0
                     });
                 }
             });
@@ -252,7 +256,7 @@ router.get('/pending-reviews', auth, permit('manager', 'admin'), async(req, res)
 });
 
 // ===== MANAGER/ADMIN: REVIEW TASK (APPROVE/REJECT) =====
-router.post('/review', auth, permit('manager', 'admin'), async(req, res) => {
+router.post('/review', auth, permit('manager', 'admin'), async (req, res) => {
     try {
         const { taskId, employeeId, action, comments, defectDescription } = req.body;
 
@@ -282,8 +286,16 @@ router.post('/review', auth, permit('manager', 'admin'), async(req, res) => {
         }
 
         // Check manager permission (manager can only review their own project tasks)
-        if (req.user.role === 'manager' && String(task.project.manager) !== String(req.user._id)) {
-            return res.status(403).json({ message: 'You can only review tasks from your projects' });
+        // Exception: if manager has no projects assigned, allow them to review any task
+        if (req.user.role === 'manager') {
+            const managerProjectCount = await mongoose.model('Project').countDocuments({ manager: req.user._id });
+            const isTaskBelongsToManager = String(task.project?.manager) === String(req.user._id);
+            
+            // Only block if manager HAS projects but this task isn't one of them
+            if (managerProjectCount > 0 && !isTaskBelongsToManager) {
+                return res.status(403).json({ message: 'You can only review tasks from your projects' });
+            }
+            // If manager has no projects, they can review any task
         }
 
         // Find employee's assignment
@@ -413,10 +425,10 @@ async function autoAssignNextTask(employeeId) {
     try {
         // Find next pending task (not yet assigned to this employee)
         const nextTask = await Task.findOne({
-                'assignments.employee': { $ne: employeeId },
-                status: { $in: ['pending', 'open', 'assigned'] },
-                'assignments.status': { $ne: 'completed' }
-            })
+            'assignments.employee': { $ne: employeeId },
+            status: { $in: ['pending', 'open', 'assigned'] },
+            'assignments.status': { $ne: 'completed' }
+        })
             .sort({ priority: -1, createdAt: 1 })
             .limit(1);
 
@@ -455,7 +467,7 @@ async function autoAssignNextTask(employeeId) {
 }
 
 // ===== MANAGER/ADMIN: MANUALLY ASSIGN NEXT TASK =====
-router.post('/assign-next', auth, permit('manager', 'admin'), async(req, res) => {
+router.post('/assign-next', auth, permit('manager', 'admin'), async (req, res) => {
     try {
         const { employeeId } = req.body;
 
@@ -501,7 +513,7 @@ router.post('/assign-next', auth, permit('manager', 'admin'), async(req, res) =>
 });
 
 // ===== EMPLOYEE: UPDATE TASK PROGRESS =====
-router.put('/:taskId/progress', auth, permit('employee'), async(req, res) => {
+router.put('/:taskId/progress', auth, permit('employee'), async (req, res) => {
     try {
         const { taskId } = req.params;
         const { progress, status } = req.body;

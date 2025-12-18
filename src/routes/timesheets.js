@@ -6,8 +6,9 @@ const { auth, permit } = require('../middleware/auth');
 const router = express.Router();
 
 // Get all timesheets (with optional filters)
-router.get('/', auth, permit('employee', 'manager', 'admin'), async(req, res) => {
+router.get('/', auth, permit('employee', 'manager', 'admin'), async (req, res) => {
     try {
+        console.log(`🔍 GET /timesheets | Role: ${req.user.role} | ID: ${req.user._id}`);
         const mongoose = require('mongoose');
         let query = {};
 
@@ -41,11 +42,20 @@ router.get('/', auth, permit('employee', 'manager', 'admin'), async(req, res) =>
                 }
             });
 
-            // Show timesheets from these employees OR timesheets with manager's projects
-            query.$or = [
-                { employee: { $in: Array.from(employeeIds).map(id => new mongoose.Types.ObjectId(id)) } },
-                { project: { $in: projectIds } }
-            ];
+            // Only apply filter if manager has projects or employees
+            // If no projects/employees are assigned, show all timesheets (manager can see all)
+            const hasProjects = projectIds.length > 0;
+            const hasEmployees = employeeIds.size > 0;
+
+            if (hasProjects || hasEmployees) {
+                // Show timesheets from these employees OR timesheets with manager's projects
+                query.$or = [
+                    { employee: { $in: Array.from(employeeIds).map(id => new mongoose.Types.ObjectId(id)) } },
+                    { project: { $in: projectIds } }
+                ];
+            }
+            // If no projects/employees, don't add any filter - manager can see all timesheets
+            console.log(`📋 Manager query: ${hasProjects ? projectIds.length : 0} projects, ${hasEmployees ? employeeIds.size : 0} employees`);
         }
 
         // Filter by date range
@@ -80,6 +90,9 @@ router.get('/', auth, permit('employee', 'manager', 'admin'), async(req, res) =>
             .sort({ date: -1 })
             .lean();
 
+        console.log(`✅ Found ${timesheets.length} timesheets | Query:`, JSON.stringify(query));
+
+
         res.json({ count: timesheets.length, data: timesheets });
     } catch (err) {
         console.error('Get timesheets error:', err);
@@ -88,7 +101,7 @@ router.get('/', auth, permit('employee', 'manager', 'admin'), async(req, res) =>
 });
 
 // submit timesheet
-router.post('/', auth, permit('employee', 'manager', 'admin'), async(req, res) => {
+router.post('/', auth, permit('employee', 'manager', 'admin'), async (req, res) => {
     try {
         const { date, startTime, endTime, breakMinutes = 0, description, project, task, isDraft = false } = req.body;
         if (!date || !startTime || !endTime) return res.status(400).json({ message: 'date/startTime/endTime required' });
@@ -157,7 +170,7 @@ router.post('/', auth, permit('employee', 'manager', 'admin'), async(req, res) =
 });
 
 // UPDATE timesheet (save as draft)
-router.put('/:id', auth, permit('employee', 'manager', 'admin'), async(req, res) => {
+router.put('/:id', auth, permit('employee', 'manager', 'admin'), async (req, res) => {
     try {
         const { date, startTime, endTime, breakMinutes = 0, description, project, isDraft = false } = req.body;
         const ts = await Timesheet.findById(req.params.id);
@@ -227,7 +240,7 @@ router.put('/:id', auth, permit('employee', 'manager', 'admin'), async(req, res)
 });
 
 // SUBMIT draft timesheet (change status from draft to pending)
-router.post('/:id/submit', auth, permit('employee', 'manager', 'admin'), async(req, res) => {
+router.post('/:id/submit', auth, permit('employee', 'manager', 'admin'), async (req, res) => {
     try {
         const ts = await Timesheet.findById(req.params.id);
         if (!ts) return res.status(404).json({ message: 'Timesheet not found' });
@@ -249,7 +262,7 @@ router.post('/:id/submit', auth, permit('employee', 'manager', 'admin'), async(r
     }
 });
 // get my timesheets
-router.get('/me', auth, permit('employee', 'manager', 'admin'), async(req, res) => {
+router.get('/me', auth, permit('employee', 'manager', 'admin'), async (req, res) => {
     try {
         const list = await Timesheet.find({ employee: req.user._id }).sort({ date: -1 });
         res.json(list);
@@ -260,7 +273,7 @@ router.get('/me', auth, permit('employee', 'manager', 'admin'), async(req, res) 
 });
 
 // get team timesheets (manager/admin)
-router.get('/team/all', auth, permit('manager', 'admin'), async(req, res) => {
+router.get('/team/all', auth, permit('manager', 'admin'), async (req, res) => {
     try {
         const Project = require('../models/Project');
         // get all employees under this manager
@@ -291,7 +304,7 @@ router.get('/team/all', auth, permit('manager', 'admin'), async(req, res) => {
 });
 
 // pending (manager/admin)
-router.get('/pending', auth, permit('manager', 'admin'), async(req, res) => {
+router.get('/pending', auth, permit('manager', 'admin'), async (req, res) => {
     try {
         let query = { status: 'pending' };
 
@@ -321,11 +334,19 @@ router.get('/pending', auth, permit('manager', 'admin'), async(req, res) => {
                 }
             });
 
-            // Show timesheets from these employees OR timesheets with manager's projects
-            query.$or = [
-                { employee: { $in: Array.from(employeeIds).map(id => new mongoose.Types.ObjectId(id)) } },
-                { project: { $in: projectIds } }
-            ];
+            // Only apply filter if manager has projects or employees
+            const hasProjects = projectIds.length > 0;
+            const hasEmployees = employeeIds.size > 0;
+
+            if (hasProjects || hasEmployees) {
+                // Show timesheets from these employees OR timesheets with manager's projects
+                query.$or = [
+                    { employee: { $in: Array.from(employeeIds).map(id => new mongoose.Types.ObjectId(id)) } },
+                    { project: { $in: projectIds } }
+                ];
+            }
+            // If no projects/employees, don't add restriction - manager sees all pending
+            console.log(`📋 Pending query: ${hasProjects ? projectIds.length : 0} projects, ${hasEmployees ? employeeIds.size : 0} employees`);
         }
 
         const list = await Timesheet.find(query)
@@ -341,7 +362,7 @@ router.get('/pending', auth, permit('manager', 'admin'), async(req, res) => {
 });
 
 // approve/reject with multi-level workflow
-router.put('/:id/approve', auth, permit('employee', 'manager', 'admin'), async(req, res) => {
+router.put('/:id/approve', auth, permit('employee', 'manager', 'admin'), async (req, res) => {
     try {
         const { id } = req.params;
         const { approve, remarks } = req.body;

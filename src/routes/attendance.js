@@ -12,7 +12,7 @@ const STANDARD_WORK_HOURS = 8;
 const STANDARD_CHECK_OUT_HOUR = 17; // 5:00 PM
 
 // ===== EMPLOYEE: CHECK-IN =====
-router.post('/check-in', auth, permit('employee', 'manager', 'admin'), async(req, res) => {
+router.post('/check-in', auth, permit('employee', 'manager', 'admin'), async (req, res) => {
     try {
         const { location, projectId, notes } = req.body;
 
@@ -119,7 +119,7 @@ router.post('/check-in', auth, permit('employee', 'manager', 'admin'), async(req
 });
 
 // ===== EMPLOYEE: CHECK-OUT =====
-router.post('/check-out', auth, permit('employee', 'manager', 'admin'), async(req, res) => {
+router.post('/check-out', auth, permit('employee', 'manager', 'admin'), async (req, res) => {
     try {
         const { notes } = req.body;
 
@@ -186,7 +186,7 @@ router.post('/check-out', auth, permit('employee', 'manager', 'admin'), async(re
 });
 
 // ===== GET MY ATTENDANCE HISTORY =====
-router.get('/my-attendance', auth, permit('employee', 'manager', 'admin'), async(req, res) => {
+router.get('/my-attendance', auth, permit('employee', 'manager', 'admin'), async (req, res) => {
     try {
         const { from, to, status } = req.query;
 
@@ -234,7 +234,7 @@ router.get('/my-attendance', auth, permit('employee', 'manager', 'admin'), async
 });
 
 // ===== GET SPECIFIC EMPLOYEE ATTENDANCE (Manager/Admin) =====
-router.get('/:employeeId', auth, permit('manager', 'admin'), async(req, res) => {
+router.get('/:employeeId', auth, permit('manager', 'admin'), async (req, res) => {
     try {
         const { employeeId } = req.params;
         const { from, to } = req.query;
@@ -283,14 +283,26 @@ router.get('/:employeeId', auth, permit('manager', 'admin'), async(req, res) => 
 });
 
 // ===== GET TEAM ATTENDANCE (Manager/Admin) =====
-router.get('/team/all', auth, permit('manager', 'admin'), async(req, res) => {
+router.get('/team/all', auth, permit('manager', 'admin'), async (req, res) => {
     try {
         const { date, projectId } = req.query;
 
+        // Use date range to handle timezone differences
         const targetDate = date ? new Date(date) : new Date();
         targetDate.setHours(0, 0, 0, 0);
 
-        const query = { date: targetDate };
+        const nextDay = new Date(targetDate);
+        nextDay.setDate(nextDay.getDate() + 1);
+
+        console.log(`📅 Attendance query: ${targetDate.toISOString()} to ${nextDay.toISOString()}`);
+
+        // Use range query instead of exact match for better timezone handling
+        const query = {
+            date: {
+                $gte: targetDate,
+                $lt: nextDay
+            }
+        };
 
         if (projectId) {
             query.project = projectId;
@@ -340,7 +352,7 @@ router.get('/team/all', auth, permit('manager', 'admin'), async(req, res) => {
 });
 
 // ===== REQUEST ATTENDANCE CORRECTION =====
-router.post('/correction/:attendanceId', auth, permit('employee', 'manager', 'admin'), async(req, res) => {
+router.post('/correction/:attendanceId', auth, permit('employee', 'manager', 'admin'), async (req, res) => {
     try {
         const { attendanceId } = req.params;
         const { reason, requestedCheckIn, requestedCheckOut } = req.body;
@@ -407,7 +419,7 @@ router.post('/correction/:attendanceId', auth, permit('employee', 'manager', 'ad
 });
 
 // ===== APPROVE/REJECT ATTENDANCE CORRECTION =====
-router.put('/correction/:attendanceId', auth, permit('manager', 'admin'), async(req, res) => {
+router.put('/correction/:attendanceId', auth, permit('manager', 'admin'), async (req, res) => {
     try {
         const { attendanceId } = req.params;
         const { action } = req.body; // 'approve' or 'reject'
@@ -501,7 +513,7 @@ router.put('/correction/:attendanceId', auth, permit('manager', 'admin'), async(
 });
 
 // ===== GET ATTENDANCE ANALYTICS (Admin) =====
-router.get('/analytics/summary', auth, permit('admin', 'manager'), async(req, res) => {
+router.get('/analytics/summary', auth, permit('admin', 'manager'), async (req, res) => {
     try {
         const { from, to } = req.query;
 
@@ -547,7 +559,7 @@ router.get('/analytics/summary', auth, permit('admin', 'manager'), async(req, re
 });
 
 // ===== GET ATTENDANCE BY DATE =====
-router.get('/date/:date', auth, async(req, res) => {
+router.get('/date/:date', auth, async (req, res) => {
     try {
         const { date } = req.params;
 
@@ -583,7 +595,7 @@ router.get('/date/:date', auth, async(req, res) => {
 });
 
 // ===== GET ALL ATTENDANCE WITH PAGINATION =====
-router.get('/', auth, permit('admin', 'manager'), async(req, res) => {
+router.get('/', auth, permit('admin', 'manager'), async (req, res) => {
     try {
         const limit = parseInt(req.query.limit) || 50;
         const skip = parseInt(req.query.skip) || 0;
@@ -610,12 +622,12 @@ router.get('/', auth, permit('admin', 'manager'), async(req, res) => {
 });
 
 // ===== GET PENDING CORRECTION REQUESTS =====
-router.get('/corrections/pending', auth, permit('admin', 'manager'), async(req, res) => {
+router.get('/corrections/pending', auth, permit('admin', 'manager'), async (req, res) => {
     try {
         const corrections = await Attendance.find({
-                status: 'correction_requested',
-                'correctionRequest.status': 'pending'
-            })
+            status: 'correction_requested',
+            'correctionRequest.status': 'pending'
+        })
             .populate('employee', 'name email department')
             .sort({ 'correctionRequest.requestedAt': -1 });
 
@@ -630,7 +642,7 @@ router.get('/corrections/pending', auth, permit('admin', 'manager'), async(req, 
 });
 
 // ===== APPROVE CORRECTION REQUEST =====
-router.post('/corrections/:id/approve', auth, permit('admin', 'manager'), async(req, res) => {
+router.post('/corrections/:id/approve', auth, permit('admin', 'manager'), async (req, res) => {
     try {
         const attendance = await Attendance.findById(req.params.id);
 
@@ -680,7 +692,7 @@ router.post('/corrections/:id/approve', auth, permit('admin', 'manager'), async(
 });
 
 // ===== REJECT CORRECTION REQUEST =====
-router.post('/corrections/:id/reject', auth, permit('admin', 'manager'), async(req, res) => {
+router.post('/corrections/:id/reject', auth, permit('admin', 'manager'), async (req, res) => {
     try {
         const { reason } = req.body;
         const attendance = await Attendance.findById(req.params.id);

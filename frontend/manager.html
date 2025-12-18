@@ -722,27 +722,6 @@
                     </tbody>
                 </table>
             </div>
-
-            <div class="section">
-                <h2>🔧 Pending Correction Requests</h2>
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Employee</th>
-                            <th>Date</th>
-                            <th>Original</th>
-                            <th>Requested</th>
-                            <th>Reason</th>
-                            <th>Action</th>
-                        </tr>
-                    </thead>
-                    <tbody id="correctionsList">
-                        <tr>
-                            <td colspan="6" style="text-align: center;">Loading...</td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
         </div>
 
         <!-- TAB 4: LEAVE REQUESTS -->
@@ -945,366 +924,363 @@
         </div>
 
         <!-- TAB 7: ANALYTICS -->
-        <div class="stats-grid">
-            <!-- TAB 7: ANALYTICS -->
-            <div id="tab-analytics" class="tab-content">
-                <!-- FILTERS SECTION -->
-                <div class="section"
-                    style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 25px; border-radius: 12px; margin-bottom: 25px;">
-                    <h2 style="color: white; margin-bottom: 20px;">🔍 Advanced Analytics Filters & Export</h2>
+        <div id="tab-analytics" class="tab-content">
+            <!-- FILTERS SECTION -->
+            <div class="section"
+                style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 25px; border-radius: 12px; margin-bottom: 25px;">
+                <h2 style="color: white; margin-bottom: 20px;">🔍 Advanced Analytics Filters & Export</h2>
 
-                    <!-- Primary Filters -->
-                    <div
-                        style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-bottom: 15px;">
-                        <div>
-                            <label style="display: block; font-size: 13px; margin-bottom: 5px; font-weight: bold;">👤
-                                Employee</label>
-                            <select id="filterAnalyticsEmployee" onchange="applyAnalyticsFilters()"
-                                style="width: 100%; padding: 10px; border: none; border-radius: 6px; background: white; color: #333;">
-                                <option value="">All Employees</option>
-                            </select>
-                        </div>
-                        <div>
-                            <label style="display: block; font-size: 13px; margin-bottom: 5px; font-weight: bold;">📂
-                                Project</label>
-                            <select id="filterAnalyticsProject" onchange="applyAnalyticsFilters()"
-                                style="width: 100%; padding: 10px; border: none; border-radius: 6px; background: white; color: #333;">
-                                <option value="">All Projects</option>
-                            </select>
-                        </div>
-                        <div>
-                            <label style="display: block; font-size: 13px; margin-bottom: 5px; font-weight: bold;">📋
-                                Task</label>
-                            <select id="filterAnalyticsTask" onchange="applyAnalyticsFilters()"
-                                style="width: 100%; padding: 10px; border: none; border-radius: 6px; background: white; color: #333;">
-                                <option value="">All Tasks</option>
-                            </select>
-                        </div>
-                        <div>
-                            <label style="display: block; font-size: 13px; margin-bottom: 5px; font-weight: bold;">✅
-                                Status</label>
-                            <select id="filterAnalyticsStatus" onchange="applyAnalyticsFilters()"
-                                style="width: 100%; padding: 10px; border: none; border-radius: 6px; background: white; color: #333;">
-                                <option value="">All Status</option>
-                                <option value="draft">Draft</option>
-                                <option value="pending">Pending</option>
-                                <option value="pending_manager">Pending Manager</option>
-                                <option value="approved">Approved</option>
-                                <option value="rejected">Rejected</option>
-                                <option value="locked">Locked</option>
-                            </select>
-                        </div>
-                    </div>
-
-                    <!-- Date & Range Filters -->
-                    <div
-                        style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-bottom: 15px;">
-                        <div>
-                            <label style="display: block; font-size: 13px; margin-bottom: 5px; font-weight: bold;">📅
-                                From Date</label>
-                            <input type="date" id="filterAnalyticsFrom" onchange="applyAnalyticsFilters()"
-                                style="width: 100%; padding: 10px; border: none; border-radius: 6px;">
-                        </div>
-                        <div>
-                            <label style="display: block; font-size: 13px; margin-bottom: 5px; font-weight: bold;">📅 To
-                                Date</label>
-                            <input type="date" id="filterAnalyticsTo" onchange="applyAnalyticsFilters()"
-                                style="width: 100%; padding: 10px; border: none; border-radius: 6px;">
-                        </div>
-                        <div>
-                            <label style="display: block; font-size: 13px; margin-bottom: 5px; font-weight: bold;">📊
-                                Quick Range</label>
-                            <select id="filterAnalyticsQuickRange" onchange="applyQuickDateRange()"
-                                style="width: 100%; padding: 10px; border: none; border-radius: 6px; background: white; color: #333;">
-                                <option value="">Custom</option>
-                                <option value="today">Today</option>
-                                <option value="yesterday">Yesterday</option>
-                                <option value="this_week">This Week</option>
-                                <option value="last_week">Last Week</option>
-                                <option value="this_month">This Month</option>
-                                <option value="last_month">Last Month</option>
-                                <option value="last_7_days">Last 7 Days</option>
-                                <option value="last_30_days">Last 30 Days</option>
-                                <option value="this_quarter">This Quarter</option>
-                                <option value="this_year">This Year</option>
-                            </select>
-                        </div>
-                        <div>
-                            <label style="display: block; font-size: 13px; margin-bottom: 5px; font-weight: bold;">🏢
-                                Department</label>
-                            <select id="filterAnalyticsDepartment" onchange="applyAnalyticsFilters()"
-                                style="width: 100%; padding: 10px; border: none; border-radius: 6px; background: white; color: #333;">
-                                <option value="">All Departments</option>
-                                <option value="IT">IT</option>
-                                <option value="HR">HR</option>
-                                <option value="Sales">Sales</option>
-                                <option value="Marketing">Marketing</option>
-                                <option value="Finance">Finance</option>
-                                <option value="Operations">Operations</option>
-                            </select>
-                        </div>
-                    </div>
-
-                    <!-- Advanced Filters -->
-                    <div
-                        style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-bottom: 15px;">
-                        <div>
-                            <label style="display: block; font-size: 13px; margin-bottom: 5px; font-weight: bold;">⏰ Min
-                                Hours</label>
-                            <input type="number" id="filterAnalyticsMinHours" min="0" step="0.5" placeholder="Min"
-                                onchange="applyAnalyticsFilters()"
-                                style="width: 100%; padding: 10px; border: none; border-radius: 6px;">
-                        </div>
-                        <div>
-                            <label style="display: block; font-size: 13px; margin-bottom: 5px; font-weight: bold;">⏰ Max
-                                Hours</label>
-                            <input type="number" id="filterAnalyticsMaxHours" min="0" step="0.5" placeholder="Max"
-                                onchange="applyAnalyticsFilters()"
-                                style="width: 100%; padding: 10px; border: none; border-radius: 6px;">
-                        </div>
-                        <div>
-                            <label style="display: block; font-size: 13px; margin-bottom: 5px; font-weight: bold;">⏱️
-                                Overtime Filter</label>
-                            <select id="filterAnalyticsOvertime" onchange="applyAnalyticsFilters()"
-                                style="width: 100%; padding: 10px; border: none; border-radius: 6px; background: white; color: #333;">
-                                <option value="">All</option>
-                                <option value="with">With Overtime</option>
-                                <option value="without">Without Overtime</option>
-                                <option value="high">High Overtime (>5h)</option>
-                            </select>
-                        </div>
-                        <div>
-                            <label style="display: block; font-size: 13px; margin-bottom: 5px; font-weight: bold;">📈
-                                Sort By</label>
-                            <select id="filterAnalyticsSort" onchange="applyAnalyticsFilters()"
-                                style="width: 100%; padding: 10px; border: none; border-radius: 6px; background: white; color: #333;">
-                                <option value="date_desc">Date (Newest First)</option>
-                                <option value="date_asc">Date (Oldest First)</option>
-                                <option value="hours_desc">Hours (High to Low)</option>
-                                <option value="hours_asc">Hours (Low to High)</option>
-                                <option value="employee">Employee Name</option>
-                                <option value="project">Project Name</option>
-                            </select>
-                        </div>
-                    </div>
-
-                    <!-- Action Buttons -->
-                    <div style="display: flex; gap: 10px; flex-wrap: wrap; margin-top: 20px;">
-                        <button onclick="clearAnalyticsFilters()" class="btn"
-                            style="background: white; color: #667eea; border: none; padding: 12px 24px; border-radius: 6px; font-weight: bold; cursor: pointer; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">🔄
-                            Clear All Filters</button>
-                        <button onclick="applyAnalyticsFilters()" class="btn"
-                            style="background: #8b5cf6; color: white; border: none; padding: 12px 24px; border-radius: 6px; font-weight: bold; cursor: pointer; box-shadow: 0 2px 4px rgba(0,0,0,0.2);">🔍
-                            Apply Filters</button>
-                        <button onclick="downloadAnalyticsXLSX()" class="btn"
-                            style="background: #10b981; color: white; border: none; padding: 12px 24px; border-radius: 6px; font-weight: bold; cursor: pointer; box-shadow: 0 2px 4px rgba(0,0,0,0.2);">📥
-                            Download XLSX</button>
-                        <button onclick="downloadAnalyticsCSV()" class="btn"
-                            style="background: #3b82f6; color: white; border: none; padding: 12px 24px; border-radius: 6px; font-weight: bold; cursor: pointer; box-shadow: 0 2px 4px rgba(0,0,0,0.2);">📄
-                            Download CSV</button>
-                        <button onclick="downloadAnalyticsPDF()" class="btn"
-                            style="background: #ef4444; color: white; border: none; padding: 12px 24px; border-radius: 6px; font-weight: bold; cursor: pointer; box-shadow: 0 2px 4px rgba(0,0,0,0.2);">📑
-                            Generate PDF</button>
-                        <button onclick="sendAnalyticsToAdmin()" class="btn"
-                            style="background: #f59e0b; color: white; border: none; padding: 12px 24px; border-radius: 6px; font-weight: bold; cursor: pointer; box-shadow: 0 2px 4px rgba(0,0,0,0.2);">📤
-                            Send to Admin</button>
-                        <button onclick="scheduleReport()" class="btn"
-                            style="background: #ec4899; color: white; border: none; padding: 12px 24px; border-radius: 6px; font-weight: bold; cursor: pointer; box-shadow: 0 2px 4px rgba(0,0,0,0.2);">⏰
-                            Schedule Report</button>
-                        <button onclick="printAnalytics()" class="btn"
-                            style="background: #6366f1; color: white; border: none; padding: 12px 24px; border-radius: 6px; font-weight: bold; cursor: pointer; box-shadow: 0 2px 4px rgba(0,0,0,0.2);">🖨️
-                            Print</button>
-                    </div>
-
-                    <!-- Filter Summary -->
-                    <div id="filterSummary"
-                        style="margin-top: 15px; padding: 15px; background: rgba(255,255,255,0.1); border-radius: 6px; display: none;">
-                        <strong>Active Filters:</strong> <span id="filterSummaryText"></span>
-                    </div>
-                </div>
-
-                <div class="stats-grid">
-                    <div class="stat-card">
-                        <div class="number" id="sumTotal">0</div>
-                        <div class="label">Total Timesheets</div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="number" id="sumHours">0h</div>
-                        <div class="label">Total Hours</div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="number" id="sumOvertime">0h</div>
-                        <div class="label">Overtime Hours</div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="number" id="sumEmployees">0</div>
-                        <div class="label">Active Employees</div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="number" id="sumProjects">0</div>
-                        <div class="label">Active Projects</div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="number" id="avgHoursPerDay">0h</div>
-                        <div class="label">Avg Hours/Day</div>
-                    </div>
-                </div>
-
-                <!-- Hours Calculation Info -->
+                <!-- Primary Filters -->
                 <div
-                    style="margin: 20px 0; padding: 15px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 10px; color: white;">
-                    <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 10px;">
-                        <span style="font-size: 24px;">⏱️</span>
-                        <h3 style="margin: 0;">How Work Hours are Calculated</h3>
+                    style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-bottom: 15px;">
+                    <div>
+                        <label style="display: block; font-size: 13px; margin-bottom: 5px; font-weight: bold;">👤
+                            Employee</label>
+                        <select id="filterAnalyticsEmployee" onchange="applyAnalyticsFilters()"
+                            style="width: 100%; padding: 10px; border: none; border-radius: 6px; background: white; color: #333;">
+                            <option value="">All Employees</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label style="display: block; font-size: 13px; margin-bottom: 5px; font-weight: bold;">📂
+                            Project</label>
+                        <select id="filterAnalyticsProject" onchange="applyAnalyticsFilters()"
+                            style="width: 100%; padding: 10px; border: none; border-radius: 6px; background: white; color: #333;">
+                            <option value="">All Projects</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label style="display: block; font-size: 13px; margin-bottom: 5px; font-weight: bold;">📋
+                            Task</label>
+                        <select id="filterAnalyticsTask" onchange="applyAnalyticsFilters()"
+                            style="width: 100%; padding: 10px; border: none; border-radius: 6px; background: white; color: #333;">
+                            <option value="">All Tasks</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label style="display: block; font-size: 13px; margin-bottom: 5px; font-weight: bold;">✅
+                            Status</label>
+                        <select id="filterAnalyticsStatus" onchange="applyAnalyticsFilters()"
+                            style="width: 100%; padding: 10px; border: none; border-radius: 6px; background: white; color: #333;">
+                            <option value="">All Status</option>
+                            <option value="draft">Draft</option>
+                            <option value="pending">Pending</option>
+                            <option value="pending_manager">Pending Manager</option>
+                            <option value="approved">Approved</option>
+                            <option value="rejected">Rejected</option>
+                            <option value="locked">Locked</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Date & Range Filters -->
+                <div
+                    style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-bottom: 15px;">
+                    <div>
+                        <label style="display: block; font-size: 13px; margin-bottom: 5px; font-weight: bold;">📅
+                            From Date</label>
+                        <input type="date" id="filterAnalyticsFrom" onchange="applyAnalyticsFilters()"
+                            style="width: 100%; padding: 10px; border: none; border-radius: 6px;">
+                    </div>
+                    <div>
+                        <label style="display: block; font-size: 13px; margin-bottom: 5px; font-weight: bold;">📅 To
+                            Date</label>
+                        <input type="date" id="filterAnalyticsTo" onchange="applyAnalyticsFilters()"
+                            style="width: 100%; padding: 10px; border: none; border-radius: 6px;">
+                    </div>
+                    <div>
+                        <label style="display: block; font-size: 13px; margin-bottom: 5px; font-weight: bold;">📊
+                            Quick Range</label>
+                        <select id="filterAnalyticsQuickRange" onchange="applyQuickDateRange()"
+                            style="width: 100%; padding: 10px; border: none; border-radius: 6px; background: white; color: #333;">
+                            <option value="">Custom</option>
+                            <option value="today">Today</option>
+                            <option value="yesterday">Yesterday</option>
+                            <option value="this_week">This Week</option>
+                            <option value="last_week">Last Week</option>
+                            <option value="this_month">This Month</option>
+                            <option value="last_month">Last Month</option>
+                            <option value="last_7_days">Last 7 Days</option>
+                            <option value="last_30_days">Last 30 Days</option>
+                            <option value="this_quarter">This Quarter</option>
+                            <option value="this_year">This Year</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label style="display: block; font-size: 13px; margin-bottom: 5px; font-weight: bold;">🏢
+                            Department</label>
+                        <select id="filterAnalyticsDepartment" onchange="applyAnalyticsFilters()"
+                            style="width: 100%; padding: 10px; border: none; border-radius: 6px; background: white; color: #333;">
+                            <option value="">All Departments</option>
+                            <option value="IT">IT</option>
+                            <option value="HR">HR</option>
+                            <option value="Sales">Sales</option>
+                            <option value="Marketing">Marketing</option>
+                            <option value="Finance">Finance</option>
+                            <option value="Operations">Operations</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Advanced Filters -->
+                <div
+                    style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-bottom: 15px;">
+                    <div>
+                        <label style="display: block; font-size: 13px; margin-bottom: 5px; font-weight: bold;">⏰ Min
+                            Hours</label>
+                        <input type="number" id="filterAnalyticsMinHours" min="0" step="0.5" placeholder="Min"
+                            onchange="applyAnalyticsFilters()"
+                            style="width: 100%; padding: 10px; border: none; border-radius: 6px;">
+                    </div>
+                    <div>
+                        <label style="display: block; font-size: 13px; margin-bottom: 5px; font-weight: bold;">⏰ Max
+                            Hours</label>
+                        <input type="number" id="filterAnalyticsMaxHours" min="0" step="0.5" placeholder="Max"
+                            onchange="applyAnalyticsFilters()"
+                            style="width: 100%; padding: 10px; border: none; border-radius: 6px;">
+                    </div>
+                    <div>
+                        <label style="display: block; font-size: 13px; margin-bottom: 5px; font-weight: bold;">⏱️
+                            Overtime Filter</label>
+                        <select id="filterAnalyticsOvertime" onchange="applyAnalyticsFilters()"
+                            style="width: 100%; padding: 10px; border: none; border-radius: 6px; background: white; color: #333;">
+                            <option value="">All</option>
+                            <option value="with">With Overtime</option>
+                            <option value="without">Without Overtime</option>
+                            <option value="high">High Overtime (>5h)</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label style="display: block; font-size: 13px; margin-bottom: 5px; font-weight: bold;">📈
+                            Sort By</label>
+                        <select id="filterAnalyticsSort" onchange="applyAnalyticsFilters()"
+                            style="width: 100%; padding: 10px; border: none; border-radius: 6px; background: white; color: #333;">
+                            <option value="date_desc">Date (Newest First)</option>
+                            <option value="date_asc">Date (Oldest First)</option>
+                            <option value="hours_desc">Hours (High to Low)</option>
+                            <option value="hours_asc">Hours (Low to High)</option>
+                            <option value="employee">Employee Name</option>
+                            <option value="project">Project Name</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Action Buttons -->
+                <div style="display: flex; gap: 10px; flex-wrap: wrap; margin-top: 20px;">
+                    <button onclick="clearAnalyticsFilters()" class="btn"
+                        style="background: white; color: #667eea; border: none; padding: 12px 24px; border-radius: 6px; font-weight: bold; cursor: pointer; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">🔄
+                        Clear All Filters</button>
+                    <button onclick="applyAnalyticsFilters()" class="btn"
+                        style="background: #8b5cf6; color: white; border: none; padding: 12px 24px; border-radius: 6px; font-weight: bold; cursor: pointer; box-shadow: 0 2px 4px rgba(0,0,0,0.2);">🔍
+                        Apply Filters</button>
+                    <button onclick="downloadAnalyticsXLSX()" class="btn"
+                        style="background: #10b981; color: white; border: none; padding: 12px 24px; border-radius: 6px; font-weight: bold; cursor: pointer; box-shadow: 0 2px 4px rgba(0,0,0,0.2);">📥
+                        Download XLSX</button>
+                    <button onclick="downloadAnalyticsCSV()" class="btn"
+                        style="background: #3b82f6; color: white; border: none; padding: 12px 24px; border-radius: 6px; font-weight: bold; cursor: pointer; box-shadow: 0 2px 4px rgba(0,0,0,0.2);">📄
+                        Download CSV</button>
+                    <button onclick="downloadAnalyticsPDF()" class="btn"
+                        style="background: #ef4444; color: white; border: none; padding: 12px 24px; border-radius: 6px; font-weight: bold; cursor: pointer; box-shadow: 0 2px 4px rgba(0,0,0,0.2);">📑
+                        Generate PDF</button>
+                    <button onclick="sendAnalyticsToAdmin()" class="btn"
+                        style="background: #f59e0b; color: white; border: none; padding: 12px 24px; border-radius: 6px; font-weight: bold; cursor: pointer; box-shadow: 0 2px 4px rgba(0,0,0,0.2);">📤
+                        Send to Admin</button>
+                    <button onclick="scheduleReport()" class="btn"
+                        style="background: #ec4899; color: white; border: none; padding: 12px 24px; border-radius: 6px; font-weight: bold; cursor: pointer; box-shadow: 0 2px 4px rgba(0,0,0,0.2);">⏰
+                        Schedule Report</button>
+                    <button onclick="printAnalytics()" class="btn"
+                        style="background: #6366f1; color: white; border: none; padding: 12px 24px; border-radius: 6px; font-weight: bold; cursor: pointer; box-shadow: 0 2px 4px rgba(0,0,0,0.2);">🖨️
+                        Print</button>
+                </div>
+
+                <!-- Filter Summary -->
+                <div id="filterSummary"
+                    style="margin-top: 15px; padding: 15px; background: rgba(255,255,255,0.1); border-radius: 6px; display: none;">
+                    <strong>Active Filters:</strong> <span id="filterSummaryText"></span>
+                </div>
+            </div>
+
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="number" id="sumTotal">0</div>
+                    <div class="label">Total Timesheets</div>
+                </div>
+                <div class="stat-card">
+                    <div class="number" id="sumHours">0h</div>
+                    <div class="label">Total Hours</div>
+                </div>
+                <div class="stat-card">
+                    <div class="number" id="sumOvertime">0h</div>
+                    <div class="label">Overtime Hours</div>
+                </div>
+                <div class="stat-card">
+                    <div class="number" id="sumEmployees">0</div>
+                    <div class="label">Active Employees</div>
+                </div>
+                <div class="stat-card">
+                    <div class="number" id="sumProjects">0</div>
+                    <div class="label">Active Projects</div>
+                </div>
+                <div class="stat-card">
+                    <div class="number" id="avgHoursPerDay">0h</div>
+                    <div class="label">Avg Hours/Day</div>
+                </div>
+            </div>
+
+            <!-- Hours Calculation Info -->
+            <div
+                style="margin: 20px 0; padding: 15px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 10px; color: white;">
+                <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 10px;">
+                    <span style="font-size: 24px;">⏱️</span>
+                    <h3 style="margin: 0;">How Work Hours are Calculated</h3>
+                </div>
+                <div
+                    style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 15px; font-size: 14px;">
+                    <div style="background: rgba(255,255,255,0.15); padding: 12px; border-radius: 8px;">
+                        <strong>📋 From Timesheets</strong>
+                        <p style="margin: 8px 0 0 0; opacity: 0.95;">All hours are calculated from employee
+                            timesheet entries with start time, end time, and break duration.</p>
+                    </div>
+                    <div style="background: rgba(255,255,255,0.15); padding: 12px; border-radius: 8px;">
+                        <strong>🧮 Calculation Formula</strong>
+                        <p style="margin: 8px 0 0 0; opacity: 0.95; font-family: monospace;">Total Hours = (End Time
+                            - Start Time) - Break Minutes</p>
+                    </div>
+                    <div style="background: rgba(255,255,255,0.15); padding: 12px; border-radius: 8px;">
+                        <strong>⚡ Overtime</strong>
+                        <p style="margin: 8px 0 0 0; opacity: 0.95;">Hours beyond 8h/day are automatically tracked
+                            as overtime in timesheet records.</p>
+                    </div>
+                    <div style="background: rgba(255,255,255,0.15); padding: 12px; border-radius: 8px;">
+                        <strong>✅ Data Accuracy</strong>
+                        <p style="margin: 8px 0 0 0; opacity: 0.95;">Only approved/pending timesheets are included.
+                            Draft or rejected entries are excluded.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="section">
+                <h2>📊 Analytics - 5 Enhanced Charts</h2>
+                <div class="chart-grid">
+                    <div
+                        style="background: #ffffff; padding: 20px; border-radius: 16px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); color: #1e293b;">
+                        <h3>1️⃣ Hours by Project</h3>
+                        <div class="chart-container">
+                            <canvas id="byProject"></canvas>
+                        </div>
                     </div>
                     <div
-                        style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 15px; font-size: 14px;">
-                        <div style="background: rgba(255,255,255,0.15); padding: 12px; border-radius: 8px;">
-                            <strong>📋 From Timesheets</strong>
-                            <p style="margin: 8px 0 0 0; opacity: 0.95;">All hours are calculated from employee
-                                timesheet entries with start time, end time, and break duration.</p>
+                        style="background: #ffffff; padding: 20px; border-radius: 16px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); color: #1e293b;">
+                        <h3>2️⃣ Hours by Task</h3>
+                        <div class="chart-container">
+                            <canvas id="byTask"></canvas>
                         </div>
-                        <div style="background: rgba(255,255,255,0.15); padding: 12px; border-radius: 8px;">
-                            <strong>🧮 Calculation Formula</strong>
-                            <p style="margin: 8px 0 0 0; opacity: 0.95; font-family: monospace;">Total Hours = (End Time
-                                - Start Time) - Break Minutes</p>
+                    </div>
+                    <div
+                        style="background: #ffffff; padding: 20px; border-radius: 16px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); color: #1e293b;">
+                        <h3>3️⃣ Timesheets by Status</h3>
+                        <div class="chart-container">
+                            <canvas id="byStatus"></canvas>
                         </div>
-                        <div style="background: rgba(255,255,255,0.15); padding: 12px; border-radius: 8px;">
-                            <strong>⚡ Overtime</strong>
-                            <p style="margin: 8px 0 0 0; opacity: 0.95;">Hours beyond 8h/day are automatically tracked
-                                as overtime in timesheet records.</p>
+                    </div>
+                    <div
+                        style="background: #ffffff; padding: 20px; border-radius: 16px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); color: #1e293b;">
+                        <h3>4️⃣ Hours Per Day (30-day)</h3>
+                        <div class="chart-container">
+                            <canvas id="hoursPerDay"></canvas>
                         </div>
-                        <div style="background: rgba(255,255,255,0.15); padding: 12px; border-radius: 8px;">
-                            <strong>✅ Data Accuracy</strong>
-                            <p style="margin: 8px 0 0 0; opacity: 0.95;">Only approved/pending timesheets are included.
-                                Draft or rejected entries are excluded.</p>
+                    </div>
+                    <div
+                        style="grid-column: 1 / 2; background: #ffffff; padding: 20px; border-radius: 16px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); color: #1e293b;">
+                        <h3>5️⃣ Employee Utilization</h3>
+                        <div class="chart-container">
+                            <canvas id="empUtil"></canvas>
                         </div>
                     </div>
                 </div>
+            </div>
 
-                <div class="section">
-                    <h2>📊 Analytics - 5 Enhanced Charts</h2>
-                    <div class="chart-grid">
-                        <div
-                            style="background: #ffffff; padding: 20px; border-radius: 16px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); color: #1e293b;">
-                            <h3>1️⃣ Hours by Project</h3>
-                            <div class="chart-container">
-                                <canvas id="byProject"></canvas>
-                            </div>
-                        </div>
-                        <div
-                            style="background: #ffffff; padding: 20px; border-radius: 16px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); color: #1e293b;">
-                            <h3>2️⃣ Hours by Task</h3>
-                            <div class="chart-container">
-                                <canvas id="byTask"></canvas>
-                            </div>
-                        </div>
-                        <div
-                            style="background: #ffffff; padding: 20px; border-radius: 16px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); color: #1e293b;">
-                            <h3>3️⃣ Timesheets by Status</h3>
-                            <div class="chart-container">
-                                <canvas id="byStatus"></canvas>
-                            </div>
-                        </div>
-                        <div
-                            style="background: #ffffff; padding: 20px; border-radius: 16px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); color: #1e293b;">
-                            <h3>4️⃣ Hours Per Day (30-day)</h3>
-                            <div class="chart-container">
-                                <canvas id="hoursPerDay"></canvas>
-                            </div>
-                        </div>
-                        <div
-                            style="grid-column: 1 / 2; background: #ffffff; padding: 20px; border-radius: 16px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); color: #1e293b;">
-                            <h3>5️⃣ Employee Utilization</h3>
-                            <div class="chart-container">
-                                <canvas id="empUtil"></canvas>
-                            </div>
+            <!-- NEW: Additional Analytics Charts -->
+            <div class="section">
+                <h2>📈 Detailed Analytics - By Category</h2>
+                <div class="chart-grid">
+                    <!-- Proof Completion Charts -->
+                    <div
+                        style="background: #ffffff; padding: 20px; border-radius: 16px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); color: #1e293b;">
+                        <h3>📄 Proof Completion by Employee</h3>
+                        <div class="chart-container">
+                            <canvas id="proofByEmployee"></canvas>
                         </div>
                     </div>
-                </div>
+                    <div
+                        style="background: #ffffff; padding: 20px; border-radius: 16px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); color: #1e293b;">
+                        <h3>📄 Proof Completion by Project</h3>
+                        <div class="chart-container">
+                            <canvas id="proofByProject"></canvas>
+                        </div>
+                    </div>
 
-                <!-- NEW: Additional Analytics Charts -->
-                <div class="section">
-                    <h2>📈 Detailed Analytics - By Category</h2>
-                    <div class="chart-grid">
-                        <!-- Proof Completion Charts -->
-                        <div
-                            style="background: #ffffff; padding: 20px; border-radius: 16px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); color: #1e293b;">
-                            <h3>📄 Proof Completion by Employee</h3>
-                            <div class="chart-container">
-                                <canvas id="proofByEmployee"></canvas>
-                            </div>
+                    <!-- Timesheet Charts -->
+                    <div
+                        style="background: #ffffff; padding: 20px; border-radius: 16px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); color: #1e293b;">
+                        <h3>📝 Timesheets by Employee</h3>
+                        <div class="chart-container">
+                            <canvas id="timesheetByEmployee"></canvas>
                         </div>
-                        <div
-                            style="background: #ffffff; padding: 20px; border-radius: 16px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); color: #1e293b;">
-                            <h3>📄 Proof Completion by Project</h3>
-                            <div class="chart-container">
-                                <canvas id="proofByProject"></canvas>
-                            </div>
+                    </div>
+                    <div
+                        style="background: #ffffff; padding: 20px; border-radius: 16px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); color: #1e293b;">
+                        <h3>📝 Timesheets by Project</h3>
+                        <div class="chart-container">
+                            <canvas id="timesheetByProject"></canvas>
                         </div>
+                    </div>
+                    <div
+                        style="background: #ffffff; padding: 20px; border-radius: 16px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); color: #1e293b;">
+                        <h3>📝 Timesheets by Task</h3>
+                        <div class="chart-container">
+                            <canvas id="timesheetByTask"></canvas>
+                        </div>
+                    </div>
 
-                        <!-- Timesheet Charts -->
-                        <div
-                            style="background: #ffffff; padding: 20px; border-radius: 16px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); color: #1e293b;">
-                            <h3>📝 Timesheets by Employee</h3>
-                            <div class="chart-container">
-                                <canvas id="timesheetByEmployee"></canvas>
-                            </div>
+                    <!-- Attendance Charts -->
+                    <div
+                        style="background: #ffffff; padding: 20px; border-radius: 16px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); color: #1e293b;">
+                        <h3>✅ Attendance by Employee</h3>
+                        <div class="chart-container">
+                            <canvas id="attendanceByEmployee"></canvas>
                         </div>
-                        <div
-                            style="background: #ffffff; padding: 20px; border-radius: 16px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); color: #1e293b;">
-                            <h3>📝 Timesheets by Project</h3>
-                            <div class="chart-container">
-                                <canvas id="timesheetByProject"></canvas>
-                            </div>
-                        </div>
-                        <div
-                            style="background: #ffffff; padding: 20px; border-radius: 16px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); color: #1e293b;">
-                            <h3>📝 Timesheets by Task</h3>
-                            <div class="chart-container">
-                                <canvas id="timesheetByTask"></canvas>
-                            </div>
-                        </div>
+                    </div>
 
-                        <!-- Attendance Charts -->
-                        <div
-                            style="background: #ffffff; padding: 20px; border-radius: 16px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); color: #1e293b;">
-                            <h3>✅ Attendance by Employee</h3>
-                            <div class="chart-container">
-                                <canvas id="attendanceByEmployee"></canvas>
-                            </div>
+                    <!-- Leave Charts -->
+                    <div
+                        style="background: #ffffff; padding: 20px; border-radius: 16px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); color: #1e293b;">
+                        <h3>🏖️ Leave Requests by Employee</h3>
+                        <div class="chart-container">
+                            <canvas id="leaveByEmployee"></canvas>
                         </div>
+                    </div>
+                    <div
+                        style="background: #ffffff; padding: 20px; border-radius: 16px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); color: #1e293b;">
+                        <h3>🏖️ Leave by Type</h3>
+                        <div class="chart-container">
+                            <canvas id="leaveByType"></canvas>
+                        </div>
+                    </div>
 
-                        <!-- Leave Charts -->
-                        <div
-                            style="background: #ffffff; padding: 20px; border-radius: 16px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); color: #1e293b;">
-                            <h3>🏖️ Leave Requests by Employee</h3>
-                            <div class="chart-container">
-                                <canvas id="leaveByEmployee"></canvas>
-                            </div>
+                    <!-- Meeting Charts -->
+                    <div
+                        style="background: #ffffff; padding: 20px; border-radius: 16px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); color: #1e293b;">
+                        <h3>👥 Meeting Attendees by Employee</h3>
+                        <div class="chart-container">
+                            <canvas id="meetingByEmployee"></canvas>
                         </div>
-                        <div
-                            style="background: #ffffff; padding: 20px; border-radius: 16px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); color: #1e293b;">
-                            <h3>🏖️ Leave by Type</h3>
-                            <div class="chart-container">
-                                <canvas id="leaveByType"></canvas>
-                            </div>
-                        </div>
-
-                        <!-- Meeting Charts -->
-                        <div
-                            style="background: #ffffff; padding: 20px; border-radius: 16px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); color: #1e293b;">
-                            <h3>👥 Meeting Attendees by Employee</h3>
-                            <div class="chart-container">
-                                <canvas id="meetingByEmployee"></canvas>
-                            </div>
-                        </div>
-                        <div
-                            style="background: #ffffff; padding: 20px; border-radius: 16px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); color: #1e293b;">
-                            <h3>📅 Meetings by Project</h3>
-                            <div class="chart-container">
-                                <canvas id="meetingByProject"></canvas>
-                            </div>
+                    </div>
+                    <div
+                        style="background: #ffffff; padding: 20px; border-radius: 16px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); color: #1e293b;">
+                        <h3>📅 Meetings by Project</h3>
+                        <div class="chart-container">
+                            <canvas id="meetingByProject"></canvas>
                         </div>
                     </div>
                 </div>
@@ -1679,7 +1655,6 @@
                         break;
                     case 'attendance':
                         loadTodayAttendance();
-                        loadCorrections();
                         break;
                     case 'leaves':
                         loadLeaveRequests();
@@ -4141,7 +4116,7 @@ Available data:
                     `;
                     } else if (status === 'approved' || status === 'completed') {
                         statusBadge = `<span class="badge badge-success">✅ Approved</span>`;
-                        actionButtons = `<button class="btn btn-sm" style="background:#e67e22;color:white;padding:4px 8px;" onclick="sendForRework('${review.taskId}', '${review.employee._id}')">🔧 Report Defect</button>`;
+                        actionButtons = '<span style="color: #27ae60;">✅ Completed</span>';
                     } else if (status === 'rework_required') {
                         statusBadge = `<span class="badge badge-warning">🔄 Rework Required</span>${defectCount > 0 ? `<br><small style="color:#e67e22;">Cycle ${defectCount}</small>` : ''}`;
                         actionButtons = '<span style="color:#f39c12;">Awaiting resubmission</span>';

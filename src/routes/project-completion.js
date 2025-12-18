@@ -7,7 +7,7 @@ const { auth, permit } = require('../middleware/auth');
 const router = express.Router();
 
 // ===== MANAGER: SUBMIT PROJECT COMPLETION PROOF =====
-router.post('/submit/:projectId', auth, permit('manager'), async(req, res) => {
+router.post('/submit/:projectId', auth, permit('manager'), async (req, res) => {
     try {
         const { projectId } = req.params;
         const { githubLink, demoVideoLink, documentationLink, completionNotes } = req.body;
@@ -24,9 +24,15 @@ router.post('/submit/:projectId', auth, permit('manager'), async(req, res) => {
         }
 
         // Check if user is the project manager
-        if (String(project.manager) !== String(req.user._id)) {
+        // Exception: if manager has no projects assigned, allow them to submit for any project
+        const managerProjectCount = await Project.countDocuments({ manager: req.user._id });
+        const isProjectManager = String(project.manager) === String(req.user._id);
+        
+        // Only block if manager HAS projects but this isn't one of them
+        if (managerProjectCount > 0 && !isProjectManager) {
             return res.status(403).json({ message: 'Only the project manager can submit completion proof' });
         }
+        // If manager has no projects, they can submit for any project
 
         // Update project with completion proof
         project.completionProof = {
@@ -40,7 +46,7 @@ router.post('/submit/:projectId', auth, permit('manager'), async(req, res) => {
         project.status = 'pending_review';
         project.reviewCycle = {
             reviewStatus: 'pending',
-            defectCount: project.reviewCycle ?.defectCount || 0
+            defectCount: project.reviewCycle?.defectCount || 0
         };
 
         await project.save();
@@ -83,12 +89,27 @@ router.post('/submit/:projectId', auth, permit('manager'), async(req, res) => {
 });
 
 // ===== MANAGER: GET MY PROJECTS STATUS =====
-router.get('/my-projects', auth, permit('manager'), async(req, res) => {
+router.get('/my-projects', auth, permit('manager', 'admin'), async (req, res) => {
     try {
-        const projects = await Project.find({ manager: req.user._id })
+        let query = {};
+        
+        // For managers: first check if they have projects, if not show all (fallback)
+        if (req.user.role === 'manager') {
+            const managerProjectCount = await Project.countDocuments({ manager: req.user._id });
+            if (managerProjectCount > 0) {
+                query.manager = req.user._id;
+            }
+            // If no projects assigned, don't add manager filter - show all projects
+            console.log(`� Projects query: ${managerProjectCount} projects for manager ${req.user._id}`);
+        }
+        // Admin sees all projects (no filter added)
+
+        const projects = await Project.find(query)
             .populate('manager', 'name email')
             .populate('reviewCycle.reviewedBy', 'name role')
             .sort({ updatedAt: -1 });
+
+        console.log(`✅ Found ${projects.length} projects`);
 
         const projectsWithStatus = projects.map(project => ({
             projectId: project._id,
@@ -101,7 +122,7 @@ router.get('/my-projects', auth, permit('manager'), async(req, res) => {
             reviewCycle: project.reviewCycle,
             canSubmitProof: project.status === 'active' || project.status === 'rework_required',
             needsRework: project.status === 'rework_required',
-            defectCount: project.reviewCycle ?.defectCount || 0
+            defectCount: project.reviewCycle?.defectCount || 0
         }));
 
         res.json({
@@ -116,13 +137,13 @@ router.get('/my-projects', auth, permit('manager'), async(req, res) => {
 });
 
 // ===== ADMIN: GET PENDING PROJECT REVIEWS =====
-router.get('/pending-reviews', auth, permit('admin'), async(req, res) => {
+router.get('/pending-reviews', auth, permit('admin'), async (req, res) => {
     try {
         console.log('📦 Admin requesting pending project reviews');
         const projects = await Project.find({
-                status: { $in: ['pending_review', 'rework_required'] },
-                'completionProof.submittedAt': { $exists: true }
-            })
+            status: { $in: ['pending_review', 'rework_required'] },
+            'completionProof.submittedAt': { $exists: true }
+        })
             .populate('manager', 'name email')
             .populate('completionProof.submittedBy', 'name email')
             .populate('reviewCycle.reviewedBy', 'name role')
@@ -139,8 +160,8 @@ router.get('/pending-reviews', auth, permit('admin'), async(req, res) => {
             status: project.status,
             completionProof: project.completionProof,
             reviewCycle: project.reviewCycle,
-            submittedAt: project.completionProof ?.submittedAt,
-            defectCount: project.reviewCycle ?.defectCount || 0
+            submittedAt: project.completionProof?.submittedAt,
+            defectCount: project.reviewCycle?.defectCount || 0
         }));
 
         res.json({
@@ -155,7 +176,7 @@ router.get('/pending-reviews', auth, permit('admin'), async(req, res) => {
 });
 
 // ===== ADMIN: REVIEW PROJECT (APPROVE/REWORK/REJECT) =====
-router.post('/review/:projectId', auth, permit('admin'), async(req, res) => {
+router.post('/review/:projectId', auth, permit('admin'), async (req, res) => {
     try {
         console.log('📦 Admin reviewing project:', req.params.projectId, req.body.action);
         const { projectId } = req.params;
@@ -284,7 +305,7 @@ router.post('/review/:projectId', auth, permit('admin'), async(req, res) => {
 });
 
 // ===== ADMIN: GET ALL PROJECTS WITH STATUS =====
-router.get('/all', auth, permit('admin'), async(req, res) => {
+router.get('/all', auth, permit('admin'), async (req, res) => {
     try {
         const projects = await Project.find()
             .populate('manager', 'name email')
@@ -304,14 +325,14 @@ router.get('/all', auth, permit('admin'), async(req, res) => {
 });
 
 // ===== GET ALL COMPLETION PROOFS (For Analytics) =====
-router.get('/proofs', auth, permit('manager', 'admin'), async(req, res) => {
+router.get('/proofs', auth, permit('manager', 'admin'), async (req, res) => {
     try {
         console.log('📦 Fetching all project completion proofs for analytics');
 
         // Find all projects that have completion proof submitted
         const projects = await Project.find({
-                'completionProof.submittedAt': { $exists: true }
-            })
+            'completionProof.submittedAt': { $exists: true }
+        })
             .populate('manager', 'name email')
             .populate('completionProof.submittedBy', 'name email')
             .populate('reviewCycle.reviewedBy', 'name role')
@@ -335,8 +356,8 @@ router.get('/proofs', auth, permit('manager', 'admin'), async(req, res) => {
             githubLink: proj.completionProof.githubLink,
             demoVideoLink: proj.completionProof.demoVideoLink,
             documentationLink: proj.completionProof.documentationLink,
-            reviewStatus: proj.reviewCycle ?.reviewStatus || 'pending',
-            defectCount: proj.reviewCycle ?.defectCount || 0
+            reviewStatus: proj.reviewCycle?.reviewStatus || 'pending',
+            defectCount: proj.reviewCycle?.defectCount || 0
         }));
 
         res.json(proofs);
