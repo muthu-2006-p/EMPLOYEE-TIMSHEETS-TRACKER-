@@ -1,0 +1,531 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reports & Analytics - Workflow 7</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: Arial;
+            background: #f5f5f5;
+        }
+        
+        .navbar {
+            background: #2c3e50;
+            color: white;
+            padding: 15px 20px;
+            display: flex;
+            justify-content: space-between;
+        }
+        
+        .logout-btn {
+            background: #e74c3c;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 20px auto;
+            padding: 0 20px;
+        }
+        
+        .filters {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 15px;
+        }
+        
+        input,
+        select {
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            width: 100%;
+        }
+        
+        .filter-buttons {
+            grid-column: 1 / -1;
+            display: flex;
+            gap: 10px;
+        }
+        
+        button {
+            background: #3498db;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        
+        button:hover {
+            background: #2980b9;
+        }
+        
+        button.secondary {
+            background: #95a5a6;
+        }
+        
+        .section {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+        
+        .section h2 {
+            color: #2c3e50;
+            margin-bottom: 15px;
+            border-bottom: 2px solid #3498db;
+            padding-bottom: 10px;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .stat-card {
+            background: #ecf0f1;
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+        }
+        
+        .stat-card .number {
+            font-size: 24px;
+            font-weight: bold;
+            color: #2c3e50;
+        }
+        
+        .stat-card .label {
+            font-size: 12px;
+            color: #7f8c8d;
+        }
+        
+        .chart-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .chart-container {
+            position: relative;
+            height: 300px;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        th,
+        td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #ecf0f1;
+        }
+        
+        th {
+            background: #ecf0f1;
+            font-weight: bold;
+        }
+        
+        .print-btn {
+            background: #27ae60;
+        }
+        
+        @media (max-width: 1024px) {
+            .chart-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        .export-section {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="navbar">
+        <h1>📊 Reports & Analytics - Workflow 7</h1>
+        <button class="logout-btn" onclick="logout()">Logout</button>
+    </div>
+
+    <div class="container">
+        <!-- Filters -->
+        <div class="filters">
+            <div>
+                <label style="font-weight: bold; display: block; margin-bottom: 5px;">Start Date</label>
+                <input type="date" id="startDate">
+            </div>
+            <div>
+                <label style="font-weight: bold; display: block; margin-bottom: 5px;">End Date</label>
+                <input type="date" id="endDate">
+            </div>
+            <div>
+                <label style="font-weight: bold; display: block; margin-bottom: 5px;">Employee</label>
+                <select id="empFilter">
+                    <option value="">All Employees</option>
+                </select>
+            </div>
+            <div>
+                <label style="font-weight: bold; display: block; margin-bottom: 5px;">Project</label>
+                <select id="projFilter">
+                    <option value="">All Projects</option>
+                </select>
+            </div>
+            <div class="filter-buttons">
+                <button onclick="applyFilters()">🔍 Apply Filters</button>
+                <button class="secondary" onclick="resetFilters()">↻ Reset</button>
+                <button class="print-btn" onclick="exportToPDF()">📄 Export PDF</button>
+                <button class="print-btn" onclick="exportToCSV()">📊 Export CSV</button>
+            </div>
+        </div>
+
+        <!-- Summary Statistics -->
+        <div class="section">
+            <h2>📈 Summary Statistics</h2>
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="number" id="totalTs">0</div>
+                    <div class="label">Total Timesheets</div>
+                </div>
+                <div class="stat-card">
+                    <div class="number" id="totalHours">0h</div>
+                    <div class="label">Total Hours</div>
+                </div>
+                <div class="stat-card">
+                    <div class="number" id="totalOT">0h</div>
+                    <div class="label">Overtime</div>
+                </div>
+                <div class="stat-card">
+                    <div class="number" id="approvalRate">0%</div>
+                    <div class="label">Approval Rate</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 5 Charts - Workflow 7 Analytics -->
+        <div class="section">
+            <h2>📊 Analytics - 5 Chart Views</h2>
+            <div class="chart-grid">
+                <div>
+                    <h3>1️⃣ Hours by Project</h3>
+                    <div class="chart-container">
+                        <canvas id="byProject"></canvas>
+                    </div>
+                </div>
+                <div>
+                    <h3>2️⃣ Hours by Task</h3>
+                    <div class="chart-container">
+                        <canvas id="byTask"></canvas>
+                    </div>
+                </div>
+                <div>
+                    <h3>3️⃣ Status Distribution</h3>
+                    <div class="chart-container">
+                        <canvas id="byStatus"></canvas>
+                    </div>
+                </div>
+                <div>
+                    <h3>4️⃣ Hours Per Day (Trend)</h3>
+                    <div class="chart-container">
+                        <canvas id="hoursPerDay"></canvas>
+                    </div>
+                </div>
+                <div>
+                    <h3>5️⃣ Employee Utilization</h3>
+                    <div class="chart-container">
+                        <canvas id="empUtil"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Detailed Timesheets Table -->
+        <div class="section">
+            <h2>📋 Detailed Timesheets</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Employee</th>
+                        <th>Date</th>
+                        <th>Project</th>
+                        <th>Task</th>
+                        <th>Hours</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody id="timesheetTable">
+                    <tr>
+                        <td colspan="6" style="text-align: center;">Loading...</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Employee Summary -->
+        <div class="section">
+            <h2>👥 Employee Summary</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Employee</th>
+                        <th>Timesheets</th>
+                        <th>Total Hours</th>
+                        <th>Overtime</th>
+                        <th>Approved %</th>
+                    </tr>
+                </thead>
+                <tbody id="empSummaryTable">
+                    <tr>
+                        <td colspan="5" style="text-align: center;">Loading...</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script>
+        const token = localStorage.getItem('token');
+        if (!token) window.location.href = '/login.html';
+
+        let allTimesheets = [];
+        let allEmployees = [];
+        let allProjects = [];
+
+        async function api(path) {
+            const res = await fetch(`/api${path}`, {
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            });
+            return res.json();
+        }
+
+        function drawChart(canvasId, type, labels, data, title) {
+            try {
+                const ctx = document.getElementById(canvasId).getContext('2d');
+                if (window[canvasId + 'Chart']) window[canvasId + 'Chart'].destroy();
+                window[canvasId + 'Chart'] = new Chart(ctx, {
+                    type: type,
+                    data: {
+                        labels: labels,
+                        datasets: [{
+                            label: title,
+                            data: data,
+                            backgroundColor: ['#3498db', '#27ae60', '#f39c12', '#e74c3c', '#9b59b6', '#1abc9c', '#34495e', '#e67e22'],
+                            borderColor: ['#2980b9', '#229954', '#d68910', '#c0392b', '#8e44ad', '#16a085', '#2c3e50', '#d35400'],
+                            borderWidth: 1
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                display: true
+                            }
+                        }
+                    }
+                });
+            } catch (e) {
+                console.error(e);
+            }
+        }
+
+        async function loadData() {
+            try {
+                // Get all data
+                allTimesheets = await api('/timesheets/all');
+                allEmployees = await api('/admin/employees');
+                allProjects = await api('/admin/projects');
+
+                // Populate filters
+                document.getElementById('empFilter').innerHTML = '<option value="">All Employees</option>' +
+                    allEmployees.map(e => `<option value="${e._id}">${e.name}</option>`).join('');
+                document.getElementById('projFilter').innerHTML = '<option value="">All Projects</option>' +
+                    allProjects.map(p => `<option value="${p._id}">${p.name}</option>`).join('');
+
+                applyFilters();
+            } catch (e) {
+                console.error(e);
+            }
+        }
+
+        async function applyFilters() {
+            let filtered = allTimesheets;
+            const startDate = document.getElementById('startDate').value;
+            const endDate = document.getElementById('endDate').value;
+            const emp = document.getElementById('empFilter').value;
+            const proj = document.getElementById('projFilter').value;
+
+            if (startDate) filtered = filtered.filter(t => new Date(t.date) >= new Date(startDate));
+            if (endDate) filtered = filtered.filter(t => new Date(t.date) <= new Date(endDate));
+            if (emp) filtered = filtered.filter(t => t.employee?._id === emp);
+            if (proj) filtered = filtered.filter(t => t.project?._id === proj);
+
+            // Summary
+            const stats = {
+                totalTs: filtered.length,
+                totalHours: filtered.reduce((s, t) => s + (t.totalHours || 0), 0),
+                totalOT: filtered.reduce((s, t) => s + (t.overtimeHours || 0), 0),
+                approved: filtered.filter(t => t.status === 'approved').length
+            };
+            document.getElementById('totalTs').textContent = stats.totalTs;
+            document.getElementById('totalHours').textContent = stats.totalHours.toFixed(1);
+            document.getElementById('totalOT').textContent = stats.totalOT.toFixed(1);
+            document.getElementById('approvalRate').textContent = stats.totalTs ? Math.round(100 * stats.approved / stats.totalTs) + '%' : '0%';
+
+            // Charts
+            const byProject = {};
+            const byTask = {};
+            const byStatus = {};
+            const hoursPerDay = {};
+            const empUtil = {};
+
+            filtered.forEach(t => {
+                const pname = t.project?.name || 'Unassigned';
+                const tname = t.task?.title || 'No Task';
+                const status = t.status || 'draft';
+                const date = new Date(t.date).toLocaleDateString();
+                const ename = t.employee?.name || 'Unknown';
+
+                byProject[pname] = (byProject[pname] || 0) + (t.totalHours || 0);
+                byTask[tname] = (byTask[tname] || 0) + (t.totalHours || 0);
+                byStatus[status] = (byStatus[status] || 0) + 1;
+                hoursPerDay[date] = (hoursPerDay[date] || 0) + (t.totalHours || 0);
+                empUtil[ename] = (empUtil[ename] || 0) + (t.totalHours || 0);
+            });
+
+            drawChart('byProject', 'bar', Object.keys(byProject), Object.values(byProject), 'Hours');
+            drawChart('byTask', 'doughnut', Object.keys(byTask), Object.values(byTask), 'Hours');
+            drawChart('byStatus', 'pie', Object.keys(byStatus), Object.values(byStatus), 'Count');
+            drawChart('hoursPerDay', 'line', Object.keys(hoursPerDay), Object.values(hoursPerDay), 'Hours');
+            drawChart('empUtil', 'bar', Object.keys(empUtil), Object.values(empUtil), 'Hours');
+
+            // Timesheets Table
+            const html = filtered.map(t => `<tr>
+                <td>${t.employee?.name || 'Unknown'}</td>
+                <td>${new Date(t.date).toLocaleDateString()}</td>
+                <td>${t.project?.name || '-'}</td>
+                <td>${t.task?.title || '-'}</td>
+                <td>${t.totalHours}</td>
+                <td><strong>${t.status}</strong></td>
+            </tr>`).join('') || '<tr><td colspan="6">No data</td></tr>';
+            document.getElementById('timesheetTable').innerHTML = html;
+
+            // Employee Summary
+            const empSummary = {};
+            filtered.forEach(t => {
+                const emp = t.employee?.name || 'Unknown';
+                if (!empSummary[emp]) empSummary[emp] = {
+                    ts: 0,
+                    hours: 0,
+                    ot: 0,
+                    approved: 0
+                };
+                empSummary[emp].ts++;
+                empSummary[emp].hours += t.totalHours || 0;
+                empSummary[emp].ot += t.overtimeHours || 0;
+                if (t.status === 'approved') empSummary[emp].approved++;
+            });
+            const empHtml = Object.entries(empSummary).map(([name, data]) => `<tr>
+                <td>${name}</td>
+                <td>${data.ts}</td>
+                <td>${data.hours.toFixed(1)}</td>
+                <td>${data.ot.toFixed(1)}</td>
+                <td>${data.ts ? Math.round(100 * data.approved / data.ts) : 0}%</td>
+            </tr>`).join('');
+            document.getElementById('empSummaryTable').innerHTML = empHtml || '<tr><td colspan="5">No data</td></tr>';
+        }
+
+        function resetFilters() {
+            document.getElementById('startDate').value = '';
+            document.getElementById('endDate').value = '';
+            document.getElementById('empFilter').value = '';
+            document.getElementById('projFilter').value = '';
+            applyFilters();
+        }
+
+        function exportToPDF() {
+            const element = document.querySelector('.container');
+            const opt = {
+                margin: 10,
+                filename: 'Timesheet_Report_' + new Date().toISOString().split('T')[0] + '.pdf',
+                image: {
+                    type: 'jpeg',
+                    quality: 0.98
+                },
+                html2canvas: {
+                    scale: 2
+                },
+                jsPDF: {
+                    orientation: 'landscape',
+                    unit: 'mm',
+                    format: 'a4'
+                }
+            };
+            html2pdf().set(opt).from(element).save();
+        }
+
+        function exportToCSV() {
+            let csv = 'Employee,Date,Project,Task,Hours,Status\n';
+            const table = document.getElementById('timesheetTable');
+            Array.from(table.rows).forEach(row => {
+                const cells = Array.from(row.cells).map(cell => `"${cell.textContent}"`);
+                csv += cells.join(',') + '\n';
+            });
+            const blob = new Blob([csv], {
+                type: 'text/csv'
+            });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'Timesheet_Report_' + new Date().toISOString().split('T')[0] + '.csv';
+            a.click();
+        }
+
+        function logout() {
+            localStorage.clear();
+            window.location.href = '/login.html';
+        }
+
+        // Set default dates (last 30 days)
+        const today = new Date();
+        const thirtyDaysAgo = new Date(today.getTime() - 30 * 24 * 60 * 60 * 1000);
+        document.getElementById('startDate').value = thirtyDaysAgo.toISOString().split('T')[0];
+        document.getElementById('endDate').value = today.toISOString().split('T')[0];
+
+        loadData();
+    </script>
+</body>
+
+</html>
+

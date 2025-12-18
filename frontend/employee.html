@@ -1,0 +1,2770 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Employee Dashboard - Enterprise Edition</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Arial, sans-serif;
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #0f172a 100%);
+            min-height: 100vh;
+            color: #e2e8f0;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at 20% 30%, rgba(59, 130, 246, 0.08) 0%, transparent 50%),
+                radial-gradient(circle at 80% 70%, rgba(99, 102, 241, 0.08) 0%, transparent 50%);
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .navbar {
+            background: rgba(15, 23, 42, 0.95);
+            backdrop-filter: blur(10px);
+            color: white;
+            padding: 15px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid rgba(59, 130, 246, 0.2);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .navbar h1 {
+            font-size: 1.4rem;
+            background: linear-gradient(135deg, #3b82f6, #60a5fa);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .logout-btn {
+            background: linear-gradient(135deg, #3b82f6 0%, #6366f1 100%);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 10px rgba(59, 130, 246, 0.3);
+        }
+
+        .logout-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(59, 130, 246, 0.4);
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 20px auto;
+            padding: 0 20px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .section {
+            background: rgba(15, 23, 42, 0.8);
+            backdrop-filter: blur(10px);
+            padding: 25px;
+            border-radius: 16px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(59, 130, 246, 0.15);
+        }
+
+        .section h2 {
+            color: #f1f5f9;
+            margin-bottom: 20px;
+            font-size: 1.3rem;
+            padding-bottom: 12px;
+            border-bottom: 2px solid rgba(59, 130, 246, 0.3);
+        }
+
+        .form-group {
+            margin: 15px 0;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #94a3b8;
+        }
+
+        input,
+        select,
+        textarea {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid rgba(59, 130, 246, 0.2);
+            border-radius: 8px;
+            background: rgba(30, 41, 59, 0.8);
+            color: #e2e8f0;
+            font-size: 0.95rem;
+            transition: all 0.3s ease;
+        }
+
+        input:focus,
+        select:focus,
+        textarea:focus {
+            outline: none;
+            border-color: #3b82f6;
+            box-shadow: 0 0 8px rgba(59, 130, 246, 0.3);
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #3b82f6, #6366f1);
+            color: white;
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, #22c55e, #16a34a);
+            color: white;
+        }
+
+        .btn-danger {
+            background: linear-gradient(135deg, #ef4444, #dc2626);
+            color: white;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+
+        th,
+        td {
+            padding: 14px 12px;
+            text-align: left;
+            border-bottom: 1px solid rgba(59, 130, 246, 0.1);
+        }
+
+        th {
+            background: rgba(30, 41, 59, 0.9);
+            font-weight: 600;
+            color: #94a3b8;
+            text-transform: uppercase;
+            font-size: 0.75rem;
+            letter-spacing: 0.5px;
+        }
+
+        td {
+            color: #e2e8f0;
+        }
+
+        tr:hover td {
+            background: rgba(59, 130, 246, 0.05);
+        }
+
+        .status-badge {
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .status-draft {
+            background: rgba(148, 163, 184, 0.2);
+            color: #94a3b8;
+        }
+
+        .status-pending {
+            background: rgba(245, 158, 11, 0.2);
+            color: #fbbf24;
+        }
+
+        .status-approved {
+            background: rgba(34, 197, 94, 0.2);
+            color: #4ade80;
+        }
+
+        .status-rejected {
+            background: rgba(239, 68, 68, 0.2);
+            color: #f87171;
+        }
+
+        .status-in-progress {
+            background: rgba(59, 130, 246, 0.2);
+            color: #60a5fa;
+        }
+
+        .status-pending-review {
+            background: rgba(245, 158, 11, 0.2);
+            color: #fbbf24;
+        }
+
+        .status-completed {
+            background: rgba(34, 197, 94, 0.2);
+            color: #4ade80;
+        }
+
+        .status-rework-required {
+            background: rgba(234, 88, 12, 0.2);
+            color: #fb923c;
+        }
+
+        .status-assigned {
+            background: rgba(148, 163, 184, 0.2);
+            color: #94a3b8;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .stat-card {
+            background: rgba(30, 41, 59, 0.8);
+            padding: 20px;
+            border-radius: 12px;
+            text-align: center;
+            border: 1px solid rgba(59, 130, 246, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-3px);
+            border-color: rgba(59, 130, 246, 0.3);
+            box-shadow: 0 8px 25px rgba(59, 130, 246, 0.15);
+        }
+
+        .stat-card .number {
+            font-size: 2rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #3b82f6, #60a5fa);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .stat-card .label {
+            font-size: 0.85rem;
+            color: #94a3b8;
+            margin-top: 5px;
+        }
+
+        .chart-container {
+            position: relative;
+            height: 300px;
+            margin: 20px 0;
+        }
+
+        .tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #ecf0f1;
+            flex-wrap: wrap;
+        }
+
+        .tab {
+            padding: 12px 20px;
+            cursor: pointer;
+            border: none;
+            background: transparent;
+            font-size: 14px;
+            font-weight: 600;
+            color: #7f8c8d;
+            border-bottom: 3px solid transparent;
+            transition: all 0.3s;
+        }
+
+        .tab:hover {
+            color: #3498db;
+        }
+
+        .tab.active {
+            color: #3498db;
+            border-bottom-color: #3498db;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            overflow-y: auto;
+        }
+
+        .modal.show {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-content {
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            max-width: 600px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            color: #7f8c8d;
+        }
+
+        .badge {
+            padding: 4px 8px;
+            border-radius: 3px;
+            font-size: 11px;
+            font-weight: bold;
+        }
+
+        .badge-success {
+            background: #27ae60;
+            color: white;
+        }
+
+        .badge-warning {
+            background: #f39c12;
+            color: white;
+        }
+
+        .badge-danger {
+            background: #e74c3c;
+            color: white;
+        }
+
+        .badge-info {
+            background: #3498db;
+            color: white;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 40px;
+            color: #7f8c8d;
+        }
+
+        .empty-state-icon {
+            font-size: 48px;
+            margin-bottom: 10px;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .btn-sm {
+            padding: 5px 10px;
+            font-size: 12px;
+        }
+
+        .grid-2 {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+        }
+
+        .card {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            border-left: 4px solid #3498db;
+            color: #1a202c;
+        }
+
+        .card h3 {
+            color: #1a202c;
+            font-size: 1.1rem;
+            margin-bottom: 10px;
+            font-weight: 700;
+        }
+
+        .card p {
+            color: #2d3748;
+            margin: 8px 0;
+            line-height: 1.6;
+        }
+
+        .card strong {
+            color: #1a202c;
+            font-weight: 700;
+        }
+
+        .card a {
+            color: #3b82f6;
+            text-decoration: none;
+            word-break: break-all;
+        }
+
+        .card a:hover {
+            text-decoration: underline;
+        }
+
+        .card.warning {
+            border-left-color: #f39c12;
+        }
+
+        .card.danger {
+            border-left-color: #e74c3c;
+        }
+
+        .card.success {
+            border-left-color: #27ae60;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="navbar">
+        <h1>👨‍💼 Employee Dashboard - Enterprise Edition</h1>
+        <button class="logout-btn" onclick="logout()">Logout</button>
+    </div>
+
+    <div class="container">
+        <!-- Navigation Tabs -->
+        <div class="tabs">
+            <button class="tab active" onclick="switchTab('tasks')">✅ My Tasks</button>
+            <button class="tab" onclick="switchTab('timesheets')">📝 Timesheets</button>
+            <button class="tab" onclick="switchTab('attendance')">🕐 Attendance</button>
+            <button class="tab" onclick="switchTab('leaves')">🏖️ Leave Requests</button>
+            <button class="tab" onclick="switchTab('meetings')">📅 Meetings</button>
+            <button class="tab" onclick="switchTab('feedback')">💬 Feedback</button>
+            <button class="tab" onclick="switchTab('analytics')">📊 Analytics</button>
+            <button class="tab" onclick="switchTab('profile')">👤 Profile</button>
+        </div>
+
+        <!-- TAB 1: MY TASKS -->
+        <div id="tab-tasks" class="tab-content active">
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="number" id="taskAssigned">0</div>
+                    <div class="label">Assigned</div>
+                </div>
+                <div class="stat-card">
+                    <div class="number" id="taskInProgress">0</div>
+                    <div class="label">In Progress</div>
+                </div>
+                <div class="stat-card">
+                    <div class="number" id="taskPendingReview">0</div>
+                    <div class="label">Pending Review</div>
+                </div>
+                <div class="stat-card">
+                    <div class="number" id="taskCompleted">0</div>
+                    <div class="label">Completed</div>
+                </div>
+            </div>
+
+            <div class="section">
+                <h2>📋 My Assigned Tasks</h2>
+                <p style="color: #7f8c8d; margin-bottom: 15px;">Click "Submit Proof" to submit completion proof with
+                    GitHub and video links</p>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Task</th>
+                            <th>Project</th>
+                            <th>Status</th>
+                            <th>Progress</th>
+                            <th>Deadline</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tasksList">
+                        <tr>
+                            <td colspan="6" style="text-align: center;">Loading...</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="section">
+                <h2>📨 Proof Submission Status</h2>
+                <div id="proofStatusList" style="display: grid; gap: 15px;">
+                    <p class="empty-state">Loading...</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB 2: TIMESHEETS -->
+        <div id="tab-timesheets" class="tab-content">
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="number" id="totalHours">0</div>
+                    <div class="label">Total Hours</div>
+                </div>
+                <div class="stat-card">
+                    <div class="number" id="overtime">0</div>
+                    <div class="label">Overtime</div>
+                </div>
+                <div class="stat-card">
+                    <div class="number" id="pending">0</div>
+                    <div class="label">Pending</div>
+                </div>
+                <div class="stat-card">
+                    <div class="number" id="approved">0</div>
+                    <div class="label">Approved</div>
+                </div>
+            </div>
+
+            <div class="section">
+                <h2>📝 Log Hours</h2>
+                <div class="grid-2">
+                    <div>
+                        <div class="form-group">
+                            <label>Date *</label>
+                            <input type="date" id="date">
+                        </div>
+                        <div class="form-group">
+                            <label>Start Time *</label>
+                            <input type="time" id="startTime" value="09:00" onchange="calculateHours()">
+                        </div>
+                        <div class="form-group">
+                            <label>End Time *</label>
+                            <input type="time" id="endTime" value="17:00" onchange="calculateHours()">
+                        </div>
+                        <div class="form-group">
+                            <label>Break Time (minutes)</label>
+                            <input type="number" id="breakMinutes" value="0" min="0" max="480"
+                                onchange="calculateHours()">
+                        </div>
+                        <div class="form-group">
+                            <label>Total Hours</label>
+                            <input type="text" id="totalHours" value="8.00" readonly
+                                style="background: #f0f0f0; color: #1a202c; font-weight: bold;">
+                        </div>
+                    </div>
+                    <div>
+                        <div class="form-group">
+                            <label>Project</label>
+                            <select id="project" onchange="filterTimesheetTasks()">
+                                <option value="">Select Project</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Task</label>
+                            <select id="task">
+                                <option value="">Select Task</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Notes</label>
+                            <textarea id="notes" rows="4" placeholder="What did you work on?"></textarea>
+                        </div>
+                    </div>
+                </div>
+                <div class="action-buttons">
+                    <button class="btn btn-primary" onclick="saveDraft()">💾 Save Draft</button>
+                    <button class="btn btn-success" onclick="submitTimesheet()">✅ Submit</button>
+                </div>
+            </div>
+
+            <div class="section">
+                <h2>📋 My Timesheets</h2>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Project</th>
+                            <th>Hours</th>
+                            <th>Status</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody id="timesheetList">
+                        <tr>
+                            <td colspan="5" style="text-align: center;">Loading...</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- TAB 3: ATTENDANCE -->
+        <div id="tab-attendance" class="tab-content">
+            <div class="section">
+                <h2>🕐 Today's Attendance</h2>
+                <div style="margin-bottom: 20px;">
+                    <div class="card" id="attendanceCard">
+                        <h3 id="attendanceStatus">Not Checked In</h3>
+                        <p id="attendanceTime"></p>
+                    </div>
+                </div>
+                <div class="action-buttons">
+                    <button class="btn btn-success" id="checkInBtn" onclick="checkIn()" style="display:none;">✓ Check
+                        In</button>
+                    <button class="btn btn-danger" id="checkOutBtn" onclick="checkOut()" style="display:none;">✗ Check
+                        Out</button>
+                </div>
+            </div>
+
+            <div class="section">
+                <h2>📅 My Attendance History</h2>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Check-In</th>
+                            <th>Check-Out</th>
+                            <th>Hours</th>
+                            <th>Status</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody id="attendanceList">
+                        <tr>
+                            <td colspan="6" style="text-align: center;">Loading...</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- TAB 4: LEAVE REQUESTS -->
+        <div id="tab-leaves" class="tab-content">
+            <div class="section">
+                <h2>🏖️ Request Leave</h2>
+                <button class="btn btn-success" style="margin-bottom: 15px;" onclick="showLeaveRequestModal()">+ Request
+                    Leave</button>
+
+                <h3 style="margin-top: 20px;">My Leave Balance</h3>
+                <div class="grid-2" id="leaveBalance">
+                    <div class="card">
+                        <strong>Casual Leave (CL):</strong> <span id="balanceCL">0</span> days
+                    </div>
+                    <div class="card">
+                        <strong>Sick Leave (SL):</strong> <span id="balanceSL">0</span> days
+                    </div>
+                    <div class="card">
+                        <strong>Earned Leave (EL):</strong> <span id="balanceEL">0</span> days
+                    </div>
+                    <div class="card">
+                        <strong>Work From Home:</strong> <span id="balanceWFH">0</span> days
+                    </div>
+                    <div class="card">
+                        <strong>Permission:</strong> <span id="balancePerm">0</span> hours
+                    </div>
+                </div>
+            </div>
+
+            <div class="section">
+                <h2>📋 My Leave Requests</h2>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Type</th>
+                            <th>From</th>
+                            <th>To</th>
+                            <th>Days/Hours</th>
+                            <th>Status</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody id="leaveList">
+                        <tr>
+                            <td colspan="6" style="text-align: center;">Loading...</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- TAB 5: MEETINGS -->
+        <div id="tab-meetings" class="tab-content">
+            <div class="section">
+                <h2>📅 Upcoming Meetings</h2>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Title</th>
+                            <th>Scheduled Time</th>
+                            <th>Organizer</th>
+                            <th>Link</th>
+                            <th>Status</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody id="meetingsList">
+                        <tr>
+                            <td colspan="6" style="text-align: center;">Loading...</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- TAB 6: FEEDBACK -->
+        <div id="tab-feedback" class="tab-content">
+            <div class="section">
+                <h2>💬 My Feedback Threads</h2>
+                <button class="btn btn-success" style="margin-bottom: 15px;" onclick="showCreateFeedbackModal()">+ New
+                    Thread</button>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Thread ID</th>
+                            <th>Subject</th>
+                            <th>Category</th>
+                            <th>Status</th>
+                            <th>Participants</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody id="feedbackList">
+                        <tr>
+                            <td colspan="7" style="text-align: center;">Loading...</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- TAB 7: ANALYTICS -->
+        <div id="tab-analytics" class="tab-content">
+            <h2>📊 Your Performance Analytics</h2>
+
+            <div
+                style="margin-bottom: 20px; padding: 15px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 8px; color: white;">
+                <h3 style="margin: 0 0 10px 0;">📤 Share Your Performance</h3>
+                <p style="margin: 0 0 15px 0; opacity: 0.9;">Send your performance analytics to admin for review</p>
+                <button onclick="sendEmployeeAnalyticsToAdmin()"
+                    style="background: white; color: #667eea; border: none; padding: 10px 24px; border-radius: 6px; font-weight: 600; cursor: pointer; font-size: 14px;">
+                    ✉️ Send to Admin
+                </button>
+            </div>
+
+            <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; margin-top: 20px;">
+                <div
+                    style="background: white; color: #1a202c; padding: 20px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1);">
+                    <h3>Task Completion Progress</h3>
+                    <canvas id="taskCompletionChart"></canvas>
+                </div>
+                <div
+                    style="background: white; color: #1a202c; padding: 20px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1);">
+                    <h3>Attendance Record</h3>
+                    <canvas id="attendanceChart"></canvas>
+                </div>
+                <div
+                    style="background: white; color: #1a202c; padding: 20px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1);">
+                    <h3>Leave Balance</h3>
+                    <canvas id="leaveBalanceChart"></canvas>
+                </div>
+                <div
+                    style="background: white; color: #1a202c; padding: 20px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1);">
+                    <h3>Meeting Participation</h3>
+                    <canvas id="meetingParticipationChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- TAB 8: PROFILE -->
+    <div id="tab-profile" class="tab-content">
+        <div class="section">
+            <h2>👤 My Profile</h2>
+            <div style="display: grid; grid-template-columns: 1fr 2fr; gap: 30px; margin-top: 20px;">
+                <!-- Profile Card -->
+                <div
+                    style="background: linear-gradient(135deg, #667eea, #764ba2); padding: 30px; border-radius: 16px; text-align: center; color: white;">
+                    <div
+                        style="width: 120px; height: 120px; border-radius: 50%; background: white; margin: 0 auto 20px; display: flex; align-items: center; justify-content: center; font-size: 48px;">
+                        <span id="profileAvatar">👤</span>
+                    </div>
+                    <h2 id="profileName" style="margin-bottom: 10px;">Loading...</h2>
+                    <p id="profileRole" style="opacity: 0.9; text-transform: capitalize; font-size: 18px;">-</p>
+                    <p id="profileDepartment" style="opacity: 0.8; margin-top: 5px;">-</p>
+                    <p id="profileEmail" style="opacity: 0.7; margin-top: 10px; font-size: 14px;">-</p>
+                </div>
+
+                <!-- Profile Edit Form -->
+                <div style="background: rgba(30, 41, 59, 0.8); padding: 30px; border-radius: 16px;">
+                    <h3 style="color: #f1f5f9; margin-bottom: 20px;">✏️ Update Profile</h3>
+                    <form id="profileForm" onsubmit="updateProfile(event)">
+                        <div class="form-group">
+                            <label>Full Name</label>
+                            <input type="text" id="editName" placeholder="Your full name">
+                        </div>
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                            <div class="form-group">
+                                <label>Phone Number</label>
+                                <input type="tel" id="editPhone" placeholder="+91 1234567890">
+                            </div>
+                            <div class="form-group">
+                                <label>Date of Birth</label>
+                                <input type="date" id="editDOB">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label>Address</label>
+                            <input type="text" id="editAddress" placeholder="Your address">
+                        </div>
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                            <div class="form-group">
+                                <label>Designation</label>
+                                <input type="text" id="editDesignation" placeholder="e.g., Senior Developer">
+                            </div>
+                            <div class="form-group">
+                                <label>Department</label>
+                                <input type="text" id="editDepartment" placeholder="e.g., Engineering" readonly
+                                    style="opacity: 0.6;">
+                            </div>
+                        </div>
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                            <div class="form-group">
+                                <label>GitHub Profile</label>
+                                <input type="url" id="editGithub" placeholder="https://github.com/username">
+                            </div>
+                            <div class="form-group">
+                                <label>LinkedIn Profile</label>
+                                <input type="url" id="editLinkedin" placeholder="https://linkedin.com/in/username">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label>Bio / About</label>
+                            <textarea id="editBio" rows="3" placeholder="Tell us about yourself..."></textarea>
+                        </div>
+                        <div style="margin-top: 20px; display: flex; gap: 15px;">
+                            <button type="submit" class="btn btn-primary" style="flex: 1;">💾 Save Changes</button>
+                            <button type="button" class="btn btn-danger" onclick="loadProfile()" style="flex: 0;">🔄
+                                Reset</button>
+                        </div>
+                    </form>
+
+                    <!-- Change Password Section -->
+                    <div style="margin-top: 30px; padding-top: 20px; border-top: 1px solid rgba(59, 130, 246, 0.3);">
+                        <h3 style="color: #f1f5f9; margin-bottom: 15px;">🔐 Change Password</h3>
+                        <form id="passwordForm" onsubmit="changePassword(event)">
+                            <div class="form-group">
+                                <label>Current Password</label>
+                                <input type="password" id="currentPassword" placeholder="Enter current password"
+                                    required>
+                            </div>
+                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                                <div class="form-group">
+                                    <label>New Password</label>
+                                    <input type="password" id="newPassword" placeholder="Min 6 characters" required
+                                        minlength="6">
+                                </div>
+                                <div class="form-group">
+                                    <label>Confirm Password</label>
+                                    <input type="password" id="confirmPassword" placeholder="Confirm new password"
+                                        required>
+                                </div>
+                            </div>
+                            <button type="submit" class="btn btn-success">🔐 Update Password</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    </div>
+
+    <!-- MODAL: Submit Proof -->
+    <div id="proofModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>📤 Submit Proof of Work</h2>
+                <button class="modal-close" onclick="closeProofModal()">×</button>
+            </div>
+            <p id="proofTaskName" style="color: #7f8c8d; margin-bottom: 20px;"></p>
+            <input type="hidden" id="selectedTaskId">
+            <form id="proofForm" onsubmit="submitProof(event)">
+                <div class="form-group">
+                    <label>GitHub Repository Link *</label>
+                    <input type="url" id="githubLink" placeholder="https://github.com/username/repo" required>
+                    <small style="color: #7f8c8d;">Must be from github.com, gitlab.com, or bitbucket.org</small>
+                </div>
+                <div class="form-group">
+                    <label>Demo/Working Video Link *</label>
+                    <input type="url" id="videoLink" placeholder="https://youtube.com/watch?v=..." required>
+                    <small style="color: #7f8c8d;">Must be from YouTube, Vimeo, Loom, or Google Drive</small>
+                </div>
+                <div class="form-group">
+                    <label>Completion Notes * <span id="noteCharCount" style="color: #95a5a6;">(0/20
+                            minimum)</span></label>
+                    <textarea id="proofNotes" rows="5" required minlength="20" maxlength="2000"
+                        placeholder="Describe what you completed, challenges faced, and how you solved them..."
+                        oninput="updateCharCount()"></textarea>
+                    <small style="color: #7f8c8d;">Minimum 20 characters required</small>
+                </div>
+                <div class="action-buttons">
+                    <button type="submit" class="btn btn-success">✅ Submit Proof</button>
+                    <button type="button" class="btn btn-danger" onclick="closeProofModal()">❌ Cancel</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL: Leave Request -->
+    <div id="leaveRequestModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>🏖️ Request Leave</h2>
+                <button class="modal-close" onclick="closeLeaveRequestModal()">×</button>
+            </div>
+            <form id="leaveRequestForm" onsubmit="submitLeaveRequest(event)">
+                <div class="form-group">
+                    <label>Leave Type *</label>
+                    <select id="leaveType" required onchange="togglePermissionFields()">
+                        <option value="">Select Type</option>
+                        <option value="CL">Casual Leave (CL)</option>
+                        <option value="SL">Sick Leave (SL)</option>
+                        <option value="EL">Earned Leave (EL)</option>
+                        <option value="WFH">Work From Home</option>
+                        <option value="PERMISSION">Permission (1-4 hours)</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>From Date *</label>
+                    <input type="date" id="leaveFromDate" required>
+                </div>
+                <div class="form-group" id="leaveToDateGroup">
+                    <label>To Date *</label>
+                    <input type="date" id="leaveToDate">
+                </div>
+                <div class="form-group" id="permissionHoursGroup" style="display:none;">
+                    <label>Permission Hours * (1-4)</label>
+                    <input type="number" id="permissionHours" min="1" max="4" step="0.5">
+                </div>
+                <div class="form-group">
+                    <label>Reason *</label>
+                    <textarea id="leaveReason" rows="3" required></textarea>
+                </div>
+                <div class="form-group">
+                    <label>
+                        <input type="checkbox" id="isEmergency">
+                        Emergency Leave
+                    </label>
+                </div>
+                <div class="action-buttons">
+                    <button type="submit" class="btn btn-success">✅ Submit Request</button>
+                    <button type="button" class="btn btn-danger" onclick="closeLeaveRequestModal()">❌ Cancel</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL: Create Feedback Thread -->
+    <div id="feedbackModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>💬 Create Feedback Thread</h2>
+                <button class="modal-close" onclick="closeFeedbackModal()">×</button>
+            </div>
+            <form id="feedbackForm" onsubmit="submitFeedback(event)">
+                <div class="form-group">
+                    <label>Recipients * <small id="employeeRecipientHelp" style="color: #7f8c8d;"></small></label>
+                    <div id="employeeRecipientsList"
+                        style="max-height: 150px; overflow-y: auto; border: 1px solid #ddd; padding: 10px; border-radius: 4px; background: #f9f9f9;">
+                        <p style="color: #95a5a6;">Loading managers...</p>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Subject *</label>
+                    <input type="text" id="feedbackSubject" required>
+                </div>
+                <div class="form-group">
+                    <label>Category *</label>
+                    <select id="feedbackCategory" required>
+                        <option value="General">General</option>
+                        <option value="Bug">Bug</option>
+                        <option value="Issue">Issue</option>
+                        <option value="Performance">Performance</option>
+                        <option value="Request">Request</option>
+                        <option value="Other">Other</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Priority *</label>
+                    <select id="feedbackPriority" required>
+                        <option value="low">Low</option>
+                        <option value="medium" selected>Medium</option>
+                        <option value="high">High</option>
+                        <option value="urgent">Urgent</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Message *</label>
+                    <textarea id="feedbackMessage" rows="5" required></textarea>
+                </div>
+                <div class="action-buttons">
+                    <button type="submit" class="btn btn-success">✅ Create Thread</button>
+                    <button type="button" class="btn btn-danger" onclick="closeFeedbackModal()">❌ Cancel</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- View Thread Modal -->
+    <div id="viewThreadModal" class="modal">
+        <div class="modal-content" style="max-width: 700px;">
+            <span class="close-btn" onclick="closeViewThread()">&times;</span>
+            <h2 id="viewThreadTitle">Thread</h2>
+            <div id="viewThreadParticipants" style="color: #7f8c8d; font-size: 14px; margin-bottom: 20px;"></div>
+
+            <div
+                style="max-height: 400px; overflow-y: auto; margin-bottom: 20px; padding: 10px; background: #fff; border: 1px solid #ecf0f1; border-radius: 5px;">
+                <div id="threadMessagesContainer"></div>
+            </div>
+
+            <div style="border-top: 2px solid #ecf0f1; padding-top: 15px;">
+                <h3 style="margin-bottom: 10px;">Reply</h3>
+                <textarea id="replyMessage" rows="4"
+                    style="width: 100%; padding: 10px; border: 1px solid #ecf0f1; border-radius: 5px; font-family: inherit;"
+                    placeholder="Type your reply..."></textarea>
+                <div class="action-buttons" style="margin-top: 10px;">
+                    <button type="button" class="btn btn-success" onclick="sendReply()">Send Reply</button>
+                    <button type="button" class="btn btn-danger" onclick="closeViewThread()">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const token = localStorage.getItem('auth_token');
+        if (!token) window.location.href = '/login.html';
+
+        // Verify employee role
+        async function checkEmployeeAccess() {
+            try {
+                const res = await fetch('/api/auth/me', {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+                const data = await res.json();
+                if (!res.ok || !data.user?.role) {
+                    alert('Access denied. Authentication required.');
+                    window.location.href = '/login.html';
+                }
+            } catch (err) {
+                alert('Authentication failed');
+                window.location.href = '/login.html';
+            }
+        }
+        checkEmployeeAccess();
+
+        let currentTab = 'tasks';
+        let currentUser = null;
+        let todayAttendanceId = null;
+
+        document.getElementById('date').valueAsDate = new Date();
+
+        // Tab Switching
+        function switchTab(tabName) {
+            currentTab = tabName;
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(tc => tc.classList.remove('active'));
+            event.target.classList.add('active');
+            document.getElementById(`tab-${tabName}`).classList.add('active');
+
+            // Load data for the active tab
+            switch (tabName) {
+                case 'tasks':
+                    loadTasks();
+                    loadProofStatuses();
+                    break;
+                case 'timesheets':
+                    loadTimesheets();
+                    break;
+                case 'attendance':
+                    loadAttendanceToday();
+                    loadAttendanceHistory();
+                    break;
+                case 'leaves':
+                    loadLeaveBalance();
+                    loadLeaveRequests();
+                    break;
+                case 'meetings':
+                    loadMeetings();
+                    break;
+                case 'feedback':
+                    loadFeedbackThreads();
+                    break;
+                case 'analytics':
+                    loadAnalytics();
+                    break;
+                case 'profile':
+                    loadProfile();
+                    break;
+            }
+        }
+
+        async function api(path, options = {}) {
+            const res = await fetch(`/api${path}`, {
+                ...options,
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json',
+                    ...options.headers
+                }
+            });
+            if (res.status === 401) {
+                localStorage.clear();
+                window.location.href = '/login.html';
+                return;
+            }
+            return res.json();
+        }
+
+        // ===== TASKS =====
+        async function loadTasks() {
+            try {
+                const response = await api('/task-completion/my-status');
+                const data = response.data || response; // Handle both response formats
+
+                if (!data) {
+                    console.error('No data returned from API');
+                    document.getElementById('tasksList').innerHTML = '<tr><td colspan="6" class="empty-state"><div class="empty-state-icon">⚠️</div><div>Error loading tasks</div></td></tr>';
+                    return;
+                }
+
+                const tasks = [...(data.assigned || []), ...(data.inProgress || []), ...(data.pendingReview || []), ...(data.defectFound || []), ...(data.approved || [])];
+
+                document.getElementById('taskAssigned').textContent = (data.assigned || []).length;
+                document.getElementById('taskInProgress').textContent = (data.inProgress || []).length;
+                document.getElementById('taskPendingReview').textContent = (data.pendingReview || []).length;
+                document.getElementById('taskCompleted').textContent = (data.approved || []).length;
+
+                let html = '';
+                tasks.forEach(task => {
+                    // Task object already has status, progress, etc. from backend
+                    const status = task.status || 'assigned';
+                    const progress = task.progress || 0;
+                    const deadline = task.deadline ? new Date(task.deadline).toLocaleDateString() : '-';
+                    const taskId = task.taskId || task._id;
+
+                    html += `<tr>
+                        <td>${task.title}</td>
+                        <td>${task.project?.name || '-'}</td>
+                        <td><span class="badge badge-${status === 'approved' || status === 'completed' ? 'success' : status === 'pending_review' || status === 'submitted' ? 'info' : status === 'rework_required' || status === 'defect_found' ? 'danger' : 'warning'}">${status.replace(/_/g, ' ')}</span></td>
+                        <td>${progress}%</td>
+                        <td>${deadline}</td>
+                        <td>
+                            ${status === 'assigned' || status === 'in_progress' ?
+                            `<button class="btn btn-sm btn-success" onclick="openProofModal('${taskId}', '${task.title}')">📤 Submit Proof</button>` :
+                            status === 'pending_review' || status === 'submitted' ? '<span class="badge badge-warning">Under Review</span>' :
+                                status === 'rework_required' || status === 'defect_found' ? `<button class="btn btn-sm btn-warning" onclick="openProofModal('${taskId}', '${task.title}')">🔄 Resubmit</button>` :
+                                    '<span class="badge badge-success">✅ Completed</span>'}
+                        </td>
+                    </tr>`;
+                });
+                document.getElementById('tasksList').innerHTML = html || '<tr><td colspan="6" class="empty-state"><div class="empty-state-icon">✅</div><div>No tasks assigned yet</div></td></tr>';
+            } catch (e) {
+                console.error('Error loading tasks:', e);
+                document.getElementById('tasksList').innerHTML = '<tr><td colspan="6" class="empty-state"><div class="empty-state-icon">❌</div><div>Error loading tasks. Please refresh the page.</div></td></tr>';
+            }
+        }
+
+        async function loadProofStatuses() {
+            try {
+                const response = await api('/task-completion/my-status');
+                const data = response.data || response;
+
+                const submissions = [...(data.pendingReview || []), ...(data.defectFound || []), ...(data.approved || [])];
+
+                let html = '';
+                submissions.forEach(task => {
+                    const proof = task.proofSubmission || {};
+                    const status = task.status || 'unknown';
+
+                    let cardClass = status === 'approved' || status === 'completed' ? 'success' :
+                        status === 'rework_required' || status === 'defect_found' ? 'danger' : 'warning';
+
+                    html += `<div class="card ${cardClass}">
+                        <h3>${task.title}</h3>
+                        <p><strong>Status:</strong> <span class="badge badge-${cardClass}">${status.replace(/_/g, ' ')}</span></p>
+                        <p><strong>Submitted:</strong> ${task.submittedAt ? new Date(task.submittedAt).toLocaleString() : '-'}</p>
+                        ${task.reviewCycle?.defectDescription ?
+                            `<p><strong>Manager Feedback:</strong> ${task.reviewCycle.defectDescription}</p>` : ''}
+                        ${task.reviewCycle?.defectCount ?
+                            `<p><strong>Defect Count:</strong> ${task.reviewCycle.defectCount}</p>` : ''}
+                        ${proof.githubLink ? `<p><strong>GitHub:</strong> <a href="${proof.githubLink}" target="_blank">${proof.githubLink}</a></p>` : ''}
+                        ${proof.videoLink ? `<p><strong>Video:</strong> <a href="${proof.videoLink}" target="_blank">${proof.videoLink}</a></p>` : ''}
+                    </div>`;
+                });
+                document.getElementById('proofStatusList').innerHTML = html || '<p class="empty-state">No proof submissions yet</p>';
+            } catch (e) {
+                console.error('Error loading proof statuses:', e);
+                document.getElementById('proofStatusList').innerHTML = '<p class="empty-state">Error loading proof statuses</p>';
+            }
+        }
+
+        function openProofModal(taskId, taskName) {
+            document.getElementById('selectedTaskId').value = taskId;
+            document.getElementById('proofTaskName').textContent = `Task: ${taskName}`;
+            document.getElementById('proofModal').classList.add('show');
+            updateCharCount(); // Initialize character count
+        }
+
+        function closeProofModal() {
+            document.getElementById('proofModal').classList.remove('show');
+            document.getElementById('proofForm').reset();
+            updateCharCount(); // Reset character count
+        }
+
+        function updateCharCount() {
+            const notes = document.getElementById('proofNotes').value;
+            const count = notes.length;
+            const counter = document.getElementById('noteCharCount');
+
+            if (count < 20) {
+                counter.textContent = `(${count}/20 minimum)`;
+                counter.style.color = '#e74c3c';
+            } else {
+                counter.textContent = `(${count} characters)`;
+                counter.style.color = '#27ae60';
+            }
+        }
+
+        async function submitProof(event) {
+            event.preventDefault();
+            const taskId = document.getElementById('selectedTaskId').value;
+            const githubLink = document.getElementById('githubLink').value.trim();
+            const videoLink = document.getElementById('videoLink').value.trim();
+            const notes = document.getElementById('proofNotes').value.trim();
+
+            // Validation
+            if (!githubLink) {
+                alert('❌ GitHub link is required');
+                return;
+            }
+
+            if (!videoLink) {
+                alert('❌ Video link is required');
+                return;
+            }
+
+            if (!notes || notes.length < 20) {
+                alert('❌ Completion notes must be at least 20 characters long');
+                return;
+            }
+
+            // Validate GitHub URL
+            const githubRegex = /^https?:\/\/(github\.com|gitlab\.com|bitbucket\.org)/;
+            if (!githubRegex.test(githubLink)) {
+                alert('❌ Invalid GitHub link. Must be from github.com, gitlab.com, or bitbucket.org');
+                return;
+            }
+
+            // Validate Video URL
+            const videoRegex = /^https?:\/\/(youtube\.com|youtu\.be|vimeo\.com|loom\.com|drive\.google\.com)/;
+            if (!videoRegex.test(videoLink)) {
+                alert('❌ Invalid video link. Must be from YouTube, Vimeo, Loom, or Google Drive');
+                return;
+            }
+
+            try {
+                const res = await fetch('/api/task-completion/submit-completion-proof', {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        taskId,
+                        githubLink,
+                        videoLink,
+                        completionNotes: notes
+                    })
+                });
+
+                if (res.ok) {
+                    alert('✅ Proof submitted successfully!');
+                    closeProofModal();
+                    loadTasks();
+                    loadProofStatuses();
+                } else {
+                    const error = await res.json();
+                    alert('❌ Error: ' + (error.message || 'Submission failed'));
+                }
+            } catch (e) {
+                console.error('Proof submission error:', e);
+                alert('❌ Error submitting proof: ' + e.message);
+            }
+        }
+
+        // ===== TIMESHEETS =====
+        let allMyTasks = []; // Store tasks globally for filtering
+
+        // Auto-calculate total hours
+        function calculateHours() {
+            const date = document.getElementById('date').value;
+            const startTime = document.getElementById('startTime').value;
+            const endTime = document.getElementById('endTime').value;
+            const breakMinutes = parseInt(document.getElementById('breakMinutes').value) || 0;
+
+            if (date && startTime && endTime) {
+                const start = new Date(`${date}T${startTime}`);
+                const end = new Date(`${date}T${endTime}`);
+                const diffMs = end - start;
+                const hours = (diffMs / (1000 * 60 * 60)) - (breakMinutes / 60);
+
+                if (hours > 0) {
+                    document.getElementById('totalHours').value = hours.toFixed(2);
+                } else {
+                    document.getElementById('totalHours').value = '0.00';
+                }
+            }
+        }
+
+        async function loadTimesheets() {
+            try {
+                const ts = await api('/timesheets/me');
+                let html = '', totalH = 0, overtimeH = 0, pendingC = 0, approvedC = 0;
+
+                ts.forEach(t => {
+                    totalH += t.totalHours || 0;
+                    overtimeH += t.overtimeHours || 0;
+                    if (t.status === 'pending') pendingC++;
+                    if (t.status === 'approved') approvedC++;
+
+                    html += `<tr>
+                        <td>${new Date(t.date).toLocaleDateString()}</td>
+                        <td>${t.project?.name || '-'}</td>
+                        <td>${t.totalHours}h</td>
+                        <td><span class="badge badge-${t.status === 'approved' ? 'success' : 'warning'}">${t.status}</span></td>
+                        <td><button class="btn btn-sm btn-primary" onclick="editTS('${t._id}')">Edit</button></td>
+                    </tr>`;
+                });
+
+                document.getElementById('totalHours').textContent = totalH.toFixed(1);
+                document.getElementById('overtime').textContent = overtimeH.toFixed(1);
+                document.getElementById('pending').textContent = pendingC;
+                document.getElementById('approved').textContent = approvedC;
+                document.getElementById('timesheetList').innerHTML = html || '<tr><td colspan="5" class="empty-state">No timesheets</td></tr>';
+
+                // Load only assigned projects and tasks
+                allMyTasks = await api('/tasks/mine'); // Store globally
+
+                // Get unique projects from assigned tasks
+                const assignedProjects = new Set();
+                allMyTasks.forEach(task => {
+                    if (task.project && task.project._id) {
+                        assignedProjects.add(JSON.stringify({
+                            _id: task.project._id,
+                            name: task.project.name
+                        }));
+                    }
+                });
+
+                const projects = Array.from(assignedProjects).map(p => JSON.parse(p));
+
+                document.getElementById('project').innerHTML = '<option value="">Select Project</option>' +
+                    projects.map(p => `<option value="${p._id}">${p.name}</option>`).join('');
+                document.getElementById('task').innerHTML = '<option value="">Select Task</option>' +
+                    allMyTasks.map(t => `<option value="${t._id}">${t.title}</option>`).join('');
+            } catch (e) {
+                console.error('Error loading timesheets:', e);
+            }
+        }
+
+        // Filter tasks based on selected project
+        function filterTimesheetTasks() {
+            const selectedProjectId = document.getElementById('project').value;
+            const taskDropdown = document.getElementById('task');
+
+            if (!selectedProjectId) {
+                // Show all tasks if no project selected
+                taskDropdown.innerHTML = '<option value="">Select Task</option>' +
+                    allMyTasks.map(t => `<option value="${t._id}">${t.title}</option>`).join('');
+            } else {
+                // Filter tasks by selected project
+                const filteredTasks = allMyTasks.filter(t => {
+                    const projectId = t.project?._id || t.project;
+                    return String(projectId) === String(selectedProjectId);
+                });
+
+                taskDropdown.innerHTML = '<option value="">Select Task</option>' +
+                    filteredTasks.map(t => `<option value="${t._id}">${t.title}</option>`).join('');
+            }
+        }
+
+        async function saveDraft() {
+            await submitTimesheetInternal('draft');
+        }
+
+        async function submitTimesheet() {
+            await submitTimesheetInternal('pending');
+        }
+
+        async function submitTimesheetInternal(status) {
+            const date = document.getElementById('date').value;
+            const startTime = document.getElementById('startTime').value;
+            const endTime = document.getElementById('endTime').value;
+            const breakMinutes = parseInt(document.getElementById('breakMinutes').value) || 0;
+            const project = document.getElementById('project').value;
+            const task = document.getElementById('task').value;
+            const notes = document.getElementById('notes').value;
+
+            if (!date || !startTime || !endTime) {
+                alert('❌ Date and times are required');
+                return;
+            }
+
+            try {
+                const res = await fetch('/api/timesheets', {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        date,
+                        startTime,
+                        endTime,
+                        breakMinutes,
+                        project: project || undefined,
+                        task: task || undefined,
+                        description: notes,
+                        isDraft: status === 'draft'
+                    })
+                });
+
+                if (res.ok) {
+                    alert(status === 'draft' ? '💾 Saved as draft' : '✅ Timesheet submitted!');
+                    document.getElementById('date').value = '';
+                    document.getElementById('startTime').value = '09:00';
+                    document.getElementById('endTime').value = '17:00';
+                    document.getElementById('breakMinutes').value = '0';
+                    document.getElementById('totalHours').value = '8.00';
+                    document.getElementById('notes').value = '';
+                    document.getElementById('project').value = '';
+                    document.getElementById('task').value = '';
+                    loadTimesheets();
+                } else {
+                    const error = await res.json();
+                    alert('❌ Error: ' + (error.message || 'Submission failed'));
+                }
+            } catch (e) {
+                console.error('Timesheet submission error:', e);
+                alert('❌ Error submitting timesheet: ' + e.message);
+            }
+        }
+
+        function editTS(id) {
+            alert('Edit functionality: ' + id);
+        }
+
+        // ===== ATTENDANCE =====
+        async function loadAttendanceToday() {
+            try {
+                const today = new Date().toISOString().split('T')[0];
+                const response = await api(`/attendance/my-attendance?from=${today}&to=${today}`);
+                const data = response?.data || response || [];
+
+                // Check for approved leave/permission for today
+                let hasPermission = false;
+                let permissionType = '';
+                try {
+                    const leaveResponse = await api('/leave/my-requests');
+                    const leaves = leaveResponse?.data || leaveResponse || [];
+                    const todayLeave = leaves.find(l => {
+                        const from = new Date(l.fromDate).toISOString().split('T')[0];
+                        const to = l.toDate ? new Date(l.toDate).toISOString().split('T')[0] : from;
+                        return l.status === 'approved' && today >= from && today <= to;
+                    });
+                    if (todayLeave) {
+                        hasPermission = true;
+                        permissionType = todayLeave.leaveType;
+                    }
+                } catch (e) {
+                    console.log('Could not check leave permission:', e);
+                }
+
+                if (data.length > 0) {
+                    const att = data[0];
+                    todayAttendanceId = att._id;
+                    const checkIn = att.checkInTime ? new Date(att.checkInTime).toLocaleTimeString() : '-';
+                    const checkOut = att.checkOutTime ? new Date(att.checkOutTime).toLocaleTimeString() : 'Working...';
+
+                    document.getElementById('attendanceStatus').textContent = att.checkOutTime ? 'Checked Out' : 'Checked In';
+                    let timeText = `In: ${checkIn} | Out: ${checkOut} | Hours: ${att.totalHours?.toFixed(2) || 0}h`;
+                    if (hasPermission && !att.checkOutTime) {
+                        timeText += ` | ${permissionType} Approved`;
+                    }
+                    document.getElementById('attendanceTime').textContent = timeText;
+                    document.getElementById('attendanceCard').className = 'card ' + (att.isLate ? 'warning' : 'success');
+
+                    // Checkout requires approved permission
+                    document.getElementById('checkInBtn').style.display = 'none';
+                    if (att.checkOutTime) {
+                        // Already checked out
+                        document.getElementById('checkOutBtn').style.display = 'none';
+                    } else if (hasPermission) {
+                        // Has permission - can checkout
+                        document.getElementById('checkOutBtn').style.display = 'inline-block';
+                        document.getElementById('checkOutBtn').disabled = false;
+                        document.getElementById('checkOutBtn').title = `${permissionType} approved - Click to check out`;
+                    } else {
+                        // No permission - show disabled button with message
+                        document.getElementById('checkOutBtn').style.display = 'inline-block';
+                        document.getElementById('checkOutBtn').disabled = true;
+                        document.getElementById('checkOutBtn').title = 'Request leave/permission from manager to check out';
+                        document.getElementById('checkOutBtn').style.opacity = '0.5';
+                        document.getElementById('checkOutBtn').style.cursor = 'not-allowed';
+                    }
+                } else {
+                    // Not checked in yet - show check-in button only
+                    document.getElementById('attendanceStatus').textContent = 'Not Checked In';
+                    document.getElementById('attendanceTime').textContent = 'Check in to start tracking';
+                    document.getElementById('attendanceCard').className = 'card';
+                    document.getElementById('checkInBtn').style.display = 'inline-block';
+                    document.getElementById('checkOutBtn').style.display = 'none';
+                }
+            } catch (e) {
+                console.error('Error loading attendance:', e);
+                document.getElementById('attendanceStatus').textContent = 'Error Loading';
+                document.getElementById('attendanceTime').textContent = e.message;
+                document.getElementById('checkInBtn').style.display = 'inline-block';
+                document.getElementById('checkOutBtn').style.display = 'none';
+            }
+        }
+
+        async function checkIn() {
+            const token = localStorage.getItem('auth_token');
+            const res = await fetch('/api/attendance/check-in', {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ location: 'office' })
+            });
+
+            if (res.ok) {
+                alert('✅ Checked in successfully!');
+                loadAttendanceToday();
+                loadAttendanceHistory();
+            } else {
+                const error = await res.json();
+                alert('❌ Error: ' + error.message);
+            }
+        }
+
+        async function checkOut() {
+            const token = localStorage.getItem('auth_token');
+            const res = await fetch('/api/attendance/check-out', {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({})
+            });
+
+            if (res.ok) {
+                alert('✅ Checked out successfully!');
+                loadAttendanceToday();
+                loadAttendanceHistory();
+            } else {
+                const error = await res.json();
+                alert('❌ Error: ' + error.message);
+            }
+        }
+
+        async function loadAttendanceHistory() {
+            try {
+                console.log('Loading attendance history...');
+                const response = await api('/attendance/my-attendance');
+                console.log('Attendance response:', response);
+                const data = response?.data || response || [];
+                console.log('Attendance data:', data);
+
+                let html = '';
+                data.forEach(att => {
+                    const checkIn = att.checkInTime ? new Date(att.checkInTime).toLocaleTimeString() : '-';
+                    const checkOut = att.checkOutTime ? new Date(att.checkOutTime).toLocaleTimeString() : '-';
+                    const status = att.isLate ? 'Late' : 'On Time';
+                    const badgeClass = att.isLate ? 'warning' : 'success';
+
+                    // Check correction status
+                    let actionButton = '';
+                    if (att.correctionRequest && att.correctionRequest.status === 'pending') {
+                        actionButton = '<span class="badge badge-warning">Pending Review</span>';
+                    } else if (att.correctionRequest && att.correctionRequest.status === 'approved') {
+                        actionButton = '<span class="badge badge-success">Approved</span>';
+                    } else if (att.correctionRequest && att.correctionRequest.status === 'rejected') {
+                        actionButton = '<span class="badge badge-danger">Rejected</span>';
+                    } else {
+                        actionButton = `<button class="btn btn-sm" style="background:#3498db;color:white;padding:5px 10px;" onclick="requestCorrection('${att._id}', '${att.date}')">🔧 Request Correction</button>`;
+                    }
+
+                    html += `<tr>
+                        <td>${new Date(att.date).toLocaleDateString()}</td>
+                        <td>${checkIn}</td>
+                        <td>${checkOut}</td>
+                        <td>${att.totalHours?.toFixed(2) || 0}h</td>
+                        <td><span class="badge badge-${badgeClass}">${status}</span></td>
+                        <td>${actionButton}</td>
+                    </tr>`;
+                });
+
+                console.log('Generated HTML rows:', data.length);
+                document.getElementById('attendanceList').innerHTML = html || '<tr><td colspan="6" class="empty-state">No attendance records</td></tr>';
+            } catch (e) {
+                console.error('Error loading attendance history:', e);
+                document.getElementById('attendanceList').innerHTML = '<tr><td colspan="6" class="empty-state"><div class="empty-state-icon">❌</div><div>Error: ' + e.message + '</div></td></tr>';
+            }
+        }
+
+        async function requestCorrection(attendanceId, date) {
+            console.log('Requesting correction for:', attendanceId, date);
+
+            const reason = prompt('Reason for correction request:');
+            if (!reason || reason.trim() === '') {
+                alert('❌ Reason is required');
+                return;
+            }
+
+            const requestedCheckIn = prompt('Requested Check-In Time (HH:MM format, e.g., 09:00):\nLeave blank if no change needed');
+            const requestedCheckOut = prompt('Requested Check-Out Time (HH:MM format, e.g., 17:00):\nLeave blank if no change needed');
+
+            if ((!requestedCheckIn || requestedCheckIn.trim() === '') && (!requestedCheckOut || requestedCheckOut.trim() === '')) {
+                alert('❌ Please provide at least one time correction');
+                return;
+            }
+
+            try {
+                const body = { reason: reason.trim() };
+
+                // Parse the date correctly
+                const dateStr = new Date(date).toISOString().split('T')[0];
+                console.log('Date string:', dateStr);
+
+                if (requestedCheckIn && requestedCheckIn.trim() !== '') {
+                    const checkInDateTime = `${dateStr}T${requestedCheckIn.trim()}:00`;
+                    body.requestedCheckIn = new Date(checkInDateTime).toISOString();
+                    console.log('Requested check-in:', body.requestedCheckIn);
+                }
+
+                if (requestedCheckOut && requestedCheckOut.trim() !== '') {
+                    const checkOutDateTime = `${dateStr}T${requestedCheckOut.trim()}:00`;
+                    body.requestedCheckOut = new Date(checkOutDateTime).toISOString();
+                    console.log('Requested check-out:', body.requestedCheckOut);
+                }
+
+                console.log('Sending request body:', body);
+
+                const res = await fetch(`/api/attendance/correction/${attendanceId}`, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(body)
+                });
+
+                const responseData = await res.json();
+                console.log('Response:', responseData);
+
+                if (res.ok) {
+                    alert('✅ Correction request submitted successfully!');
+                    loadAttendanceHistory();
+                } else {
+                    alert('❌ Error: ' + (responseData.message || 'Failed to submit request'));
+                }
+            } catch (err) {
+                console.error('Request correction error:', err);
+                alert('❌ Error: ' + err.message);
+            }
+        }
+
+        // ===== LEAVE REQUESTS =====
+        async function loadLeaveBalance() {
+            try {
+                console.log('📊 Loading leave balance...');
+                const meResponse = await api('/auth/me');
+                const me = meResponse.user || meResponse;
+                currentUser = me;
+                console.log('📊 Current user:', me._id, me.name);
+
+                const response = await api(`/leave/balance/${me._id}`);
+                console.log('📊 Leave balance response:', response);
+
+                const balance = response?.data || response;
+                console.log('📊 Balance data:', balance);
+
+                document.getElementById('balanceCL').textContent = balance?.casualLeave?.balance || 0;
+                document.getElementById('balanceSL').textContent = balance?.sickLeave?.balance || 0;
+                document.getElementById('balanceEL').textContent = balance?.earnedLeave?.balance || 0;
+                document.getElementById('balanceWFH').textContent = balance?.workFromHome?.balance || 0;
+                document.getElementById('balancePerm').textContent = balance?.permission?.balance || 0;
+
+                console.log('✅ Leave balance loaded:', {
+                    CL: balance?.casualLeave?.balance,
+                    SL: balance?.sickLeave?.balance,
+                    EL: balance?.earnedLeave?.balance,
+                    WFH: balance?.workFromHome?.balance,
+                    PERM: balance?.permission?.balance
+                });
+            } catch (e) {
+                console.error('❌ Error loading leave balance:', e);
+                document.getElementById('balanceCL').textContent = 'Error';
+                document.getElementById('balanceSL').textContent = 'Error';
+                document.getElementById('balanceEL').textContent = 'Error';
+                document.getElementById('balanceWFH').textContent = 'Error';
+                document.getElementById('balancePerm').textContent = 'Error';
+            }
+        }
+
+        async function loadLeaveRequests() {
+            try {
+                const response = await api('/leave/my-requests');
+                const leaves = response?.data || response || [];
+                let html = '';
+                leaves.forEach(leave => {
+                    const from = new Date(leave.fromDate).toLocaleDateString();
+                    const to = leave.toDate ? new Date(leave.toDate).toLocaleDateString() : '-';
+                    const duration = leave.leaveType === 'PERMISSION' ? `${leave.permissionHours}h` : `${leave.totalDays} days`;
+                    const statusClass = leave.status === 'approved' ? 'success' : leave.status === 'rejected' ? 'danger' : 'warning';
+
+                    html += `<tr>
+                        <td><span class="badge badge-info">${leave.leaveType}</span></td>
+                        <td>${from}</td>
+                        <td>${to}</td>
+                        <td>${duration}</td>
+                        <td><span class="badge badge-${statusClass}">${leave.status}</span></td>
+                        <td>
+                            ${leave.status === 'pending' ?
+                            `<button class="btn btn-sm btn-danger" onclick="cancelLeave('${leave._id}')">Cancel</button>` :
+                            '-'}
+                        </td>
+                    </tr>`;
+                });
+                document.getElementById('leaveList').innerHTML = html || '<tr><td colspan="6" class="empty-state">No leave requests</td></tr>';
+            } catch (e) {
+                console.error('Error loading leave requests:', e);
+                document.getElementById('leaveList').innerHTML = '<tr><td colspan="6" class="empty-state"><div class="empty-state-icon">❌</div><div>Error: ' + e.message + '</div></td></tr>';
+            }
+        }
+
+        function showLeaveRequestModal() {
+            document.getElementById('leaveRequestModal').classList.add('show');
+        }
+
+        function closeLeaveRequestModal() {
+            document.getElementById('leaveRequestModal').classList.remove('show');
+            document.getElementById('leaveRequestForm').reset();
+        }
+
+        function togglePermissionFields() {
+            const type = document.getElementById('leaveType').value;
+            const isPermission = type === 'PERMISSION';
+            document.getElementById('leaveToDateGroup').style.display = isPermission ? 'none' : 'block';
+            document.getElementById('permissionHoursGroup').style.display = isPermission ? 'block' : 'none';
+            document.getElementById('leaveToDate').required = !isPermission;
+            document.getElementById('permissionHours').required = isPermission;
+        }
+
+        async function submitLeaveRequest(event) {
+            event.preventDefault();
+            const type = document.getElementById('leaveType').value;
+            const fromDate = document.getElementById('leaveFromDate').value;
+            const toDate = document.getElementById('leaveToDate').value;
+            const permissionHours = document.getElementById('permissionHours').value;
+            const reason = document.getElementById('leaveReason').value;
+            const isEmergency = document.getElementById('isEmergency').checked;
+
+            const payload = {
+                leaveType: type,
+                fromDate,
+                reason,
+                isEmergency
+            };
+
+            if (type === 'PERMISSION') {
+                payload.permissionHours = parseInt(permissionHours);
+            } else {
+                payload.toDate = toDate;
+            }
+
+            const res = await fetch('/api/leave/request', {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(payload)
+            });
+
+            if (res.ok) {
+                alert('✅ Leave request submitted!');
+                closeLeaveRequestModal();
+                loadLeaveRequests();
+                loadLeaveBalance();
+            } else {
+                const error = await res.json();
+                alert('❌ Error: ' + error.message);
+            }
+        }
+
+        async function cancelLeave(id) {
+            if (confirm('Cancel this leave request?')) {
+                const res = await fetch(`/api/leave/cancel/${id}`, {
+                    method: 'PUT',
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                if (res.ok) {
+                    alert('✅ Leave cancelled');
+                    loadLeaveRequests();
+                    loadLeaveBalance();
+                }
+            }
+        }
+
+        // ===== MEETINGS =====
+        async function loadMeetings() {
+            try {
+                console.log('📞 Loading meetings for employee...');
+                const response = await fetch('/api/meetings-v2/list', {  // Remove status filter to show ALL meetings
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                }
+
+                const data = await response.json();
+                const meetings = data.data || data || [];
+                console.log(`📞 Loaded ${meetings.length} meetings`);
+
+                let html = '';
+                meetings.forEach(meeting => {
+                    const scheduled = new Date(meeting.dateTime || meeting.scheduledTime).toLocaleString();
+                    const organizer = meeting.sender || meeting.organizer || {};
+                    const link = meeting.link || meeting.location || '#';
+                    const status = meeting.status || 'scheduled';
+
+                    html += `<tr>
+                        <td>${meeting.title}</td>
+                        <td>${scheduled}</td>
+                        <td>${organizer.name || 'Unknown'}</td>
+                        <td><a href="${link}" target="_blank" class="btn btn-sm btn-primary">Join</a></td>
+                        <td><span class="badge badge-info">${status}</span></td>
+                        <td>
+                            <button class="btn btn-sm btn-success" onclick="joinMeeting('${meeting._id}')">✓ Mark Joined</button>
+                        </td>
+                    </tr>`;
+                });
+                document.getElementById('meetingsList').innerHTML = html || '<tr><td colspan="6" class="empty-state">No upcoming meetings</td></tr>';
+            } catch (e) {
+                console.error('❌ Error loading meetings:', e);
+                document.getElementById('meetingsList').innerHTML =
+                    `<tr><td colspan="6" style="text-align:center;color:#e74c3c;">Error: ${e.message}</td></tr>`;
+            }
+        }
+
+        async function joinMeeting(meetingId) {
+            const res = await fetch(`/api/meetings-v2/${meetingId}/join`, {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    deviceInfo: navigator.userAgent.substring(0, 50),
+                    connectionQuality: 'good'
+                })
+            });
+
+            if (res.ok) {
+                alert('✅ Attendance marked!');
+                loadMeetings();
+            }
+        }
+
+        // ===== FEEDBACK =====
+        async function loadFeedbackThreads() {
+            try {
+                const response = await api('/feedback-threads/threads/my');
+                const threads = response.data || response || [];
+                allThreads = threads; // Store for viewThread function
+
+                let html = '';
+                if (threads.length === 0) {
+                    html = '<tr><td colspan="6" class="empty-state">No feedback threads</td></tr>';
+                } else {
+                    threads.forEach(thread => {
+                        html += `<tr>
+                            <td>#${thread._id.slice(-6)}</td>
+                            <td>${thread.title}</td>
+                            <td><span class="badge badge-info">${thread.tag || 'General'}</span></td>
+                            <td><span class="badge badge-${thread.status === 'open' ? 'success' : 'secondary'}">${thread.status}</span></td>
+                            <td>From: ${thread.sender?.name || 'Unknown'}<br>To: ${thread.receiver?.name || 'Unknown'}</td>
+                            <td><button class="btn btn-sm" onclick="viewThread('${thread._id}')">View</button></td>
+                        </tr>`;
+                    });
+                }
+                document.getElementById('feedbackList').innerHTML = html;
+            } catch (e) {
+                console.error('Error loading feedback:', e);
+                document.getElementById('feedbackList').innerHTML = '<tr><td colspan="6" class="empty-state">Error loading threads</td></tr>';
+            }
+        }
+
+        async function showCreateFeedbackModal() {
+            document.getElementById('feedbackModal').classList.add('show');
+
+            // Load managers (employees can only send to managers)
+            try {
+                document.getElementById('employeeRecipientHelp').textContent = 'You can only send to Managers';
+
+                const res = await fetch('/api/feedback-threads/recipients', {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                const data = await res.json();
+                const recipients = data.data || [];
+
+                const recipientsList = document.getElementById('employeeRecipientsList');
+                if (recipients.length === 0) {
+                    recipientsList.innerHTML = '<p style="color: #e74c3c;">No managers available</p>';
+                } else {
+                    recipientsList.innerHTML = recipients.map(user => `
+                        <label style="display: flex; align-items: center; gap: 8px; padding: 5px; cursor: pointer;">
+                            <input type="checkbox" name="employeeRecipient" value="${user._id}" style="cursor: pointer;">
+                            <span><strong>${user.name}</strong> <small style="color: #7f8c8d;">(${user.role}${user.department ? ' - ' + user.department : ''})</small></span>
+                        </label>
+                    `).join('');
+                }
+            } catch (err) {
+                console.error('Error loading recipients:', err);
+                document.getElementById('employeeRecipientsList').innerHTML = '<p style="color: #e74c3c;">Error loading managers</p>';
+            }
+        }
+
+        function closeFeedbackModal() {
+            document.getElementById('feedbackModal').classList.remove('show');
+            document.getElementById('feedbackForm').reset();
+        }
+
+        async function submitFeedback(event) {
+            event.preventDefault();
+
+            // Get selected recipients
+            const recipientCheckboxes = document.querySelectorAll('input[name="employeeRecipient"]:checked');
+            const recipients = Array.from(recipientCheckboxes).map(cb => cb.value);
+
+            if (recipients.length === 0) {
+                alert('❌ Please select at least one manager');
+                return;
+            }
+
+            const subject = document.getElementById('feedbackSubject').value;
+            const category = document.getElementById('feedbackCategory').value;
+            const priority = document.getElementById('feedbackPriority').value;
+            const message = document.getElementById('feedbackMessage').value;
+
+            console.log('📩 Employee creating thread with recipients:', recipients);
+
+            const res = await fetch('/api/feedback-threads/thread/new', {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    subject,
+                    category,
+                    priority,
+                    message,
+                    recipients: recipients
+                })
+            });
+
+            const result = await res.json();
+
+            if (res.ok) {
+                alert(`✅ Feedback sent to ${recipients.length} manager(s)!`);
+                closeFeedbackModal();
+                loadFeedbackThreads();
+            } else {
+                alert('❌ Error: ' + result.message);
+                console.error('Submit feedback error:', result);
+            }
+        }
+
+        let currentThreadId = null;
+        let allThreads = [];
+
+        async function viewThread(threadId) {
+            try {
+                currentThreadId = threadId;
+                const response = await api(`/feedback-threads/thread/${threadId}/messages`);
+                const messages = response.data || response || [];
+
+                // Get thread details from the list
+                const thread = allThreads.find(t => t._id === threadId);
+
+                document.getElementById('viewThreadTitle').textContent = thread?.title || 'Thread';
+                document.getElementById('viewThreadParticipants').textContent =
+                    `From: ${thread?.sender?.name || 'Unknown'} | To: ${thread?.receiver?.name || 'Unknown'}`;
+
+                let html = '';
+                if (messages.length === 0) {
+                    html = '<div style="text-align:center;color:#7f8c8d;padding:20px;">No messages yet</div>';
+                } else {
+                    messages.forEach(m => {
+                        html += `
+                            <div style="padding: 15px; margin-bottom: 10px; background: #f8f9fa; border-radius: 5px; border-left: 3px solid #27ae60;">
+                                <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                                    <strong style="color: #2c3e50;">${m.sender?.name || 'Unknown'}</strong>
+                                    <span style="color: #7f8c8d; font-size: 12px;">${new Date(m.createdAt).toLocaleString()}</span>
+                                </div>
+                                <div style="color: #34495e;">${m.message}</div>
+                            </div>
+                        `;
+                    });
+                }
+                document.getElementById('threadMessagesContainer').innerHTML = html;
+
+                // Show modal
+                document.getElementById('viewThreadModal').classList.add('show');
+            } catch (err) {
+                console.error('Error viewing thread:', err);
+                alert('Error loading thread messages');
+            }
+        }
+
+        function closeViewThread() {
+            document.getElementById('viewThreadModal').classList.remove('show');
+            currentThreadId = null;
+            document.getElementById('replyMessage').value = '';
+        }
+
+        async function sendReply() {
+            const message = document.getElementById('replyMessage').value.trim();
+            if (!message) {
+                alert('Please enter a message');
+                return;
+            }
+
+            try {
+                const res = await fetch(`/api/feedback-threads/thread/${currentThreadId}/reply`, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ message })
+                });
+
+                if (!res.ok) throw new Error('Failed to send reply');
+
+                document.getElementById('replyMessage').value = '';
+                // Reload messages
+                await viewThread(currentThreadId);
+            } catch (err) {
+                console.error('Error sending reply:', err);
+                alert('Error sending reply');
+            }
+        }
+
+        // ===== ANALYTICS =====
+        let analyticsCharts = {};
+
+        async function loadAnalytics() {
+            try {
+                // Destroy existing charts
+                Object.values(analyticsCharts).forEach(chart => {
+                    if (chart) chart.destroy();
+                });
+                analyticsCharts = {};
+
+                // Get current user ID
+                const userResponse = await fetch('/api/auth/me', {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                const userData = await userResponse.json();
+                const currentUserId = userData.user?._id || userData._id;
+
+                // Fetch tasks assigned to me
+                const tasksRes = await fetch('/api/tasks/mine', {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                const tasksData = await tasksRes.json();
+                const tasks = tasksData.data || tasksData || [];
+
+                // Count task statuses from assignments
+                const taskStatuses = { completed: 0, in_progress: 0, pending: 0 };
+                tasks.forEach(t => {
+                    const myAssignment = t.assignments?.find(a =>
+                        String(a.employee?._id || a.employee) === String(currentUserId)
+                    );
+                    if (myAssignment) {
+                        const status = myAssignment.status || 'pending';
+                        if (taskStatuses.hasOwnProperty(status)) {
+                            taskStatuses[status]++;
+                        } else {
+                            taskStatuses.pending++;
+                        }
+                    }
+                });
+
+                // Task Completion Chart
+                const taskCtx = document.getElementById('taskCompletionChart');
+                if (taskCtx) {
+                    analyticsCharts.taskCompletion = new Chart(taskCtx, {
+                        type: 'doughnut',
+                        data: {
+                            labels: ['Completed', 'In Progress', 'Pending'],
+                            datasets: [{
+                                data: [taskStatuses.completed, taskStatuses.in_progress, taskStatuses.pending],
+                                backgroundColor: ['#2ecc71', '#f39c12', '#e74c3c']
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: true,
+                            plugins: {
+                                legend: { position: 'bottom' },
+                                title: {
+                                    display: true,
+                                    text: `Total Tasks: ${taskStatuses.completed + taskStatuses.in_progress + taskStatuses.pending}`
+                                }
+                            }
+                        }
+                    });
+                }
+
+                // Fetch attendance data (last 7 days)
+                const last7Days = [...Array(7)].map((_, i) => {
+                    const d = new Date();
+                    d.setDate(d.getDate() - i);
+                    return d.toISOString().split('T')[0];
+                }).reverse();
+
+                console.log('📊 Fetching attendance for last 7 days:', last7Days);
+
+                const attendanceData = await Promise.all(last7Days.map(async date => {
+                    try {
+                        const res = await fetch(`/api/attendance/date/${date}`, {
+                            headers: { 'Authorization': `Bearer ${token}` }
+                        });
+                        console.log(`📊 Attendance ${date}:`, res.status);
+                        if (!res.ok) {
+                            console.error(`❌ Attendance ${date} failed:`, await res.text());
+                            return 0;
+                        }
+                        const data = await res.json();
+                        const records = data.data || data || [];
+                        console.log(`📊 Attendance ${date} records:`, records.length);
+                        const myRecord = records.find(r =>
+                            String(r.employee?._id || r.employee) === String(currentUserId)
+                        );
+                        return myRecord?.status === 'present' ? 1 : 0;
+                    } catch (err) {
+                        console.error(`❌ Attendance ${date} error:`, err);
+                        return 0;
+                    }
+                }));
+
+                // Attendance Chart
+                const attendanceCtx = document.getElementById('attendanceChart');
+                if (attendanceCtx) {
+                    analyticsCharts.attendance = new Chart(attendanceCtx, {
+                        type: 'line',
+                        data: {
+                            labels: last7Days.map(d => new Date(d).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })),
+                            datasets: [{
+                                label: 'Present',
+                                data: attendanceData,
+                                borderColor: '#2ecc71',
+                                backgroundColor: 'rgba(46, 204, 113, 0.1)',
+                                tension: 0.4,
+                                fill: true
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: true,
+                            scales: {
+                                y: {
+                                    beginAtZero: true,
+                                    max: 1,
+                                    ticks: {
+                                        stepSize: 1,
+                                        callback: function (value) {
+                                            return value === 1 ? 'Present' : 'Absent';
+                                        }
+                                    }
+                                }
+                            },
+                            plugins: {
+                                legend: { display: false },
+                                title: {
+                                    display: true,
+                                    text: `Last 7 Days (${attendanceData.filter(x => x === 1).length}/7 days present)`
+                                }
+                            }
+                        }
+                    });
+                }
+
+                // Fetch leave balance
+                try {
+                    const leaveRes = await fetch('/api/leave/balance', {
+                        headers: { 'Authorization': `Bearer ${token}` }
+                    });
+                    const leaveData = await leaveRes.json();
+                    const balance = leaveData.data || leaveData || {};
+
+                    // Leave Balance Chart
+                    const leaveCtx = document.getElementById('leaveBalanceChart');
+                    if (leaveCtx) {
+                        analyticsCharts.leaveBalance = new Chart(leaveCtx, {
+                            type: 'bar',
+                            data: {
+                                labels: ['Total', 'Used', 'Remaining'],
+                                datasets: [{
+                                    label: 'Leave Days',
+                                    data: [
+                                        balance.totalAnnualLeave || 12,
+                                        balance.usedLeave || 0,
+                                        balance.remainingLeave || (balance.totalAnnualLeave || 12) - (balance.usedLeave || 0)
+                                    ],
+                                    backgroundColor: ['#3498db', '#e74c3c', '#2ecc71']
+                                }]
+                            },
+                            options: {
+                                responsive: true,
+                                maintainAspectRatio: true,
+                                scales: { y: { beginAtZero: true } },
+                                plugins: {
+                                    legend: { display: false }
+                                }
+                            }
+                        });
+                    }
+                } catch (err) {
+                    console.error('Leave balance error:', err);
+                    // Show default chart if API fails
+                    const leaveCtx = document.getElementById('leaveBalanceChart');
+                    if (leaveCtx) {
+                        analyticsCharts.leaveBalance = new Chart(leaveCtx, {
+                            type: 'bar',
+                            data: {
+                                labels: ['Total', 'Used', 'Remaining'],
+                                datasets: [{
+                                    label: 'Leave Days',
+                                    data: [12, 0, 12],
+                                    backgroundColor: ['#3498db', '#e74c3c', '#2ecc71']
+                                }]
+                            },
+                            options: {
+                                responsive: true,
+                                maintainAspectRatio: true,
+                                scales: { y: { beginAtZero: true } },
+                                plugins: { legend: { display: false } }
+                            }
+                        });
+                    }
+                }
+
+                // Fetch meeting participation
+                try {
+                    console.log('📊 Fetching meetings from /api/meetings-v2');
+                    const meetingsRes = await fetch('/api/meetings-v2', {
+                        headers: { 'Authorization': `Bearer ${token}` }
+                    });
+                    console.log('📊 Meetings response status:', meetingsRes.status);
+
+                    if (!meetingsRes.ok) {
+                        const errorText = await meetingsRes.text();
+                        console.error('❌ Meetings API failed:', errorText);
+                        throw new Error('Meetings API failed');
+                    }
+
+                    const meetingsData = await meetingsRes.json();
+                    const meetings = (meetingsData.data || meetingsData || []).slice(0, 6);
+                    console.log('📊 Found meetings:', meetings.length);
+
+                    // Meeting Participation Chart
+                    const meetingCtx = document.getElementById('meetingParticipationChart');
+                    if (meetingCtx && meetings.length > 0) {
+                        analyticsCharts.meetings = new Chart(meetingCtx, {
+                            type: 'bar',
+                            data: {
+                                labels: meetings.map(m => {
+                                    const title = m.title || 'Untitled';
+                                    return title.length > 20 ? title.substring(0, 20) + '...' : title;
+                                }),
+                                datasets: [{
+                                    label: 'Attended',
+                                    data: meetings.map(m => {
+                                        const participants = m.recipients || [];
+                                        const attended = participants.some(p =>
+                                            String(p._id || p) === String(currentUserId)
+                                        );
+                                        console.log(`📊 Meeting "${m.title}": attended=${attended}`);
+                                        return attended ? 1 : 0;
+                                    }),
+                                    backgroundColor: '#9b59b6'
+                                }]
+                            },
+                            options: {
+                                responsive: true,
+                                maintainAspectRatio: true,
+                                scales: {
+                                    y: {
+                                        beginAtZero: true,
+                                        max: 1,
+                                        ticks: {
+                                            stepSize: 1,
+                                            callback: function (value) {
+                                                return value === 1 ? 'Yes' : 'No';
+                                            }
+                                        }
+                                    }
+                                },
+                                plugins: {
+                                    legend: { display: false },
+                                    title: {
+                                        display: true,
+                                        text: `Last ${meetings.length} Meetings`
+                                    }
+                                }
+                            }
+                        });
+                    } else if (meetingCtx) {
+                        meetingCtx.parentElement.innerHTML = '<h3>Meeting Participation</h3><p style="text-align: center; color: #7f8c8d; padding: 20px;">📭 No meetings found</p>';
+                    }
+                } catch (err) {
+                    console.error('❌ Meetings error:', err);
+                    const meetingCtx = document.getElementById('meetingParticipationChart');
+                    if (meetingCtx) {
+                        meetingCtx.parentElement.innerHTML = '<h3>Meeting Participation</h3><p style="text-align: center; color: #7f8c8d; padding: 20px;">📭 No meeting data available</p>';
+                    }
+                }
+
+                console.log('✅ Analytics loaded successfully');
+            } catch (e) {
+                console.error('Error loading analytics:', e);
+                alert('❌ Failed to load analytics: ' + e.message);
+            }
+        }
+
+        // Send Employee Analytics to Admin
+        async function sendEmployeeAnalyticsToAdmin() {
+            try {
+                console.log('📤 Preparing to send employee analytics to admin...');
+
+                // Get current user
+                const userResponse = await fetch('/api/auth/me', {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                const userData = await userResponse.json();
+                const currentUserId = userData.user?._id || userData._id;
+                const currentUserName = userData.user?.name || userData.name || 'Employee';
+
+                // Fetch all data for analytics
+                const [tasksRes, attendanceRes, leaveRes, meetingsRes] = await Promise.all([
+                    fetch('/api/tasks/mine', { headers: { 'Authorization': `Bearer ${token}` } }),
+                    fetch('/api/attendance/my-attendance', { headers: { 'Authorization': `Bearer ${token}` } }),
+                    fetch(`/api/leave/balance/${currentUserId}`, { headers: { 'Authorization': `Bearer ${token}` } }),
+                    fetch('/api/meetings-v2', { headers: { 'Authorization': `Bearer ${token}` } })
+                ]);
+
+                const tasks = (await tasksRes.json()).data || [];
+                const attendance = (await attendanceRes.json()).data || [];
+                const leaveBalance = (await leaveRes.json()).data || {};
+                const meetings = (await meetingsRes.json()).data || [];
+
+                // Calculate task statistics
+                const taskStats = { completed: 0, in_progress: 0, pending: 0, total: tasks.length };
+                tasks.forEach(t => {
+                    const myAssignment = t.assignments?.find(a =>
+                        String(a.employee?._id || a.employee) === String(currentUserId)
+                    );
+                    if (myAssignment) {
+                        const status = myAssignment.status || 'pending';
+                        if (taskStats.hasOwnProperty(status)) {
+                            taskStats[status]++;
+                        } else {
+                            taskStats.pending++;
+                        }
+                    }
+                });
+
+                // Calculate attendance statistics (last 30 days)
+                const presentDays = attendance.filter(a => a.status === 'present').length;
+                const totalDays = attendance.length;
+                const attendanceRate = totalDays > 0 ? ((presentDays / totalDays) * 100).toFixed(1) : 0;
+
+                // Meeting participation
+                const meetingsAttended = meetings.filter(m => {
+                    const participants = m.recipients || [];
+                    return participants.some(p => String(p._id || p) === String(currentUserId));
+                }).length;
+
+                // Prepare report data
+                const reportData = {
+                    title: `${currentUserName}'s Performance Report`,
+                    description: `Self-reported performance analytics for ${new Date().toLocaleDateString()}`,
+                    reportType: 'employee_performance',
+                    dateRange: {
+                        startDate: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString(),
+                        endDate: new Date().toISOString()
+                    },
+                    data: {
+                        tasks: taskStats,
+                        attendance: {
+                            total: totalDays,
+                            present: presentDays,
+                            attendanceRate: parseFloat(attendanceRate)
+                        },
+                        leave: {
+                            casualLeave: leaveBalance.casualLeave || { total: 0, used: 0, balance: 0 },
+                            sickLeave: leaveBalance.sickLeave || { total: 0, used: 0, balance: 0 },
+                            earnedLeave: leaveBalance.earnedLeave || { total: 0, used: 0, balance: 0 },
+                            workFromHome: leaveBalance.workFromHome || { total: 0, used: 0, balance: 0 }
+                        },
+                        meetings: {
+                            total: meetings.length,
+                            attended: meetingsAttended
+                        }
+                    }
+                };
+
+                console.log('📤 Sending report:', reportData);
+
+                // Create report
+                const createRes = await fetch('/api/analytics-report/create', {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(reportData)
+                });
+
+                if (!createRes.ok) {
+                    throw new Error('Failed to create report');
+                }
+
+                const createResult = await createRes.json();
+                const reportId = createResult.reportId || createResult.data?._id;
+                console.log('✅ Report created with ID:', reportId);
+
+                // Send to admin
+                const sendRes = await fetch(`/api/analytics-report/send/${reportId}`, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    }
+                });
+
+                if (!sendRes.ok) {
+                    throw new Error('Failed to send report to admin');
+                }
+
+                alert('✅ Performance report sent to admin successfully!');
+                console.log('✅ Report sent to admin');
+
+            } catch (err) {
+                console.error('❌ Error sending analytics to admin:', err);
+                alert('❌ Failed to send report: ' + err.message);
+            }
+        }
+
+        function drawChart(canvasId, type, labels, data, title) {
+            const ctx = document.getElementById(canvasId).getContext('2d');
+            new Chart(ctx, {
+                type: type,
+                data: {
+                    labels,
+                    datasets: [{
+                        label: title,
+                        data,
+                        backgroundColor: ['#3498db', '#27ae60', '#f39c12', '#e74c3c', '#9b59b6']
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false
+                }
+            });
+        }
+
+        function logout() {
+            localStorage.clear();
+            window.location.href = '/login.html';
+        }
+
+        // ===== DAILY TIMESHEET WARNING =====
+        async function checkTodayTimesheet() {
+            try {
+                const today = new Date().toISOString().split('T')[0];
+                const ts = await api('/timesheets/me');
+
+                // Check if any timesheet exists for today
+                const todayTimesheet = ts.find(t => {
+                    const tsDate = new Date(t.date).toISOString().split('T')[0];
+                    return tsDate === today;
+                });
+
+                if (!todayTimesheet) {
+                    // Show warning alert
+                    showTimesheetWarning();
+                }
+            } catch (e) {
+                console.error('Error checking today timesheet:', e);
+            }
+        }
+
+        function showTimesheetWarning() {
+            // Create warning banner if it doesn't exist
+            if (!document.getElementById('timesheetWarningBanner')) {
+                const banner = document.createElement('div');
+                banner.id = 'timesheetWarningBanner';
+                banner.style.cssText = `
+                    position: fixed;
+                    top: 70px;
+                    left: 50%;
+                    transform: translateX(-50%);
+                    background: linear-gradient(135deg, #ff6b6b, #ee5a24);
+                    color: white;
+                    padding: 15px 30px;
+                    border-radius: 10px;
+                    box-shadow: 0 4px 20px rgba(238, 90, 36, 0.4);
+                    z-index: 9999;
+                    display: flex;
+                    align-items: center;
+                    gap: 15px;
+                    animation: slideDown 0.5s ease-out, pulse 2s infinite;
+                    max-width: 90%;
+                `;
+                banner.innerHTML = `
+                    <span style="font-size: 28px;">⚠️</span>
+                    <div>
+                        <strong style="font-size: 16px;">Timesheet Reminder!</strong>
+                        <p style="margin: 5px 0 0 0; font-size: 14px; opacity: 0.95;">
+                            You haven't submitted a timesheet for today. Please submit at least one timesheet per day.
+                        </p>
+                    </div>
+                    <button onclick="this.parentElement.remove(); document.querySelector('.tab[onclick*=\\'timesheets\\']')?.click();" 
+                        style="background: white; color: #ee5a24; border: none; padding: 8px 16px; border-radius: 6px; 
+                        cursor: pointer; font-weight: bold; white-space: nowrap;">
+                        Submit Now →
+                    </button>
+                    <button onclick="this.parentElement.remove();" 
+                        style="background: transparent; color: white; border: 2px solid white; padding: 6px 12px; 
+                        border-radius: 6px; cursor: pointer; font-weight: bold;">
+                        ✕
+                    </button>
+                `;
+
+                // Add animation keyframes
+                if (!document.getElementById('timesheetWarningStyles')) {
+                    const style = document.createElement('style');
+                    style.id = 'timesheetWarningStyles';
+                    style.textContent = `
+                        @keyframes slideDown {
+                            from { transform: translateX(-50%) translateY(-100px); opacity: 0; }
+                            to { transform: translateX(-50%) translateY(0); opacity: 1; }
+                        }
+                        @keyframes pulse {
+                            0%, 100% { box-shadow: 0 4px 20px rgba(238, 90, 36, 0.4); }
+                            50% { box-shadow: 0 4px 30px rgba(238, 90, 36, 0.7); }
+                        }
+                    `;
+                    document.head.appendChild(style);
+                }
+
+                document.body.appendChild(banner);
+            }
+        }
+
+        // ===== PROFILE FUNCTIONS =====
+        async function loadProfile() {
+            try {
+                const response = await api('/auth/me');
+                const user = response.user || response;
+
+                // Update profile card
+                document.getElementById('profileName').textContent = user.name || 'User';
+                document.getElementById('profileRole').textContent = user.role || '-';
+                document.getElementById('profileDepartment').textContent = user.department || '-';
+                document.getElementById('profileEmail').textContent = user.email || '-';
+
+                // Set avatar initial
+                const initial = (user.name || 'U').charAt(0).toUpperCase();
+                document.getElementById('profileAvatar').textContent = initial;
+
+                // Fill edit form
+                document.getElementById('editName').value = user.name || '';
+                document.getElementById('editPhone').value = user.phone || '';
+                document.getElementById('editDOB').value = user.dob ? user.dob.split('T')[0] : '';
+                document.getElementById('editAddress').value = user.address || '';
+                document.getElementById('editDesignation').value = user.designation || '';
+                document.getElementById('editDepartment').value = user.department || '';
+                document.getElementById('editGithub').value = user.github || '';
+                document.getElementById('editLinkedin').value = user.linkedin || '';
+                document.getElementById('editBio').value = user.bio || '';
+            } catch (e) {
+                console.error('Error loading profile:', e);
+            }
+        }
+
+        async function updateProfile(event) {
+            event.preventDefault();
+
+            try {
+                const updates = {
+                    name: document.getElementById('editName').value,
+                    phone: document.getElementById('editPhone').value,
+                    dob: document.getElementById('editDOB').value,
+                    address: document.getElementById('editAddress').value,
+                    designation: document.getElementById('editDesignation').value,
+                    github: document.getElementById('editGithub').value,
+                    linkedin: document.getElementById('editLinkedin').value,
+                    bio: document.getElementById('editBio').value
+                };
+
+                const res = await fetch('/api/users/profile', {
+                    method: 'PUT',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(updates)
+                });
+
+                if (res.ok) {
+                    alert('✅ Profile updated successfully!');
+                    loadProfile();
+                } else {
+                    const error = await res.json();
+                    alert('❌ Error: ' + (error.message || 'Failed to update profile'));
+                }
+            } catch (e) {
+                console.error('Error updating profile:', e);
+                alert('❌ Error: ' + e.message);
+            }
+        }
+
+        async function changePassword(event) {
+            event.preventDefault();
+
+            const currentPassword = document.getElementById('currentPassword').value;
+            const newPassword = document.getElementById('newPassword').value;
+            const confirmPassword = document.getElementById('confirmPassword').value;
+
+            if (newPassword !== confirmPassword) {
+                alert('❌ New passwords do not match!');
+                return;
+            }
+
+            if (newPassword.length < 6) {
+                alert('❌ Password must be at least 6 characters!');
+                return;
+            }
+
+            try {
+                const res = await fetch('/api/auth/change-password', {
+                    method: 'PUT',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        currentPassword,
+                        newPassword
+                    })
+                });
+
+                if (res.ok) {
+                    alert('✅ Password changed successfully!');
+                    document.getElementById('passwordForm').reset();
+                } else {
+                    const error = await res.json();
+                    alert('❌ Error: ' + (error.message || 'Failed to change password'));
+                }
+            } catch (e) {
+                console.error('Error changing password:', e);
+                alert('❌ Error: ' + e.message);
+            }
+        }
+
+        // Initial load
+        loadTasks();
+        loadProofStatuses();
+        checkTodayTimesheet(); // Check for daily timesheet submission
+
+        // Auto-refresh every 30 seconds
+        setInterval(() => {
+            switch (currentTab) {
+                case 'tasks': loadTasks(); loadProofStatuses(); break;
+                case 'timesheets': loadTimesheets(); break;
+                case 'attendance': loadAttendanceToday(); break;
+                case 'leaves': loadLeaveRequests(); break;
+                case 'meetings': loadMeetings(); break;
+                case 'feedback': loadFeedbackThreads(); break;
+            }
+        }, 30000);
+    </script>
+
+    <!-- AI Chatbot -->
+    <link rel="stylesheet" href="chatbot.css">
+    <script src="chatbot-actions.js"></script>
+    <script src="chatbot.js"></script>
+</body>
+
+</html>

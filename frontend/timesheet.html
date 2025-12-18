@@ -1,0 +1,101 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Submit Timesheet — ETT</title>
+    <link rel="stylesheet" href="assets/css/style.css">
+    <link rel="stylesheet" href="assets/css/dashboard.css">
+    <link rel="stylesheet" href="assets/css/animations.css">
+</head>
+
+<body class="bg-gradient">
+    <nav class="navbar">
+        <div class="nav-brand">
+            <img src="assets/images/logo.svg" alt="logo" class="logo-sm">
+            <span>Submit Timesheet</span>
+        </div>
+        <div class="nav-menu">
+            <a href="dashboard_employee.html" class="nav-link">Back to Dashboard</a>
+            <button class="btn small" onclick="logout()">Logout</button>
+        </div>
+    </nav>
+
+    <main class="dashboard">
+        <div class="card">
+            <h2>Daily Timesheet</h2>
+            <form id="timesheetForm" class="form">
+                <div class="input-row">
+                    <div class="input-group"><label>Start Date</label><input type="date" id="startDate" required></div>
+                    <div class="input-group"><label>Start Time</label><input type="time" id="startTime" required></div>
+                    <div class="input-group"><label>End Date</label><input type="date" id="endDate"></div>
+                </div>
+                <div class="input-row">
+                    <div class="input-group"><label>End Time</label><input type="time" id="endTime" required></div>
+                    <div class="input-group"><label>Break (minutes)</label><input type="number" id="breakMinutes" value="0"></div>
+                    <div class="input-group"><label>Total Hours</label><input type="number" id="totalHours" readonly></div>
+                </div>
+                <div class="input-group"><label>Description</label><textarea id="description" placeholder="What did you work on?"></textarea></div>
+                <input type="hidden" id="taskId" />
+                <button type="submit" class="btn primary btn-animated">Submit Timesheet</button>
+            </form>
+            <pre id="result"></pre>
+        </div>
+    </main>
+
+    <script src="assets/js/auth.js"></script>
+    <script>
+        // include optional task id from query param
+        (function prefillTaskFromQuery() {
+            const params = new URLSearchParams(window.location.search);
+            const t = params.get('task');
+            if (t) {
+                const el = document.getElementById('taskId');
+                if (el) el.value = t;
+                // show a subtle note in description to avoid major UI changes
+                const desc = document.getElementById('description');
+                if (desc && !desc.value) desc.value = `Timesheet for task: ${t} - `;
+            }
+        })();
+
+        document.getElementById('timesheetForm').addEventListener('submit', async(e) => {
+            e.preventDefault();
+            const payload = {
+                date: document.getElementById('startDate').value,
+                startTime: document.getElementById('startTime').value,
+                endDate: document.getElementById('endDate').value || document.getElementById('startDate').value,
+                endTime: document.getElementById('endTime').value,
+                breakMinutes: parseInt(document.getElementById('breakMinutes').value) || 0,
+                description: document.getElementById('description').value,
+                task: document.getElementById('taskId').value || undefined
+            };
+            const data = await apiCall('/timesheets', 'POST', payload);
+            document.getElementById('result').textContent = JSON.stringify(data, null, 2);
+            if (data._id) alert('Timesheet submitted successfully!');
+        });
+
+        // Auto-calc total hours
+        document.getElementById('startTime').addEventListener('change', calcHours);
+        document.getElementById('endTime').addEventListener('change', calcHours);
+        document.getElementById('breakMinutes').addEventListener('change', calcHours);
+
+        function calcHours() {
+            const sd = document.getElementById('startDate').value;
+            const ed = document.getElementById('endDate').value || sd;
+            const start = document.getElementById('startTime').value;
+            const end = document.getElementById('endTime').value;
+            const breakMins = parseInt(document.getElementById('breakMinutes').value) || 0;
+            if (sd && start && ed && end) {
+                const s = new Date(sd + ' ' + start);
+                const e = new Date(ed + ' ' + end);
+                let diffMs = e - s;
+                if (diffMs < 0) diffMs = 0;
+                const hours = Math.max(0, (diffMs / (1000 * 60 * 60)) - (breakMins / 60));
+                document.getElementById('totalHours').value = hours.toFixed(2);
+            }
+        }
+    </script>
+</body>
+
+</html>

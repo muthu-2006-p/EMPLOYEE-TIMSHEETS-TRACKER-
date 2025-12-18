@@ -1,0 +1,3717 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - Enterprise Edition</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Arial, sans-serif;
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #0f172a 100%);
+            min-height: 100vh;
+            color: #e2e8f0;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at 20% 30%, rgba(59, 130, 246, 0.08) 0%, transparent 50%),
+                radial-gradient(circle at 80% 70%, rgba(99, 102, 241, 0.08) 0%, transparent 50%);
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .navbar {
+            background: rgba(15, 23, 42, 0.95);
+            backdrop-filter: blur(10px);
+            color: white;
+            padding: 15px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid rgba(59, 130, 246, 0.2);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .navbar h1 {
+            font-size: 1.4rem;
+            background: linear-gradient(135deg, #3b82f6, #60a5fa);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .logout-btn {
+            background: linear-gradient(135deg, #3b82f6 0%, #6366f1 100%);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 10px rgba(59, 130, 246, 0.3);
+        }
+
+        .logout-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(59, 130, 246, 0.4);
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 20px auto;
+            padding: 0 20px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .tabs {
+            display: flex;
+            gap: 5px;
+            margin-bottom: 25px;
+            background: rgba(30, 41, 59, 0.5);
+            padding: 8px;
+            border-radius: 12px;
+            flex-wrap: wrap;
+        }
+
+        .tab-btn {
+            padding: 12px 20px;
+            cursor: pointer;
+            border: none;
+            background: transparent;
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: #94a3b8;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .tab-btn:hover {
+            color: #e2e8f0;
+            background: rgba(59, 130, 246, 0.1);
+        }
+
+        .tab-btn.active {
+            color: #fff;
+            background: linear-gradient(135deg, #3b82f6, #6366f1);
+            box-shadow: 0 2px 10px rgba(59, 130, 246, 0.3);
+        }
+
+        .section {
+            background: rgba(15, 23, 42, 0.8);
+            backdrop-filter: blur(10px);
+            padding: 25px;
+            border-radius: 16px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(59, 130, 246, 0.15);
+            display: none;
+        }
+
+        .section.active {
+            display: block;
+        }
+
+        .section h2 {
+            color: #f1f5f9;
+            margin-bottom: 20px;
+            font-size: 1.3rem;
+            padding-bottom: 12px;
+            border-bottom: 2px solid rgba(59, 130, 246, 0.3);
+        }
+
+        .form-group {
+            margin: 15px 0;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #94a3b8;
+        }
+
+        input,
+        select,
+        textarea {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid rgba(59, 130, 246, 0.2);
+            border-radius: 8px;
+            background: rgba(30, 41, 59, 0.8);
+            color: #e2e8f0;
+            font-size: 0.95rem;
+            font-family: inherit;
+            transition: all 0.3s ease;
+        }
+
+        input:focus,
+        select:focus,
+        textarea:focus {
+            outline: none;
+            border-color: #3b82f6;
+            box-shadow: 0 0 8px rgba(59, 130, 246, 0.3);
+        }
+
+        button {
+            background: linear-gradient(135deg, #3b82f6, #6366f1);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            margin: 5px 0;
+            transition: all 0.3s ease;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+        }
+
+        button.danger {
+            background: linear-gradient(135deg, #ef4444, #dc2626);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+
+        th,
+        td {
+            padding: 14px 12px;
+            text-align: left;
+            border-bottom: 1px solid rgba(59, 130, 246, 0.1);
+        }
+
+        th {
+            background: rgba(30, 41, 59, 0.9);
+            font-weight: 600;
+            color: #94a3b8;
+            text-transform: uppercase;
+            font-size: 0.75rem;
+            letter-spacing: 0.5px;
+        }
+
+        td {
+            color: #e2e8f0;
+        }
+
+        tr:hover td {
+            background: rgba(59, 130, 246, 0.05);
+        }
+
+
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .stat-card {
+            background: rgba(30, 41, 59, 0.8);
+            padding: 20px;
+            border-radius: 12px;
+            text-align: center;
+            border: 1px solid rgba(59, 130, 246, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-3px);
+            border-color: rgba(59, 130, 246, 0.3);
+            box-shadow: 0 8px 25px rgba(59, 130, 246, 0.15);
+        }
+
+        .stat-card .number {
+            font-size: 2rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #3b82f6, #60a5fa);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .stat-card .label {
+            font-size: 0.85rem;
+            color: #94a3b8;
+            margin-top: 5px;
+        }
+
+        .alert {
+            padding: 10px 15px;
+            margin: 10px 0;
+            border-radius: 5px;
+        }
+
+        .alert.success {
+            background: rgba(0, 255, 0, 0.1);
+            color: #00FF00;
+        }
+
+        .alert.error {
+            background: rgba(255, 0, 0, 0.1);
+            color: #DC143C;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        /* Modal styles */
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0, 0, 0, 0.5);
+        }
+
+        .modal.show {
+            display: block;
+        }
+
+        .modal-content {
+            background-color: #fefefe;
+            margin: 5% auto;
+            padding: 30px;
+            border: 1px solid #888;
+            border-radius: 10px;
+            width: 90%;
+            max-width: 600px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .close:hover,
+        .close:focus {
+            color: #000;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: white;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 14px;
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+
+<body>
+    <div class="navbar">
+        <h1>🛡️ Admin Dashboard - Enterprise System Control</h1>
+        <button class="logout-btn" onclick="logout()">Logout</button>
+    </div>
+
+    <div class="container">
+        <div id="alert"></div>
+
+        <div class="tabs">
+            <button class="tab-btn active" onclick="switchTab('overview')">📊 Overview</button>
+
+            <button class="tab-btn" onclick="switchTab('projectReviews')">📦 Project Reviews</button>
+            <button class="tab-btn" onclick="switchTab('managerReports')">📈 Manager Reports</button>
+            <button class="tab-btn" onclick="switchTab('projects')">🎯 Projects</button>
+            <button class="tab-btn" onclick="switchTab('tasks')">✓ Tasks</button>
+            <button class="tab-btn" onclick="switchTab('employees')">👥 Employees</button>
+            <button class="tab-btn" onclick="switchTab('attendance')">📅 Attendance</button>
+            <button class="tab-btn" onclick="switchTab('leaves')">🏖️ Leave Management</button>
+            <button class="tab-btn" onclick="switchTab('meetings')">📞 Meetings</button>
+            <button class="tab-btn" onclick="switchTab('feedback')">💬 Feedback</button>
+            <button class="tab-btn" onclick="switchTab('analytics')">📊 System Analytics</button>
+        </div>
+
+        <!-- Overview Tab -->
+        <div id="overview" class="section active">
+            <h2>📊 System Overview</h2>
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="number" id="totalEmp">0</div>
+                    <div class="label">Total Employees</div>
+                </div>
+                <div class="stat-card">
+                    <div class="number" id="totalProj">0</div>
+                    <div class="label">Active Projects</div>
+                </div>
+                <div class="stat-card">
+                    <div class="number" id="totalTasks">0</div>
+                    <div class="label">Total Tasks</div>
+                </div>
+                <div class="stat-card">
+                    <div class="number" id="totalTs">0</div>
+                    <div class="label">Timesheets</div>
+                </div>
+            </div>
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="number" id="approvedTs">0</div>
+                    <div class="label">Approved</div>
+                </div>
+                <div class="stat-card">
+                    <div class="number" id="totalHours">0h</div>
+                    <div class="label">Total Hours</div>
+                </div>
+                <div class="stat-card">
+                    <div class="number" id="totalOT">0h</div>
+                    <div class="label">Overtime</div>
+                </div>
+                <div class="stat-card">
+                    <div class="number" id="approvalRate">0%</div>
+                    <div class="label">Approval Rate</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Proof Submissions Tab -->
+        <div id="proofs" class="section">
+            <h2>📋 Proof Submissions Review</h2>
+            <div id="proofSubmissionsList" style="display: grid; gap: 12px;">
+                <p style="color: rgba(255,255,255,0.7); text-align: center; padding: 20px;">Loading submissions...</p>
+            </div>
+        </div>
+
+        <!-- Proof Notifications Tab -->
+        <div id="proofNotifications" class="section">
+            <h2>📬 Proof Notifications</h2>
+            <div id="adminProofNotificationsList"
+                style="display: grid; gap: 12px; max-height: 600px; overflow-y: auto;">
+                <p style="color: rgba(255,255,255,0.7); text-align: center; padding: 20px;">Loading notifications...</p>
+            </div>
+        </div>
+
+        <!-- Project Reviews Tab -->
+        <div id="projectReviews" class="section">
+            <h2>📦 Project Completion Reviews</h2>
+            <p style="color: rgba(255,255,255,0.7); margin-bottom: 20px;">
+                Review manager-submitted project completion proofs. Approve or request rework if defects are found.
+            </p>
+
+            <div
+                style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-bottom: 30px;">
+                <div class="stat-card">
+                    <div class="stat-label">Pending Reviews</div>
+                    <div class="number" id="adminPendingProjectsCount">0</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">Rework Required</div>
+                    <div class="number" id="adminReworkProjectsCount">0</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">Approved</div>
+                    <div class="number" id="adminApprovedProjectsCount">0</div>
+                </div>
+            </div>
+
+            <div style="margin-bottom: 20px;">
+                <button class="btn" onclick="loadPendingProjectReviews()" style="background: #1E90FF;">
+                    🔄 Refresh Reviews
+                </button>
+                <button class="btn" onclick="alert('Test button works! Check console for logs.')"
+                    style="background: #95a5a6; margin-left: 10px;">
+                    🧪 Test Button
+                </button>
+            </div>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>Project Name</th>
+                        <th>Manager</th>
+                        <th>Status</th>
+                        <th>Proof Links</th>
+                        <th>Submitted</th>
+                        <th>Defects</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="projectReviewsList">
+                    <tr>
+                        <td colspan="7" style="text-align: center;">Loading...</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Manager Analytics Reports -->
+        <div id="managerReports" class="section">
+            <h2>📈 Analytics Reports from Managers</h2>
+            <p style="color: rgba(255,255,255,0.7); margin-bottom: 20px;">
+                View and analyze performance reports submitted by managers from their analytics tab.
+            </p>
+
+            <div style="margin-bottom: 20px;">
+                <button class="btn" onclick="loadManagerAnalyticsReports()" style="background: #1E90FF;">
+                    🔄 Refresh Reports
+                </button>
+            </div>
+
+            <div id="managerReportsContainer">
+                <p style="color: rgba(255,255,255,0.7); text-align: center; padding: 20px;">Loading reports...</p>
+            </div>
+        </div>
+
+        <!-- Workflow 4: Project Management -->
+        <div id="projects" class="section">
+            <h2>🎯 Workflow 4: Project Management</h2>
+            <div style="background: rgba(255,255,255,0.05); padding: 15px; border-radius: 8px; margin-bottom: 20px;">
+                <h3>Create New Project</h3>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Project Name *</label>
+                        <input type="text" id="projName" placeholder="e.g., Website Redesign">
+                    </div>
+                    <div class="form-group">
+                        <label>Department/Team</label>
+                        <input type="text" id="projDept" placeholder="e.g., IT Department">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Assign Manager</label>
+                        <select id="projManager">
+                            <option value="">-- Auto-assign (Admin) --</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Start Date</label>
+                        <input type="date" id="projStartDate">
+                    </div>
+                    <div class="form-group">
+                        <label>End Date</label>
+                        <input type="date" id="projEndDate">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Description</label>
+                    <textarea id="projDesc" placeholder="Project details and scope" rows="3"></textarea>
+                </div>
+                <button onclick="createProject()">✅ Create Project</button>
+            </div>
+
+            <h3>All Projects</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Department</th>
+                        <th>Description</th>
+                        <th>Employees</th>
+                        <th>Tasks</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody id="projectsTable">
+                    <tr>
+                        <td colspan="6" style="text-align: center;">Loading...</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Workflow 5: Task Management -->
+        <div id="tasks" class="section">
+            <h2>✓ Workflow 5: Task Management</h2>
+            <div style="background: #ecf0f1; padding: 15px; border-radius: 8px; margin-bottom: 20px;">
+                <h3>Create New Task</h3>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Task Title *</label>
+                        <input type="text" id="taskTitle" placeholder="e.g., Frontend Development">
+                    </div>
+                    <div class="form-group">
+                        <label>Project *</label>
+                        <select id="taskProject">
+                            <option value="">Select Project</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Description</label>
+                    <textarea id="taskDesc" placeholder="Task details" rows="3"></textarea>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Estimated Hours</label>
+                        <input type="number" id="taskHours" placeholder="e.g., 40" min="1">
+                    </div>
+                    <div class="form-group">
+                        <label>Priority</label>
+                        <select id="taskPriority">
+                            <option value="low">Low</option>
+                            <option value="medium" selected>Medium</option>
+                            <option value="high">High</option>
+                        </select>
+                    </div>
+                </div>
+                <button onclick="createTask()">✅ Create Task</button>
+            </div>
+
+            <h3>All Tasks</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Title</th>
+                        <th>Project</th>
+                        <th>Priority</th>
+                        <th>Est. Hours</th>
+                        <th>Assignments</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody id="tasksTable">
+                    <tr>
+                        <td colspan="6" style="text-align: center;">Loading...</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Workflow 6: Employee Management -->
+        <div id="employees" class="section">
+            <h2>👥 Workflow 6: Employee Management & Assignment</h2>
+
+            <!-- Tab Toggle -->
+            <div style="display: flex; gap: 10px; margin-bottom: 20px; border-bottom: 2px solid #ecf0f1;">
+                <button id="tabExisting" onclick="switchEmpTab('existing')"
+                    style="background: none; border: none; padding: 10px 20px; cursor: pointer; font-weight: bold; color: #3498db; border-bottom: 3px solid #3498db;">✅
+                    Assign Existing</button>
+                <button id="tabNew" onclick="switchEmpTab('new')"
+                    style="background: none; border: none; padding: 10px 20px; cursor: pointer; font-weight: bold; color: #7f8c8d; border-bottom: 3px solid transparent;">➕
+                    Register & Assign</button>
+            </div>
+
+            <!-- TAB 1: Assign Existing Employee/Manager -->
+            <div id="existingTab" style="display: block;">
+                <!-- Employee Assignment Section -->
+                <div
+                    style="background: #d5f4e6; padding: 20px; border-radius: 8px; margin-bottom: 20px; border-left: 4px solid #27ae60;">
+                    <h3>👤 Assign Existing Employee to Project & Task</h3>
+                    <p style="font-size: 12px; color: #27ae60; margin-bottom: 15px;">Select from registered employees
+                        only</p>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Select Employee *</label>
+                            <select id="selectEmpForAssign">
+                                <option value="">-- Choose Employee --</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Select Project *</label>
+                            <select id="selectProjForAssignEmp">
+                                <option value="">-- Choose Project --</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Select Task *</label>
+                            <select id="selectTaskForAssignEmp">
+                                <option value="">-- Choose Task --</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>&nbsp;</label>
+                            <button onclick="assignEmployeeToProjectTask()" style="background: #27ae60;">✅ Assign
+                                Employee to Project & Task</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Manager Assignment Section -->
+                <div
+                    style="background: #e8f4fd; padding: 20px; border-radius: 8px; margin-bottom: 20px; border-left: 4px solid #3498db;">
+                    <h3>👔 Assign Existing Manager to Project & Task</h3>
+                    <p style="font-size: 12px; color: #3498db; margin-bottom: 15px;">Select from registered managers
+                        only</p>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Select Manager *</label>
+                            <select id="selectMgrForAssign">
+                                <option value="">-- Choose Manager --</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Select Project *</label>
+                            <select id="selectProjForAssignMgr">
+                                <option value="">-- Choose Project --</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Select Task *</label>
+                            <select id="selectTaskForAssignMgr">
+                                <option value="">-- Choose Task --</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>&nbsp;</label>
+                            <button onclick="assignManagerToProjectTask()" style="background: #3498db;">✅ Assign Manager
+                                to Project & Task</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB 2: Register New & Assign -->
+            <div id="newTab"
+                style="background: #ecf0f1; padding: 20px; border-radius: 8px; margin-bottom: 20px; border-left: 4px solid #3498db; display: none;">
+                <h3>➕ Register New Employee/Manager & Assign to Project & Task</h3>
+                <p style="font-size: 12px; color: #3498db; margin-bottom: 15px;">Complete registration form (like
+                    register.html) with project & task assignment</p>
+
+                <!-- Personal Details Section -->
+                <div style="background: white; padding: 15px; border-radius: 5px; margin-bottom: 15px;">
+                    <h4 style="color: #2c3e50; margin-bottom: 10px;">📋 Personal Details</h4>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Name *</label>
+                            <input type="text" id="newEmpName" placeholder="Full Name">
+                        </div>
+                        <div class="form-group">
+                            <label>Email *</label>
+                            <input type="email" id="newEmpEmail" placeholder="email@company.com">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Password *</label>
+                            <input type="password" id="newEmpPassword" placeholder="Minimum 6 characters">
+                        </div>
+                        <div class="form-group">
+                            <label>Phone</label>
+                            <input type="text" id="newEmpPhone" placeholder="+1-555-1234">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Date of Birth</label>
+                            <input type="date" id="newEmpDOB">
+                        </div>
+                        <div class="form-group">
+                            <label>Address</label>
+                            <input type="text" id="newEmpAddress" placeholder="Street Address, City, State">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Professional Details Section -->
+                <div style="background: white; padding: 15px; border-radius: 5px; margin-bottom: 15px;">
+                    <h4 style="color: #2c3e50; margin-bottom: 10px;">💼 Professional Details</h4>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Department</label>
+                            <input type="text" id="newEmpDept" placeholder="e.g., Engineering">
+                        </div>
+                        <div class="form-group">
+                            <label>Designation</label>
+                            <input type="text" id="newEmpDesignation" placeholder="e.g., Senior Engineer">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Role *</label>
+                            <select id="newEmpRole">
+                                <option value="employee">Employee</option>
+                                <option value="manager">Manager</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>&nbsp;</label>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Social Links Section -->
+                <div style="background: white; padding: 15px; border-radius: 5px; margin-bottom: 15px;">
+                    <h4 style="color: #2c3e50; margin-bottom: 10px;">🔗 Social Links & Media</h4>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>GitHub</label>
+                            <input type="text" id="newEmpGithub" placeholder="https://github.com/username">
+                        </div>
+                        <div class="form-group">
+                            <label>LinkedIn</label>
+                            <input type="text" id="newEmpLinkedin" placeholder="https://linkedin.com/in/username">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Bio/Personal Details</label>
+                            <textarea id="newEmpBio" placeholder="Brief professional summary" rows="3"
+                                style="resize: vertical;"></textarea>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Assignment Section -->
+                <div
+                    style="background: #fff3cd; padding: 15px; border-radius: 5px; margin-bottom: 15px; border-left: 4px solid #ffc107;">
+                    <h4 style="color: #856404; margin-bottom: 10px;">🎯 Assign to Project & Task</h4>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Select Project *</label>
+                            <select id="newEmpProj">
+                                <option value="">-- Choose Project --</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Select Task *</label>
+                            <select id="newEmpTask">
+                                <option value="">-- Choose Task --</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <button onclick="registerAndAssignEmployee()"
+                    style="background: #3498db; width: 100%; padding: 12px; font-weight: bold;">➕ Register & Assign to
+                    Project & Task</button>
+            </div>
+
+            <h3>All Employees</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Email</th>
+                        <th>Role</th>
+                        <th>Department</th>
+                        <th>Project</th>
+                        <th>Task</th>
+                        <th>Status</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody id="employeesTable">
+                    <tr>
+                        <td colspan="8" style="text-align: center;">Loading...</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- ATTENDANCE TAB -->
+        <div id="attendance" class="section" style="display:none;">
+            <h2>📅 Attendance System Management</h2>
+
+            <h3>Today's Attendance Overview</h3>
+            <div id="todayAttendanceAdmin" style="margin-bottom: 30px;">
+                <p style="text-align:center; color: #7f8c8d;">Loading attendance data...</p>
+            </div>
+
+            <h3>Attendance Correction Requests</h3>
+            <div id="correctionRequests">
+                <p style="text-align:center; color: #7f8c8d;">Loading correction requests...</p>
+            </div>
+
+            <h3>All Attendance Records (Recent 50)</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Employee</th>
+                        <th>Date</th>
+                        <th>Check-In</th>
+                        <th>Check-Out</th>
+                        <th>Hours Worked</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody id="allAttendanceTable">
+                    <tr>
+                        <td colspan="6" style="text-align:center;">Loading...</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- LEAVE MANAGEMENT TAB -->
+        <div id="leaves" class="section" style="display:none;">
+            <h2>🏖️ Leave Management System</h2>
+
+            <h3>Pending Leave Requests</h3>
+            <div id="pendingLeavesAdmin">
+                <p style="text-align:center; color: #7f8c8d;">Loading pending leave requests...</p>
+            </div>
+
+            <h3>All Leave Requests (Recent 50)</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Employee</th>
+                        <th>Type</th>
+                        <th>Start Date</th>
+                        <th>End Date</th>
+                        <th>Days</th>
+                        <th>Status</th>
+                        <th>Applied On</th>
+                    </tr>
+                </thead>
+                <tbody id="allLeavesTable">
+                    <tr>
+                        <td colspan="7" style="text-align:center;">Loading...</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h3>Employee Leave Balances</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Employee</th>
+                        <th>Total Annual</th>
+                        <th>Used</th>
+                        <th>Remaining</th>
+                        <th>Carry Forward</th>
+                    </tr>
+                </thead>
+                <tbody id="leaveBalancesTable">
+                    <tr>
+                        <td colspan="5" style="text-align:center;">Loading...</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- MEETINGS TAB -->
+        <div id="meetings" class="section" style="display:none;">
+            <h2>📞 Meeting Management System</h2>
+
+            <button onclick="openCreateMeetingModal()" style="margin-bottom: 20px; background: #27ae60;">
+                ➕ Schedule New Meeting
+            </button>
+
+            <h3>Upcoming Meetings</h3>
+            <div id="upcomingMeetingsAdmin">
+                <p style="text-align:center; color: #7f8c8d;">Loading meetings...</p>
+            </div>
+
+            <h3>All Meetings (Recent 50)</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Title</th>
+                        <th>Date & Time</th>
+                        <th>Type</th>
+                        <th>Organizer</th>
+                        <th>Participants</th>
+                        <th>Attendance</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="allMeetingsTable">
+                    <tr>
+                        <td colspan="7" style="text-align:center;">Loading...</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- FEEDBACK TAB -->
+        <div id="feedback" class="section" style="display:none;">
+            <h2>💬 Feedback & Communication System</h2>
+            <div style="margin-bottom: 15px;">
+                <button class="btn btn-approve" onclick="showCreateThreadModalAdmin()">+ New Thread</button>
+            </div>
+
+            <h3>Active Feedback Threads</h3>
+            <div id="allFeedbackThreadsAdmin">
+                <p style="text-align:center; color: #7f8c8d;">Loading feedback threads...</p>
+            </div>
+        </div>
+
+        <!-- Create Thread Modal for Admin -->
+        <div id="createThreadModalAdmin" class="modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2>Create Feedback Thread</h2>
+                    <button class="modal-close" onclick="closeCreateThreadModalAdmin()">&times;</button>
+                </div>
+                <form id="createThreadFormAdmin" onsubmit="createThreadAdmin(event)">
+                    <div class="form-group">
+                        <label>Recipients * <small id="recipientHelpTextAdmin" style="color: #7f8c8d;">You can send to
+                                Managers and Employees</small></label>
+                        <div id="recipientsListAdmin"
+                            style="max-height: 150px; overflow-y: auto; border: 1px solid #ddd; padding: 10px; border-radius: 4px; background: #f9f9f9;">
+                            <p style="color: #95a5a6;">Loading recipients...</p>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Subject *</label>
+                        <input type="text" name="subject" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Category *</label>
+                        <select name="category" required>
+                            <option value="General">General</option>
+                            <option value="Bug">Bug</option>
+                            <option value="Issue">Issue</option>
+                            <option value="Performance">Performance</option>
+                            <option value="Request">Request</option>
+                            <option value="Other">Other</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Priority *</label>
+                        <select name="priority" required>
+                            <option value="low">Low</option>
+                            <option value="medium" selected>Medium</option>
+                            <option value="high">High</option>
+                            <option value="urgent">Urgent</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Message *</label>
+                        <textarea name="message" required></textarea>
+                    </div>
+                    <div class="action-buttons">
+                        <button type="submit" class="btn btn-approve">Create Thread</button>
+                        <button type="button" class="btn btn-reject"
+                            onclick="closeCreateThreadModalAdmin()">Cancel</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- View Thread Modal for Admin -->
+        <div id="viewThreadModalAdmin" class="modal">
+            <div class="modal-content" style="max-width: 700px;">
+                <span class="close-btn" onclick="closeViewAdminThread()">&times;</span>
+                <h2 id="viewThreadTitleAdmin">Thread</h2>
+                <div id="viewThreadParticipantsAdmin" style="color: #7f8c8d; font-size: 14px; margin-bottom: 20px;">
+                </div>
+
+                <div
+                    style="max-height: 400px; overflow-y: auto; margin-bottom: 20px; padding: 10px; background: #fff; border: 1px solid #ecf0f1; border-radius: 5px;">
+                    <div id="threadMessagesContainerAdmin"></div>
+                </div>
+
+                <div style="border-top: 2px solid #ecf0f1; padding-top: 15px;">
+                    <h3 style="margin-bottom: 10px;">Reply</h3>
+                    <textarea id="replyMessageAdmin" rows="4"
+                        style="width: 100%; padding: 10px; border: 1px solid #ecf0f1; border-radius: 5px; font-family: inherit;"
+                        placeholder="Type your reply..."></textarea>
+                    <div class="action-buttons" style="margin-top: 10px;">
+                        <button type="button" class="btn btn-approve" onclick="sendAdminReply()">Send Reply</button>
+                        <button type="button" class="btn btn-reject" onclick="closeViewAdminThread()">Close</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- EXPORT DATA TAB -->
+        <!-- ANALYTICS TAB -->
+        <div id="analytics" class="section" style="display:none;">
+            <h2>📈 System Analytics & Insights</h2>
+            <p style="color: #7f8c8d; margin-bottom: 20px;">Comprehensive overview of your organization's performance
+                metrics, team productivity, and resource utilization.</p>
+
+            <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; margin: 20px 0;">
+                <div
+                    style="background: #fff; padding: 20px; border: 1px solid #ddd; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+                    <h3 style="color: #2c3e50; margin-bottom: 8px;">📊 Project Distribution</h3>
+                    <p style="font-size: 13px; color: #7f8c8d; margin-bottom: 15px;">Shows the number of employees
+                        assigned to each project. Helps identify project workload distribution.</p>
+                    <canvas id="projectChart"></canvas>
+                </div>
+
+                <div
+                    style="background: #fff; padding: 20px; border: 1px solid #ddd; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+                    <h3 style="color: #2c3e50; margin-bottom: 8px;">✓ Task Status Overview</h3>
+                    <p style="font-size: 13px; color: #7f8c8d; margin-bottom: 15px;">Breakdown of tasks by status
+                        (Assigned, In Progress, Completed, etc.). Monitor task completion rates.</p>
+                    <canvas id="taskStatusChart"></canvas>
+                </div>
+
+                <div
+                    style="background: #fff; padding: 20px; border: 1px solid #ddd; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+                    <h3 style="color: #2c3e50; margin-bottom: 8px;">📅 Attendance Trends (Last 7 Days)</h3>
+                    <p style="font-size: 13px; color: #7f8c8d; margin-bottom: 15px;">Daily attendance count for the past
+                        week. Track employee presence patterns and identify trends.</p>
+                    <canvas id="attendanceTrendChart"></canvas>
+                </div>
+
+                <div
+                    style="background: #fff; padding: 20px; border: 1px solid #ddd; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+                    <h3 style="color: #2c3e50; margin-bottom: 8px;">🏖️ Leave Utilization</h3>
+                    <p style="font-size: 13px; color: #7f8c8d; margin-bottom: 15px;">Total days taken by leave type
+                        (Sick, Vacation, Personal, etc.). Monitor leave usage across the organization.</p>
+                    <canvas id="leaveChart"></canvas>
+                </div>
+
+                <div
+                    style="background: #fff; padding: 20px; border: 1px solid #ddd; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+                    <h3 style="color: #2c3e50; margin-bottom: 8px;">⏱️ Timesheet Approval Rate</h3>
+                    <p style="font-size: 13px; color: #7f8c8d; margin-bottom: 15px;">Status distribution of timesheets
+                        (Pending, Approved, Rejected). Track timesheet processing efficiency.</p>
+                    <canvas id="timesheetChart"></canvas>
+                </div>
+
+                <div
+                    style="background: #fff; padding: 20px; border: 1px solid #ddd; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+                    <h3 style="color: #2c3e50; margin-bottom: 8px;">📞 Meeting Participation</h3>
+                    <p style="font-size: 13px; color: #7f8c8d; margin-bottom: 15px;">Number of attendees per meeting.
+                        Analyze meeting engagement and participation rates.</p>
+                    <canvas id="meetingChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- CREATE MEETING MODAL -->
+    <div id="createMeetingModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeCreateMeetingModal()">&times;</span>
+            <h2>📞 Schedule New Meeting</h2>
+            <form id="createMeetingForm" onsubmit="createMeetingAdmin(event)">
+                <div class="form-group">
+                    <label>Title *</label>
+                    <input type="text" id="meetingTitle" required>
+                </div>
+                <div class="form-group">
+                    <label>Date & Time *</label>
+                    <input type="datetime-local" id="meetingDateTime" required>
+                </div>
+                <div class="form-group">
+                    <label>Duration (minutes) *</label>
+                    <input type="number" id="meetingDuration" value="60" required>
+                </div>
+                <div class="form-group">
+                    <label>Type *</label>
+                    <select id="meetingType" required>
+                        <option value="standup">Daily Standup</option>
+                        <option value="review">Sprint Review</option>
+                        <option value="planning">Planning</option>
+                        <option value="retrospective">Retrospective</option>
+                        <option value="one-on-one">One-on-One</option>
+                        <option value="training">Training</option>
+                        <option value="other">Other</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Participants *</label>
+                    <div
+                        style="border: 1px solid #ddd; padding: 10px; border-radius: 4px; max-height: 200px; overflow-y: auto; background: #f9f9f9;">
+                        <div id="participantsList" style="display: flex; flex-direction: column; gap: 5px;">
+                            <p style="text-align: center; color: #999;">Loading participants...</p>
+                        </div>
+                    </div>
+                    <small style="color: #666; display: block; margin-top: 5px;" id="participantHelp">
+                        Select at least one participant
+                    </small>
+                </div>
+                <div class="form-group">
+                    <label>Agenda</label>
+                    <textarea id="meetingAgenda" rows="3"></textarea>
+                </div>
+                <div class="form-group">
+                    <label>Location/Link</label>
+                    <input type="text" id="meetingLocation" placeholder="Zoom/Teams link or room number">
+                </div>
+                <button type="submit" style="background: #27ae60; width: 100%; padding: 12px;">Schedule Meeting</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        const token = localStorage.getItem('auth_token') || localStorage.getItem('token');
+        if (!token) {
+            window.location.href = '/login.html';
+        }
+
+        // Global storage for filtering
+        let allTasks = [];
+        let allProjects = [];
+
+        // Verify admin role
+        async function checkAdminAccess() {
+            try {
+                const res = await fetch('/api/auth/me', {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+                const data = await res.json();
+                if (!res.ok || data.user?.role !== 'admin') {
+                    alert('Access denied. Admin only.');
+                    window.location.href = '/login.html';
+                }
+            } catch (err) {
+                alert('Authentication failed');
+                window.location.href = '/login.html';
+            }
+        }
+        checkAdminAccess();
+
+        async function api(path, method = 'GET', body = null) {
+            const opts = {
+                method,
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                }
+            };
+            if (body) opts.body = JSON.stringify(body);
+            const res = await fetch(`/api${path}`, opts);
+            if (!res.ok) {
+                let errorMessage = `Error: ${res.status}`;
+                try {
+                    const contentType = res.headers.get('content-type');
+                    if (contentType && contentType.includes('application/json')) {
+                        const error = await res.json();
+                        errorMessage = error.message || errorMessage;
+                    } else {
+                        const text = await res.text();
+                        console.error('Non-JSON error response:', text.substring(0, 200));
+                        errorMessage = `Server error: ${res.status} - Check console for details`;
+                    }
+                } catch (e) {
+                    console.error('Failed to parse error response:', e);
+                }
+                throw new Error(errorMessage);
+            }
+            return res.json();
+        }
+
+        function showAlert(msg, type = 'success') {
+            const el = document.getElementById('alert');
+            el.className = `alert ${type}`;
+            el.textContent = msg;
+            setTimeout(() => el.textContent = '', 4000);
+        }
+
+        function switchTab(name) {
+            // Hide all sections
+            document.querySelectorAll('.section').forEach(s => {
+                s.classList.remove('active');
+                s.style.display = 'none';
+            });
+            // Hide all tab buttons
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+
+            // Show selected section
+            const selectedSection = document.getElementById(name);
+            if (selectedSection) {
+                selectedSection.classList.add('active');
+                selectedSection.style.display = 'block';
+            }
+
+            // Activate clicked button
+            if (event && event.target) {
+                event.target.classList.add('active');
+            }
+
+            // Load data when tabs are clicked
+            if (name === 'proofs') {
+                loadAllProofs();
+            } else if (name === 'proofNotifications') {
+                loadAdminProofNotifications();
+            } else if (name === 'projectReviews') {
+                loadPendingProjectReviews();
+            } else if (name === 'managerReports') {
+                loadManagerAnalyticsReports();
+            } else if (name === 'attendance') {
+                loadAttendanceAdmin();
+            } else if (name === 'leaves') {
+                loadLeaveManagement();
+            } else if (name === 'meetings') {
+                loadMeetingsAdmin();
+            } else if (name === 'feedback') {
+                loadFeedbackAdmin();
+            } else if (name === 'analytics') {
+                loadAnalytics();
+            }
+        }
+
+        // Load all proof submissions for admin
+        async function loadAllProofs() {
+            try {
+                const res = await fetch('/api/proof/pending', {
+                    headers: {
+                        'Authorization': `Bearer ${localStorage.getItem('auth_token')}`
+                    }
+                });
+                const data = await res.json();
+                const proofs = data.data || [];
+
+                let html = '';
+                if (proofs.length === 0) {
+                    html = '<p style="color: #7f8c8d; text-align: center; padding: 20px;">No pending submissions</p>';
+                } else {
+                    proofs.forEach(proof => {
+                        html += `
+                            <div style="border: 1px solid #ddd; padding: 12px; border-radius: 6px; background: #f9f9f9;">
+                                <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 8px;">
+                                    <div>
+                                        <h4 style="margin: 0;">${proof.task?.title || 'Task'}</h4>
+                                        <p style="margin: 4px 0; color: #666; font-size: 13px;">Employee: ${proof.employee?.name || 'Unknown'}</p>
+                                        <p style="margin: 4px 0; color: #666; font-size: 13px;">Project: ${proof.project?.name || 'Unknown'}</p>
+                                        <p style="margin: 4px 0; color: #666; font-size: 13px;">Submitted: ${new Date(proof.submittedAt).toLocaleString()}</p>
+                                    </div>
+                                    <span style="background: #ffc107; color: #333; padding: 4px 8px; border-radius: 4px; font-size: 12px; font-weight: bold;">⏳ PENDING</span>
+                                </div>
+                                <div style="margin: 8px 0; padding: 8px; background: white; border-radius: 4px; font-size: 13px;">
+                                    <p><strong>GitHub:</strong> <a href="${proof.githubLink}" target="_blank" style="color: #0066cc;">View Repository</a></p>
+                                    <p><strong>Video:</strong> <a href="${proof.demoVideoLink}" target="_blank" style="color: #0066cc;">Watch Demo</a></p>
+                                    <p><strong>Notes:</strong> ${proof.completionNotes?.substring(0, 100)}...</p>
+                                </div>
+                                <button class="btn" onclick="approveProofAdmin('${proof._id}');" style="width: 48%; margin-right: 2%; margin-top: 8px; background: #27ae60;">
+                                    ✅ Approve
+                                </button>
+                                <button class="btn" onclick="rejectProofAdmin('${proof._id}');" style="width: 48%; margin-top: 8px; background: #e74c3c;">
+                                    ❌ Reject
+                                </button>
+                            </div>
+                        `;
+                    });
+                }
+                document.getElementById('proofSubmissionsList').innerHTML = html;
+            } catch (err) {
+                console.error('Error loading proofs:', err);
+                document.getElementById('proofSubmissionsList').innerHTML = '<p style="color: red;">Error loading proofs</p>';
+            }
+        }
+
+        async function approveProofAdmin(proofId) {
+            try {
+                const res = await fetch(`/api/proof/${proofId}/review`, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${localStorage.getItem('auth_token')}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        decision: 'approved',
+                        comments: 'Approved by admin'
+                    })
+                });
+                const result = await res.json();
+
+                // Auto-assign next task
+                if (result.data) {
+                    try {
+                        const assignRes = await fetch(`/api/proof/${proofId}/assign-next`, {
+                            method: 'POST',
+                            headers: {
+                                'Authorization': `Bearer ${localStorage.getItem('auth_token')}`,
+                                'Content-Type': 'application/json'
+                            }
+                        });
+                        const assignData = await assignRes.json();
+
+                        if (assignData.status === 'all_tasks_completed') {
+                            showAlert('🎉 All Tasks Completed – Awaiting New Assignments', 'success');
+                        } else if (assignData.nextTask) {
+                            showAlert(`📌 Next task auto-assigned: ${assignData.nextTask.title}`, 'success');
+                        }
+                    } catch (assignErr) {
+                        console.log('Auto-assign completed');
+                    }
+                }
+
+                showAlert('✅ ' + (result.message || 'Proof approved'), 'success');
+                loadAllProofs();
+            } catch (err) {
+                showAlert('❌ Error: ' + err.message, 'error');
+            }
+        }
+
+        async function rejectProofAdmin(proofId) {
+            const defect = prompt('Enter defect description:');
+            if (!defect) return;
+
+            try {
+                const res = await fetch(`/api/proof/${proofId}/review`, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${localStorage.getItem('auth_token')}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        decision: 'defect_found',
+                        comments: 'Rework required - see defect description',
+                        defectDescription: defect
+                    })
+                });
+                const result = await res.json();
+                showAlert('⚠️ Defect Found – Rework Required\n\n' + (result.message || 'Rework requested'), 'warning');
+                loadAllProofs();
+            } catch (err) {
+                showAlert('❌ Error: ' + err.message, 'error');
+            }
+        }
+
+        // Load admin proof notifications
+        async function loadAdminProofNotifications() {
+            try {
+                const res = await fetch('/api/notify/me', {
+                    headers: {
+                        'Authorization': `Bearer ${localStorage.getItem('auth_token')}`
+                    }
+                });
+                const data = await res.json();
+                const notifications = (data.data || []).filter(n => ['proof_approved', 'proof_rejected', 'task_assigned'].includes(n.type)).slice(0, 20);
+
+                let html = '';
+                if (notifications.length === 0) {
+                    html = '<p style="color: #7f8c8d; text-align: center; padding: 20px;">No proof notifications</p>';
+                } else {
+                    notifications.forEach(notif => {
+                        const timestamp = new Date(notif.createdAt).toLocaleString();
+                        let icon = '📬';
+                        let bgColor = '#f0f0f0';
+                        let borderColor = '#999';
+
+                        if (notif.type === 'proof_approved') {
+                            icon = '✅';
+                            bgColor = '#d4edda';
+                            borderColor = '#28a745';
+                        } else if (notif.type === 'proof_rejected') {
+                            icon = '⚠️';
+                            bgColor = '#fff3cd';
+                            borderColor = '#ffc107';
+                        } else if (notif.type === 'task_assigned') {
+                            icon = '📌';
+                            bgColor = '#cfe2ff';
+                            borderColor = '#0d6efd';
+                        }
+
+                        html += `
+                            <div style="padding: 12px; border-radius: 6px; background: ${bgColor}; border-left: 4px solid ${borderColor};">
+                                <p style="margin: 0; font-weight: bold;">${icon} ${notif.title}</p>
+                                <p style="margin: 4px 0; font-size: 13px;">${notif.body}</p>
+                                <p style="margin: 4px 0; font-size: 11px; color: #666;">${timestamp}</p>
+                            </div>
+                        `;
+                    });
+                }
+                document.getElementById('adminProofNotificationsList').innerHTML = html;
+            } catch (err) {
+                console.error('Error loading admin notifications:', err);
+            }
+        }
+
+        async function createProject() {
+            try {
+                const name = document.getElementById('projName').value;
+                const manager = document.getElementById('projManager').value;
+                const startDate = document.getElementById('projStartDate').value;
+                const endDate = document.getElementById('projEndDate').value;
+
+                if (!name) {
+                    showAlert('❌ Project name required', 'error');
+                    return;
+                }
+
+                // Validate dates if both are provided
+                if (startDate && endDate && new Date(startDate) > new Date(endDate)) {
+                    showAlert('❌ Start date must be before end date', 'error');
+                    return;
+                }
+
+                const data = {
+                    name,
+                    description: document.getElementById('projDesc').value,
+                    department: document.getElementById('projDept').value
+                };
+
+                if (manager) {
+                    data.manager = manager;
+                }
+
+                if (startDate) {
+                    data.startDate = startDate;
+                }
+
+                if (endDate) {
+                    data.endDate = endDate;
+                }
+
+                await api('/projects', 'POST', data);
+                showAlert('✅ Project created!');
+                document.getElementById('projName').value = '';
+                document.getElementById('projDesc').value = '';
+                document.getElementById('projDept').value = '';
+                document.getElementById('projManager').value = '';
+                document.getElementById('projStartDate').value = '';
+                document.getElementById('projEndDate').value = '';
+                loadProjects();
+            } catch (e) {
+                showAlert('❌ ' + e.message, 'error');
+            }
+        }
+
+        async function createTask() {
+            try {
+                const title = document.getElementById('taskTitle').value;
+                const project = document.getElementById('taskProject').value;
+                if (!title || !project) {
+                    showAlert('❌ Title and Project required', 'error');
+                    return;
+                }
+                await api('/tasks', 'POST', {
+                    title,
+                    project,
+                    description: document.getElementById('taskDesc').value,
+                    estimatedHours: parseInt(document.getElementById('taskHours').value) || 0,
+                    priority: document.getElementById('taskPriority').value
+                });
+                showAlert('✅ Task created!');
+                document.getElementById('taskTitle').value = '';
+                document.getElementById('taskDesc').value = '';
+                document.getElementById('taskHours').value = '';
+                loadTasks();
+            } catch (e) {
+                showAlert('❌ ' + e.message, 'error');
+            }
+        }
+
+        async function addEmployee() {
+            try {
+                const name = document.getElementById('empName').value.trim();
+                const email = document.getElementById('empEmail').value.trim();
+                const password = document.getElementById('empPassword').value.trim();
+                const role = document.getElementById('empRole').value;
+                const department = document.getElementById('empDept').value.trim();
+
+                if (!name || !email || !password) {
+                    showAlert('❌ Name, Email, and Password required', 'error');
+                    return;
+                }
+
+                if (password.length < 6) {
+                    showAlert('❌ Password must be at least 6 characters', 'error');
+                    return;
+                }
+
+                await api('/admin/employees', 'POST', {
+                    name,
+                    email,
+                    password,
+                    role,
+                    department: department || ''
+                });
+                showAlert('✅ Employee added!');
+                document.getElementById('empName').value = '';
+                document.getElementById('empEmail').value = '';
+                document.getElementById('empPassword').value = '';
+                document.getElementById('empDept').value = '';
+                loadEmployees();
+            } catch (e) {
+                showAlert('❌ ' + e.message, 'error');
+            }
+        }
+
+        // NEW: Tab switching for employee management
+        function switchEmpTab(tabName) {
+            const existingTab = document.getElementById('existingTab');
+            const newTab = document.getElementById('newTab');
+            const tabExisting = document.getElementById('tabExisting');
+            const tabNew = document.getElementById('tabNew');
+
+            if (tabName === 'existing') {
+                existingTab.style.display = 'block';
+                newTab.style.display = 'none';
+                tabExisting.style.color = '#3498db';
+                tabExisting.style.borderBottomColor = '#3498db';
+                tabNew.style.color = '#7f8c8d';
+                tabNew.style.borderBottomColor = 'transparent';
+            } else {
+                existingTab.style.display = 'none';
+                newTab.style.display = 'block';
+                tabExisting.style.color = '#7f8c8d';
+                tabExisting.style.borderBottomColor = 'transparent';
+                tabNew.style.color = '#3498db';
+                tabNew.style.borderBottomColor = '#3498db';
+            }
+        }
+
+        // NEW: Register & Assign new employee with all 9 fields
+        async function registerAndAssignEmployee() {
+            try {
+                const name = document.getElementById('newEmpName').value.trim();
+                const email = document.getElementById('newEmpEmail').value.trim();
+                const password = document.getElementById('newEmpPassword').value.trim();
+                const phone = document.getElementById('newEmpPhone').value.trim();
+                const dob = document.getElementById('newEmpDOB').value;
+                const address = document.getElementById('newEmpAddress').value.trim();
+                const department = document.getElementById('newEmpDept').value.trim();
+                const designation = document.getElementById('newEmpDesignation').value.trim();
+                const role = document.getElementById('newEmpRole').value;
+                const github = document.getElementById('newEmpGithub').value.trim();
+                const linkedin = document.getElementById('newEmpLinkedin').value.trim();
+                const bio = document.getElementById('newEmpBio').value.trim();
+                const projId = document.getElementById('newEmpProj').value;
+                const taskId = document.getElementById('newEmpTask').value;
+
+                // Validation
+                if (!name || !email || !password) {
+                    showAlert('❌ Name, Email, and Password required', 'error');
+                    return;
+                }
+                if (password.length < 6) {
+                    showAlert('❌ Password must be at least 6 characters', 'error');
+                    return;
+                }
+                if (!projId || !taskId) {
+                    showAlert('❌ Project and Task required for assignment', 'error');
+                    return;
+                }
+
+                // Register employee with all fields via auth/register
+                const regResponse = await fetch('/api/auth/register', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        name,
+                        email,
+                        password,
+                        phone,
+                        dob,
+                        address,
+                        department,
+                        designation,
+                        role,
+                        github,
+                        linkedin,
+                        bio
+                    })
+                });
+
+                if (!regResponse.ok) {
+                    const error = await regResponse.json();
+                    throw new Error(error.message || 'Registration failed');
+                }
+
+                const regData = await regResponse.json();
+                const empId = regData.user?.id || regData.user?._id;
+
+                // Assign to project
+                await api(`/admin/projects/${projId}/assign-employee`, 'POST', {
+                    employee: email // Backend expects email, not ID
+                });
+
+                // Assign to task - Get all tasks and find the one we need
+                const allTasksResponse = await api('/tasks', 'GET');
+                const allTasks = allTasksResponse.data || allTasksResponse || [];
+                const task = allTasks.find(t => String(t._id) === String(taskId));
+
+                if (!task) {
+                    throw new Error('Task not found');
+                }
+
+                const existingAssignments = task.assignments || [];
+
+                // Check if already assigned (shouldn't happen for new employee but check anyway)
+                const alreadyAssigned = existingAssignments.some(a => {
+                    const assignedEmpId = a.employee && (a.employee._id || a.employee);
+                    return assignedEmpId && String(assignedEmpId) === String(empId);
+                });
+
+                if (!alreadyAssigned) {
+                    const newAssignment = {
+                        employee: empId,
+                        status: 'assigned',
+                        progress: 0
+                    };
+                    await api(`/tasks/${taskId}`, 'PUT', {
+                        assignments: [...existingAssignments, newAssignment]
+                    });
+                }
+
+                showAlert('✅ Employee registered & assigned to Project & Task!');
+
+                // Clear form
+                document.getElementById('newEmpName').value = '';
+                document.getElementById('newEmpEmail').value = '';
+                document.getElementById('newEmpPassword').value = '';
+                document.getElementById('newEmpPhone').value = '';
+                document.getElementById('newEmpDOB').value = '';
+                document.getElementById('newEmpAddress').value = '';
+                document.getElementById('newEmpDept').value = '';
+                document.getElementById('newEmpDesignation').value = '';
+                document.getElementById('newEmpGithub').value = '';
+                document.getElementById('newEmpLinkedin').value = '';
+                document.getElementById('newEmpBio').value = '';
+                document.getElementById('newEmpProj').value = '';
+                document.getElementById('newEmpTask').value = '';
+
+                loadEmployees();
+                switchEmpTab('existing');
+            } catch (e) {
+                showAlert('❌ ' + e.message, 'error');
+            }
+        }
+
+        async function deleteProject(id) {
+            if (confirm('Delete this project?')) {
+                try {
+                    await api(`/projects/${id}`, 'DELETE');
+                    showAlert('✅ Project deleted');
+                    loadProjects();
+                } catch (e) {
+                    showAlert('❌ ' + e.message, 'error');
+                }
+            }
+        }
+
+        async function deleteEmployee(id) {
+            if (confirm('Delete this employee?')) {
+                try {
+                    const res = await fetch(`/api/users/${id}`, {
+                        method: 'DELETE',
+                        headers: {
+                            'Authorization': `Bearer ${token}`,
+                            'Content-Type': 'application/json'
+                        }
+                    });
+                    if (!res.ok) {
+                        const error = await res.json();
+                        throw new Error(error.message || 'Delete failed');
+                    }
+                    showAlert('✅ Employee deleted');
+                    loadEmployees();
+                } catch (e) {
+                    showAlert('❌ ' + e.message, 'error');
+                }
+            }
+        }
+
+        async function assignEmployeeToProjectTask() {
+            try {
+                const empId = document.getElementById('selectEmpForAssign').value;
+                const projId = document.getElementById('selectProjForAssignEmp').value;
+                const taskId = document.getElementById('selectTaskForAssignEmp').value;
+
+                console.log('🔍 Employee Assignment started:', {
+                    empId,
+                    projId,
+                    taskId
+                });
+
+                if (!empId || !projId || !taskId) {
+                    showAlert('❌ Please select Employee, Project, and Task', 'error');
+                    return;
+                }
+
+                // Get employee email for project assignment
+                console.log('📋 Fetching employees from /admin/employees');
+                const employees = await api('/admin/employees');
+                console.log('📋 Employees fetched:', employees.length);
+
+                const emp = employees.find(e => e._id === empId && e.role === 'employee');
+                if (!emp) {
+                    showAlert('❌ Employee not found', 'error');
+                    return;
+                }
+                console.log('✅ Employee found:', emp.name, emp.email);
+
+                // Assign employee to project
+                console.log('📌 Assigning to project:', projId);
+                await api(`/admin/projects/${projId}/assign-employee`, 'POST', {
+                    employee: emp.email // Backend expects email
+                });
+                console.log('✅ Project assignment successful');
+
+                // Assign employee to task
+                console.log('📋 Fetching all tasks from /tasks');
+                const allTasksResponse = await api('/tasks', 'GET');
+                const allTasks = allTasksResponse.data || allTasksResponse || [];
+                console.log('📋 Total tasks:', allTasks.length);
+
+                const task = allTasks.find(t => String(t._id) === String(taskId));
+
+                if (!task) {
+                    console.error('❌ Task not found in list:', taskId);
+                    showAlert('❌ Task not found', 'error');
+                    return;
+                }
+                console.log('✅ Task found:', task.title);
+
+                const existingAssignments = task.assignments || [];
+
+                const alreadyAssigned = existingAssignments.some(a => {
+                    const assignedEmpId = a.employee && (a.employee._id || a.employee);
+                    return assignedEmpId && String(assignedEmpId) === String(empId);
+                });
+
+                if (!alreadyAssigned) {
+                    const newAssignment = {
+                        employee: empId,
+                        status: 'assigned',
+                        progress: 0
+                    };
+                    console.log('📌 Adding new assignment:', newAssignment);
+                    await api(`/tasks/${taskId}`, 'PUT', {
+                        assignments: [...existingAssignments, newAssignment]
+                    });
+                    console.log('✅ Task assignment successful');
+                } else {
+                    console.log('ℹ️ Employee already assigned');
+                    showAlert('ℹ️ Employee already assigned to this task', 'info');
+                }
+
+                showAlert('✅ Employee assigned to Project & Task!');
+                document.getElementById('selectEmpForAssign').value = '';
+                document.getElementById('selectProjForAssignEmp').value = '';
+                document.getElementById('selectTaskForAssignEmp').value = '';
+                loadEmployees();
+                loadProjects();
+                loadTasks();
+            } catch (e) {
+                console.error('❌ Employee assignment error:', e);
+                showAlert('❌ ' + e.message, 'error');
+            }
+        }
+
+        async function assignManagerToProjectTask() {
+            try {
+                const mgrId = document.getElementById('selectMgrForAssign').value;
+                const projId = document.getElementById('selectProjForAssignMgr').value;
+                const taskId = document.getElementById('selectTaskForAssignMgr').value;
+
+                console.log('🔍 Manager Assignment started:', {
+                    mgrId,
+                    projId,
+                    taskId
+                });
+
+                if (!mgrId || !projId || !taskId) {
+                    showAlert('❌ Please select Manager, Project, and Task', 'error');
+                    return;
+                }
+
+                // Get manager email for project assignment
+                console.log('📋 Fetching employees from /admin/employees');
+                const employees = await api('/admin/employees');
+                console.log('📋 Employees fetched:', employees.length);
+
+                const mgr = employees.find(e => e._id === mgrId && e.role === 'manager');
+                if (!mgr) {
+                    showAlert('❌ Manager not found', 'error');
+                    return;
+                }
+                console.log('✅ Manager found:', mgr.name, mgr.email);
+
+                // Assign manager to project
+                console.log('📌 Assigning to project:', projId);
+                await api(`/admin/projects/${projId}/assign-employee`, 'POST', {
+                    employee: mgr.email // Backend expects email
+                });
+                console.log('✅ Project assignment successful');
+
+                // Assign manager to task
+                console.log('📋 Fetching all tasks from /tasks');
+                const allTasksResponse = await api('/tasks', 'GET');
+                const allTasks = allTasksResponse.data || allTasksResponse || [];
+                console.log('📋 Total tasks:', allTasks.length);
+
+                const task = allTasks.find(t => String(t._id) === String(taskId));
+
+                if (!task) {
+                    console.error('❌ Task not found in list:', taskId);
+                    showAlert('❌ Task not found', 'error');
+                    return;
+                }
+                console.log('✅ Task found:', task.title);
+
+                const existingAssignments = task.assignments || [];
+
+                // Check if manager already assigned
+                const alreadyAssigned = existingAssignments.some(a => {
+                    const assignedMgrId = a.employee && (a.employee._id || a.employee);
+                    return assignedMgrId && String(assignedMgrId) === String(mgrId);
+                });
+
+                if (!alreadyAssigned) {
+                    const newAssignment = {
+                        employee: mgrId,
+                        status: 'assigned',
+                        progress: 0
+                    };
+                    console.log('📌 Adding new assignment:', newAssignment);
+                    await api(`/tasks/${taskId}`, 'PUT', {
+                        assignments: [...existingAssignments, newAssignment]
+                    });
+                    console.log('✅ Task assignment successful');
+                } else {
+                    console.log('ℹ️ Manager already assigned');
+                    showAlert('ℹ️ Manager already assigned to this task', 'info');
+                }
+
+                showAlert('✅ Manager assigned to Project & Task!');
+                document.getElementById('selectMgrForAssign').value = '';
+                document.getElementById('selectProjForAssignMgr').value = '';
+                document.getElementById('selectTaskForAssignMgr').value = '';
+                loadEmployees();
+                loadProjects();
+                loadTasks();
+            } catch (e) {
+                console.error('❌ Manager assignment error:', e);
+                showAlert('❌ ' + e.message, 'error');
+            }
+        }
+
+        async function loadOverview() {
+            try {
+                const stats = await api('/analysis/summary');
+                const employees = await api('/admin/employees');
+                const projects = await api('/admin/projects');
+                const tasks = await api('/admin/tasks');
+                document.getElementById('totalEmp').textContent = employees.length;
+                document.getElementById('totalProj').textContent = projects.length;
+                document.getElementById('totalTasks').textContent = tasks.length;
+                document.getElementById('totalTs').textContent = stats.totalTimesheets;
+                document.getElementById('approvedTs').textContent = stats.approved;
+                document.getElementById('totalHours').textContent = stats.totalHours.toFixed(1);
+                document.getElementById('totalOT').textContent = stats.totalOvertimeHours.toFixed(1);
+                document.getElementById('approvalRate').textContent = stats.totalTimesheets ? Math.round(100 * stats.approved / stats.totalTimesheets) + '%' : '0%';
+            } catch (e) {
+                console.error(e);
+            }
+        }
+
+        async function loadProjects() {
+            try {
+                const response = await api('/projects');
+                allProjects = response.data || response || [];
+                const html = allProjects.map(p => `<tr>
+                    <td>${p.name}</td>
+                    <td>${p.department || '-'}</td>
+                    <td>${(p.description || '').substring(0, 30)}...</td>
+                    <td>${(p.employees || []).length}</td>
+                    <td>0</td>
+                    <td><button class="danger" onclick="deleteProject('${p._id}')">Delete</button></td>
+                </tr>`).join('') || '<tr><td colspan="6">No projects</td></tr>';
+                document.getElementById('projectsTable').innerHTML = html;
+                document.getElementById('taskProject').innerHTML = '<option value="">Select Project</option>' + allProjects.map(p => `<option value="${p._id}">${p.name}</option>`).join('');
+                document.getElementById('selectProjForAssignEmp').innerHTML = '<option value="">-- Choose Project --</option>' + allProjects.map(p => `<option value="${p._id}">${p.name}</option>`).join('');
+                document.getElementById('selectProjForAssignMgr').innerHTML = '<option value="">-- Choose Project --</option>' + allProjects.map(p => `<option value="${p._id}">${p.name}</option>`).join('');
+                document.getElementById('newEmpProj').innerHTML = '<option value="">-- Choose Project --</option>' + allProjects.map(p => `<option value="${p._id}">${p.name}</option>`).join('');
+
+                // Setup event listeners for project selection to filter tasks
+                document.getElementById('selectProjForAssignEmp').addEventListener('change', filterTasksForAssignmentEmp);
+                document.getElementById('selectProjForAssignMgr').addEventListener('change', filterTasksForAssignmentMgr);
+                document.getElementById('newEmpProj').addEventListener('change', filterTasksForNewEmployee);
+            } catch (e) {
+                console.error(e);
+            }
+        }
+
+        async function loadTasks() {
+            try {
+                const response = await api('/tasks');
+                allTasks = response.data || response || [];
+                const html = allTasks.map(t => `<tr>
+                    <td>${t.title}</td>
+                    <td>${t.project?.name || '-'}</td>
+                    <td>${t.priority || 'medium'}</td>
+                    <td>${t.estimatedHours || 0}h</td>
+                    <td>${(t.assignments || []).length}</td>
+                    <td>Active</td>
+                </tr>`).join('') || '<tr><td colspan="6">No tasks</td></tr>';
+                document.getElementById('tasksTable').innerHTML = html;
+
+                // Initially show all tasks in dropdowns
+                updateTaskDropdowns(allTasks, 'selectTaskForAssignEmp');
+                updateTaskDropdowns(allTasks, 'selectTaskForAssignMgr');
+                updateTaskDropdowns(allTasks, 'newEmpTask');
+            } catch (e) {
+                console.error(e);
+            }
+        }
+
+        // Helper function to update task dropdowns
+        function updateTaskDropdowns(tasks, elementId) {
+            const taskOptions = '<option value="">-- Choose Task --</option>' +
+                tasks.map(t => `<option value="${t._id}">${t.title} (${t.project?.name || 'No Project'})</option>`).join('');
+            document.getElementById(elementId).innerHTML = taskOptions;
+        }
+
+        // Filter tasks for existing employee assignment based on selected project
+        function filterTasksForAssignmentEmp() {
+            const selectedProjectId = document.getElementById('selectProjForAssignEmp').value;
+            if (!selectedProjectId) {
+                updateTaskDropdowns(allTasks, 'selectTaskForAssignEmp');
+            } else {
+                const filteredTasks = allTasks.filter(t =>
+                    String(t.project?._id || t.project) === String(selectedProjectId)
+                );
+                updateTaskDropdowns(filteredTasks, 'selectTaskForAssignEmp');
+            }
+        }
+
+        // Filter tasks for existing manager assignment based on selected project
+        function filterTasksForAssignmentMgr() {
+            const selectedProjectId = document.getElementById('selectProjForAssignMgr').value;
+            if (!selectedProjectId) {
+                updateTaskDropdowns(allTasks, 'selectTaskForAssignMgr');
+            } else {
+                const filteredTasks = allTasks.filter(t =>
+                    String(t.project?._id || t.project) === String(selectedProjectId)
+                );
+                updateTaskDropdowns(filteredTasks, 'selectTaskForAssignMgr');
+            }
+        }
+
+        // Filter tasks for new employee registration based on selected project
+        function filterTasksForNewEmployee() {
+            const selectedProjectId = document.getElementById('newEmpProj').value;
+            if (!selectedProjectId) {
+                // Show all tasks if no project selected
+                updateTaskDropdowns(allTasks, 'newEmpTask');
+            } else {
+                // Filter tasks by selected project
+                const filteredTasks = allTasks.filter(t =>
+                    String(t.project?._id || t.project) === String(selectedProjectId)
+                );
+                updateTaskDropdowns(filteredTasks, 'newEmpTask');
+            }
+        }
+
+        async function loadEmployees() {
+            try {
+                const response = await api('/users');
+                const allUsers = response.data || response || [];
+                const employees = allUsers.filter(u => u.role === 'employee');
+                const managers = allUsers.filter(u => u.role === 'manager');
+                const allEmployeesAndManagers = [...employees, ...managers];
+
+                const html = allEmployeesAndManagers.map(e => `<tr>
+                    <td>${e.name}</td>
+                    <td>${e.email}</td>
+                    <td>${e.role}</td>
+                    <td>${e.department || '-'}</td>
+                    <td>-</td>
+                    <td>-</td>
+                    <td>🟢 Active</td>
+                    <td><button class="danger" onclick="deleteEmployee('${e._id}')">Delete</button></td>
+                </tr>`).join('') || '<tr><td colspan="8">No employees</td></tr>';
+                document.getElementById('employeesTable').innerHTML = html;
+
+                // Update employee dropdown (employees only)
+                const empOptions = '<option value="">-- Choose Employee --</option>' +
+                    employees.map(e => `<option value="${e._id}">${e.name} (${e.email})</option>`).join('');
+                document.getElementById('selectEmpForAssign').innerHTML = empOptions;
+
+                // Update manager dropdown (managers only)
+                const mgrOptions = '<option value="">-- Choose Manager --</option>' +
+                    managers.map(m => `<option value="${m._id}">${m.name} (${m.email})</option>`).join('');
+                document.getElementById('selectMgrForAssign').innerHTML = mgrOptions;
+
+                // Update manager dropdown for project creation
+                const managerOptions = '<option value="">-- Auto-assign (Admin) --</option>' +
+                    managers.map(m => `<option value="${m._id}">${m.name} (${m.email})</option>`).join('');
+                document.getElementById('projManager').innerHTML = managerOptions;
+            } catch (e) {
+                console.error(e);
+            }
+        }
+
+        function logout() {
+            localStorage.clear();
+            window.location.href = '/login.html';
+        }
+
+        loadOverview();
+        loadProjects();
+        loadTasks();
+        loadEmployees();
+        loadAllProofs();
+        loadAdminProofNotifications();
+
+        // Auto-refresh overview, proofs, and notifications
+        setInterval(loadOverview, 60000);
+        setInterval(loadAllProofs, 30000);
+        setInterval(loadAdminProofNotifications, 30000);
+
+        // ===== NEW ENTERPRISE FUNCTIONS =====
+
+        // Load attendance data for admin
+        async function loadAttendanceAdmin() {
+            try {
+                // Load today's attendance
+                const today = new Date().toISOString().split('T')[0];
+                const res = await fetch(`/api/attendance/date/${today}`, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+                const data = await res.json();
+                const records = data.data || [];
+
+                let html = '<div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px;">';
+                html += `<div style="background: #d4edda; padding: 20px; border-radius: 8px; text-align: center;">
+                    <h3 style="margin: 0; color: #155724;">Present: ${records.filter(r => r.status === 'checked_out' || r.status === 'present').length}</h3>
+                </div>`;
+                html += `<div style="background: #f8d7da; padding: 20px; border-radius: 8px; text-align: center;">
+                    <h3 style="margin: 0; color: #721c24;">Absent: ${records.filter(r => r.status === 'absent').length}</h3>
+                </div>`;
+                html += '</div>';
+                document.getElementById('todayAttendanceAdmin').innerHTML = html;
+
+                // Load all attendance records
+                const allRes = await fetch('/api/attendance?limit=50', {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+                const allData = await allRes.json();
+                const allRecords = allData.data || [];
+
+                const tableHtml = allRecords.map(r => `
+                    <tr>
+                        <td>${r.employee?.name || 'Unknown'}</td>
+                        <td>${new Date(r.date).toLocaleDateString()}</td>
+                        <td>${r.checkInTime ? new Date(r.checkInTime).toLocaleTimeString() : '-'}</td>
+                        <td>${r.checkOutTime ? new Date(r.checkOutTime).toLocaleTimeString() : '-'}</td>
+                        <td>${r.hoursWorked?.toFixed(2) || '0.00'}</td>
+                        <td><span style="background: ${r.status === 'checked_out' || r.status === 'present' ? '#d4edda' : r.status === 'checked_in' ? '#fff3cd' : '#f8d7da'}; padding: 4px 8px; border-radius: 4px;">${r.status}</span></td>
+                    </tr>
+                `).join('') || '<tr><td colspan="6" style="text-align:center;">No records</td></tr>';
+                document.getElementById('allAttendanceTable').innerHTML = tableHtml;
+
+                // Load correction requests
+                const corrRes = await fetch('/api/attendance/corrections/pending', {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+                const corrData = await corrRes.json();
+                const corrections = corrData.data || [];
+
+                let corrHtml = '';
+                if (corrections.length === 0) {
+                    corrHtml = '<p style="text-align:center; color: #7f8c8d;">No pending correction requests</p>';
+                } else {
+                    corrections.forEach(corr => {
+                        corrHtml += `
+                            <div style="border: 1px solid #ddd; padding: 15px; margin: 10px 0; border-radius: 8px; background: #fff3cd;">
+                                <p><strong>${corr.employee?.name || 'Unknown'}</strong> - ${new Date(corr.date).toLocaleDateString()}</p>
+                                <p>Reason: ${corr.reason}</p>
+                                <button onclick="approveCorrection('${corr._id}')" style="background: #27ae60; margin-right: 10px;">Approve</button>
+                                <button onclick="rejectCorrection('${corr._id}')" style="background: #e74c3c;">Reject</button>
+                            </div>
+                        `;
+                    });
+                }
+                document.getElementById('correctionRequests').innerHTML = corrHtml;
+            } catch (err) {
+                console.error('Error loading attendance:', err);
+            }
+        }
+
+        async function approveCorrection(id) {
+            try {
+                await fetch(`/api/attendance/corrections/${id}/approve`, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    }
+                });
+                showAlert('✅ Correction approved', 'success');
+                loadAttendanceAdmin();
+            } catch (err) {
+                showAlert('❌ Error: ' + err.message, 'error');
+            }
+        }
+
+        async function rejectCorrection(id) {
+            try {
+                await fetch(`/api/attendance/corrections/${id}/reject`, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    }
+                });
+                showAlert('✅ Correction rejected', 'success');
+                loadAttendanceAdmin();
+            } catch (err) {
+                showAlert('❌ Error: ' + err.message, 'error');
+            }
+        }
+
+        // Load leave management data
+        async function loadLeaveManagement() {
+            try {
+                // Load pending leave requests
+                const res = await fetch('/api/leave/pending', {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+                const data = await res.json();
+                const pending = data.data || [];
+
+                let html = '';
+                if (pending.length === 0) {
+                    html = '<p style="text-align:center; color: #7f8c8d;">No pending leave requests</p>';
+                } else {
+                    pending.forEach(leave => {
+                        html += `
+                            <div style="border: 1px solid #ddd; padding: 15px; margin: 10px 0; border-radius: 8px; background: #fff3cd;">
+                                <p><strong>${leave.employee?.name || 'Unknown'}</strong> - ${leave.leaveType}</p>
+                                <p>From: ${new Date(leave.startDate).toLocaleDateString()} To: ${new Date(leave.endDate).toLocaleDateString()}</p>
+                                <p>Days: ${leave.numberOfDays} | Reason: ${leave.reason}</p>
+                                <button onclick="approveLeaveAdmin('${leave._id}')" style="background: #27ae60; margin-right: 10px;">Approve</button>
+                                <button onclick="rejectLeaveAdmin('${leave._id}')" style="background: #e74c3c;">Reject</button>
+                            </div>
+                        `;
+                    });
+                }
+                document.getElementById('pendingLeavesAdmin').innerHTML = html;
+
+                // Load all leave requests
+                const allRes = await fetch('/api/leave?limit=50', {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+                const allData = await allRes.json();
+                const allLeaves = allData.data || [];
+
+                const tableHtml = allLeaves.map(l => `
+                    <tr>
+                        <td>${l.employee?.name || 'Unknown'}</td>
+                        <td>${l.leaveType}</td>
+                        <td>${new Date(l.startDate).toLocaleDateString()}</td>
+                        <td>${new Date(l.endDate).toLocaleDateString()}</td>
+                        <td>${l.numberOfDays}</td>
+                        <td><span style="background: ${l.status === 'approved' ? '#d4edda' : l.status === 'rejected' ? '#f8d7da' : '#fff3cd'}; padding: 4px 8px; border-radius: 4px;">${l.status}</span></td>
+                        <td>${new Date(l.createdAt).toLocaleDateString()}</td>
+                    </tr>
+                `).join('') || '<tr><td colspan="7" style="text-align:center;">No leave requests</td></tr>';
+                document.getElementById('allLeavesTable').innerHTML = tableHtml;
+
+                // Load leave balances
+                const balRes = await fetch('/api/leave/balances', {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+                const balData = await balRes.json();
+                const balances = balData.data || [];
+
+                const balHtml = balances.map(b => `
+                    <tr>
+                        <td>${b.employee?.name || 'Unknown'}</td>
+                        <td>${b.totalAnnualLeave}</td>
+                        <td>${b.usedLeave}</td>
+                        <td>${b.remainingLeave}</td>
+                        <td>${b.carryForward}</td>
+                    </tr>
+                `).join('') || '<tr><td colspan="5" style="text-align:center;">No balance data</td></tr>';
+                document.getElementById('leaveBalancesTable').innerHTML = balHtml;
+            } catch (err) {
+                console.error('Error loading leave data:', err);
+            }
+        }
+
+        async function approveLeaveAdmin(id) {
+            try {
+                await fetch(`/api/leave/${id}/approve`, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    }
+                });
+                showAlert('✅ Leave approved', 'success');
+                loadLeaveManagement();
+            } catch (err) {
+                showAlert('❌ Error: ' + err.message, 'error');
+            }
+        }
+
+        async function rejectLeaveAdmin(id) {
+            const reason = prompt('Reason for rejection:');
+            if (!reason) return;
+            try {
+                await fetch(`/api/leave/${id}/reject`, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        reason
+                    })
+                });
+                showAlert('✅ Leave rejected', 'success');
+                loadLeaveManagement();
+            } catch (err) {
+                showAlert('❌ Error: ' + err.message, 'error');
+            }
+        }
+
+        // Load meetings data
+        async function loadMeetingsAdmin() {
+            try {
+                console.log('📞 Loading meetings for admin...');
+
+                const res = await fetch('/api/meetings-v2', {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+
+                if (!res.ok) {
+                    throw new Error(`HTTP ${res.status}: ${res.statusText}`);
+                }
+
+                const data = await res.json();
+                console.log('📞 Received meetings data:', data);
+
+                const meetings = data.data || [];
+                console.log(`📞 Processing ${meetings.length} meetings`);
+
+                const upcoming = meetings.filter(m => new Date(m.dateTime || m.startTime) > new Date());
+                console.log(`📞 Found ${upcoming.length} upcoming meetings`);
+
+                let html = '';
+                if (upcoming.length === 0) {
+                    html = '<p style="text-align:center; color: #7f8c8d;">No upcoming meetings</p>';
+                } else {
+                    upcoming.forEach(m => {
+                        const organizer = m.sender || m.organizer || {};
+                        const dateField = m.dateTime || m.startTime;
+                        html += `
+                            <div style="border: 1px solid #ddd; padding: 15px; margin: 10px 0; border-radius: 8px; background: #e3f2fd;">
+                                <h4 style="margin: 0;">${m.title}</h4>
+                                <p>📅 ${new Date(dateField).toLocaleString()} | ⏱️ ${m.duration || 60} min</p>
+                                <p>Type: ${m.meetingType || 'other'} | Organizer: ${organizer.name || 'Unknown'}</p>
+                                <p>Participants: ${(m.recipients || m.participants || []).length} | Attendance: ${(m.attendance || []).length}</p>
+                                <button onclick="deleteMeeting('${m._id}')" style="background: #e74c3c;">Delete</button>
+                            </div>
+                        `;
+                    });
+                }
+                document.getElementById('upcomingMeetingsAdmin').innerHTML = html;
+
+                const tableHtml = meetings.slice(0, 50).map(m => {
+                    const organizer = m.sender || m.organizer || {};
+                    const dateField = m.dateTime || m.startTime;
+                    return `
+                        <tr>
+                            <td>${m.title}</td>
+                            <td>${new Date(dateField).toLocaleString()}</td>
+                            <td>${m.meetingType || 'other'}</td>
+                            <td>${organizer.name || 'Unknown'}</td>
+                            <td>${(m.recipients || m.participants || []).length}</td>
+                            <td>${(m.attendance || []).length}</td>
+                            <td><button onclick="deleteMeeting('${m._id}')" style="background: #e74c3c; padding: 5px 10px;">Delete</button></td>
+                        </tr>
+                    `;
+                }).join('') || '<tr><td colspan="7" style="text-align:center;">No meetings</td></tr>';
+
+                document.getElementById('allMeetingsTable').innerHTML = tableHtml;
+                console.log('✅ Meetings loaded successfully');
+
+            } catch (err) {
+                console.error('❌ Error loading meetings:', err);
+
+                // Show error to user
+                document.getElementById('upcomingMeetingsAdmin').innerHTML =
+                    `<div style="background: #fee; border: 1px solid #fcc; padding: 15px; border-radius: 8px; color: #c33;">
+                        <strong>❌ Error Loading Meetings</strong><br>
+                        ${err.message || 'Failed to load meetings. Please try again.'}
+                    </div>`;
+
+                document.getElementById('allMeetingsTable').innerHTML =
+                    `<tr><td colspan="7" style="text-align:center; color: #e74c3c;">
+                        ❌ Error: ${err.message || 'Failed to load meetings'}
+                    </td></tr>`;
+
+                showAlert('❌ Error loading meetings: ' + err.message, 'error');
+            }
+        }
+
+        async function deleteMeeting(id) {
+            if (!confirm('Delete this meeting?')) return;
+            try {
+                await fetch(`/api/meetings-v2/${id}`, {
+                    method: 'DELETE',
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+                showAlert('✅ Meeting deleted', 'success');
+                loadMeetingsAdmin();
+            } catch (err) {
+                showAlert('❌ Error: ' + err.message, 'error');
+            }
+        }
+
+        async function openCreateMeetingModal() {
+            document.getElementById('createMeetingModal').style.display = 'block';
+
+            // Load participants based on user role
+            try {
+                console.log('👥 Loading participants for meeting creation...');
+
+                // Get current user info
+                const userRes = await fetch('/api/auth/me', {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+                const userData = await userRes.json();
+                const currentUser = userData.user || userData;
+
+                console.log('👤 Current user role:', currentUser.role);
+
+                // Determine which roles to fetch based on current user's role
+                let rolesToFetch = '';
+                let helpText = '';
+
+                if (currentUser.role === 'admin') {
+                    // Admin can invite managers and employees
+                    rolesToFetch = 'manager,employee';
+                    helpText = 'As Admin, you can invite managers and employees';
+                } else if (currentUser.role === 'manager') {
+                    // Manager can only invite employees
+                    rolesToFetch = 'employee';
+                    helpText = 'As Manager, you can only invite employees';
+                } else {
+                    // Employee (if applicable)
+                    rolesToFetch = 'employee';
+                    helpText = 'Select employees to invite';
+                }
+
+                document.getElementById('participantHelp').textContent = helpText;
+
+                // Fetch users by role
+                const res = await fetch(`/api/users/by-role?roles=${rolesToFetch}`, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+
+                const data = await res.json();
+                const users = data.data || [];
+
+                console.log(`👥 Loaded ${users.length} potential participants`);
+
+                // Render participant checkboxes
+                const participantsList = document.getElementById('participantsList');
+
+                if (users.length === 0) {
+                    participantsList.innerHTML = '<p style="text-align: center; color: #999;">No users available</p>';
+                } else {
+                    participantsList.innerHTML = users.map(user => `
+                        <label style="display: flex; align-items: center; gap: 8px; padding: 5px; cursor: pointer; border-radius: 4px; transition: background 0.2s;"
+                               onmouseover="this.style.background='#e8f5e9'" onmouseout="this.style.background='transparent'">
+                            <input type="checkbox" name="participant" value="${user._id}" style="cursor: pointer;">
+                            <span style="flex: 1;">
+                                <strong>${user.name}</strong>
+                                <small style="color: #666; display: block;">${user.role} - ${user.department || 'N/A'}</small>
+                            </span>
+                        </label>
+                    `).join('');
+                }
+
+            } catch (err) {
+                console.error('❌ Error loading participants:', err);
+                document.getElementById('participantsList').innerHTML =
+                    '<p style="text-align: center; color: #e74c3c;">Error loading participants</p>';
+            }
+        }
+
+        function closeCreateMeetingModal() {
+            document.getElementById('createMeetingModal').style.display = 'none';
+        }
+
+        async function createMeetingAdmin(event) {
+            event.preventDefault();
+            try {
+                const title = document.getElementById('meetingTitle').value;
+                const dateTime = document.getElementById('meetingDateTime').value;
+                const duration = parseInt(document.getElementById('meetingDuration').value);
+                const meetingType = document.getElementById('meetingType').value;
+                const agenda = document.getElementById('meetingAgenda').value;
+                const location = document.getElementById('meetingLocation').value;
+
+                // Get selected participants
+                const participantCheckboxes = document.querySelectorAll('input[name="participant"]:checked');
+                const participants = Array.from(participantCheckboxes).map(cb => cb.value);
+
+                console.log('📞 Creating meeting with', participants.length, 'participants');
+                console.log('📞 Request data:', {
+                    title,
+                    dateTime,
+                    duration,
+                    meetingType,
+                    agenda,
+                    location,
+                    participants
+                });
+
+                if (participants.length === 0) {
+                    console.warn('⚠️ No participants selected, but proceeding...');
+                }
+
+                const response = await fetch('/api/meetings-v2', {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        title,
+                        startTime: new Date(dateTime).toISOString(),
+                        duration,
+                        meetingType,
+                        agenda,
+                        location,
+                        participants
+                    })
+                });
+
+                console.log('📞 Response status:', response.status);
+                const data = await response.json();
+                console.log('📞 Response data:', data);
+
+                if (!response.ok) {
+                    console.error('❌ Server returned error:', data);
+                    throw new Error(data.message || 'Failed to create meeting');
+                }
+
+                showAlert('✅ Meeting scheduled successfully' + (participants.length > 0 ? ' with ' + participants.length + ' participants' : ''), 'success');
+                closeCreateMeetingModal();
+                document.getElementById('createMeetingForm').reset();
+                loadMeetingsAdmin();
+            } catch (err) {
+                console.error('❌ Error creating meeting:', err);
+                showAlert('❌ Error: ' + err.message, 'error');
+            }
+        }
+
+        // Load feedback threads
+        let allAdminFeedback = [];
+        let currentThreadId = null;
+
+        async function loadFeedbackAdmin() {
+            try {
+                const res = await fetch('/api/feedback-threads/threads/all', {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+                const data = await res.json();
+                const threads = data.data || [];
+                allAdminFeedback = threads;
+
+                let html = '';
+                if (threads.length === 0) {
+                    html = '<p style="text-align:center; color: #7f8c8d;">No feedback threads</p>';
+                } else {
+                    html = '<table class="table"><thead><tr><th>Thread ID</th><th>Subject</th><th>Category</th><th>Status</th><th>Participants</th><th>Last Message</th><th>Action</th></tr></thead><tbody>';
+                    threads.forEach(thread => {
+                        html += `<tr>
+                            <td>#${thread._id.slice(-6)}</td>
+                            <td>${thread.title}</td>
+                            <td><span class="badge badge-info">${thread.tag || 'General'}</span></td>
+                            <td><span class="badge badge-${thread.status === 'resolved' ? 'success' : thread.status === 'closed' ? 'danger' : 'warning'}">${thread.status}</span></td>
+                            <td>From: ${thread.sender?.name || 'Unknown'}<br>To: ${thread.receiver?.name || 'Unknown'}</td>
+                            <td>${thread.lastMessageAt ? new Date(thread.lastMessageAt).toLocaleString() : '-'}</td>
+                            <td>
+                                <button class="btn btn-approve btn-sm" onclick="viewAdminThread('${thread._id}')">View</button>
+                            </td>
+                        </tr>`;
+                    });
+                    html += '</tbody></table>';
+                }
+                document.getElementById('allFeedbackThreadsAdmin').innerHTML = html;
+            } catch (err) {
+                console.error('Error loading feedback:', err);
+                document.getElementById('allFeedbackThreadsAdmin').innerHTML = '<p style="text-align:center; color: #e74c3c;">Error loading threads</p>';
+            }
+        }
+
+        async function viewAdminThread(threadId) {
+            try {
+                currentThreadId = threadId;
+                const response = await fetch(`/api/feedback-threads/thread/${threadId}/messages`, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+                const data = await response.json();
+                const messages = data.data || data || [];
+
+                const thread = allAdminFeedback.find(t => t._id === threadId);
+
+                document.getElementById('viewThreadTitleAdmin').textContent = thread?.title || 'Thread';
+                document.getElementById('viewThreadParticipantsAdmin').textContent =
+                    `From: ${thread?.sender?.name || 'Unknown'} | To: ${thread?.receiver?.name || 'Unknown'}`;
+
+                let html = '';
+                if (messages.length === 0) {
+                    html = '<div style="text-align:center;color:#7f8c8d;padding:20px;">No messages yet</div>';
+                } else {
+                    messages.forEach(m => {
+                        html += `
+                            <div style="padding: 15px; margin-bottom: 10px; background: #f8f9fa; border-radius: 5px; border-left: 3px solid #e74c3c;">
+                                <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                                    <strong style="color: #2c3e50;">${m.sender?.name || 'Unknown'}</strong>
+                                    <span style="color: #7f8c8d; font-size: 12px;">${new Date(m.createdAt).toLocaleString()}</span>
+                                </div>
+                                <div style="color: #34495e;">${m.message}</div>
+                            </div>
+                        `;
+                    });
+                }
+                document.getElementById('threadMessagesContainerAdmin').innerHTML = html;
+                document.getElementById('viewThreadModalAdmin').classList.add('show');
+            } catch (err) {
+                console.error('Error viewing thread:', err);
+                alert('Error loading thread messages');
+            }
+        }
+
+        function closeViewAdminThread() {
+            document.getElementById('viewThreadModalAdmin').classList.remove('show');
+            currentThreadId = null;
+            document.getElementById('replyMessageAdmin').value = '';
+        }
+
+        async function sendAdminReply() {
+            const message = document.getElementById('replyMessageAdmin').value.trim();
+            if (!message) {
+                alert('Please enter a message');
+                return;
+            }
+
+            try {
+                const res = await fetch(`/api/feedback-threads/thread/${currentThreadId}/reply`, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        message
+                    })
+                });
+
+                const data = await res.json();
+
+                if (!res.ok) {
+                    throw new Error(data.message || 'Failed to send reply');
+                }
+
+                document.getElementById('replyMessageAdmin').value = '';
+                await viewAdminThread(currentThreadId);
+            } catch (err) {
+                console.error('Error sending reply:', err);
+                alert('Error sending reply: ' + err.message);
+            }
+        }
+
+        async function showCreateThreadModalAdmin() {
+            document.getElementById('createThreadModalAdmin').classList.add('show');
+
+            // Load recipients (managers and employees only)
+            try {
+                const res = await fetch('/api/feedback-threads/recipients', {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+                const data = await res.json();
+                const recipients = data.data || [];
+
+                const recipientsList = document.getElementById('recipientsListAdmin');
+                if (recipients.length === 0) {
+                    recipientsList.innerHTML = '<p style="color: #e74c3c;">No recipients available</p>';
+                } else {
+                    recipientsList.innerHTML = recipients.map(user => `
+                        <label style="display: flex; align-items: center; gap: 8px; padding: 5px; cursor: pointer;">
+                            <input type="checkbox" name="recipient" value="${user._id}" style="cursor: pointer;">
+                            <span><strong>${user.name}</strong> <small style="color: #7f8c8d;">(${user.role}${user.department ? ' - ' + user.department : ''})</small></span>
+                        </label>
+                    `).join('');
+                }
+            } catch (err) {
+                console.error('Error loading recipients:', err);
+                document.getElementById('recipientsListAdmin').innerHTML = '<p style="color: #e74c3c;">Error loading recipients</p>';
+            }
+        }
+
+        function closeCreateThreadModalAdmin() {
+            document.getElementById('createThreadModalAdmin').classList.remove('show');
+            document.getElementById('createThreadFormAdmin').reset();
+        }
+
+        async function createThreadAdmin(event) {
+            event.preventDefault();
+            const formData = new FormData(event.target);
+
+            // Get selected recipients
+            const recipientCheckboxes = document.querySelectorAll('#createThreadModalAdmin input[name="recipient"]:checked');
+            const recipients = Array.from(recipientCheckboxes).map(cb => cb.value);
+
+            if (recipients.length === 0) {
+                alert('❌ Please select at least one recipient');
+                return;
+            }
+
+            const data = {
+                subject: formData.get('subject'),
+                category: formData.get('category'),
+                priority: formData.get('priority'),
+                message: formData.get('message'),
+                recipients: recipients
+            };
+
+            console.log('📩 Creating thread with data:', data);
+
+            try {
+                const res = await fetch('/api/feedback-threads/thread/new', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify(data)
+                });
+
+                const result = await res.json();
+
+                if (res.ok) {
+                    alert(`✅ Thread Created with ${recipients.length} recipient(s)!`);
+                    closeCreateThreadModalAdmin();
+                    loadFeedbackAdmin();
+                } else {
+                    alert('❌ Error: ' + result.message);
+                    console.error('Create thread error:', result);
+                }
+            } catch (err) {
+                console.error('Error creating thread:', err);
+                alert('❌ Error creating thread');
+            }
+        }
+
+        async function viewThread(id) {
+            window.location.href = `/frontend/feedback.html?thread=${id}`;
+        }
+
+        async function closeThread(id) {
+            if (!confirm('Close this feedback thread?')) return;
+            try {
+                await fetch(`/api/feedback-threads/${id}/close`, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+                showAlert('✅ Thread closed', 'success');
+                loadFeedbackAdmin();
+            } catch (err) {
+                showAlert('❌ Error: ' + err.message, 'error');
+            }
+        }
+
+        // Export data function
+        // Load analytics with Chart.js
+        let analyticsCharts = {};
+
+        async function loadAnalytics() {
+            try {
+                console.log('📊 Loading system analytics...');
+
+                // Destroy existing charts
+                Object.values(analyticsCharts).forEach(chart => {
+                    if (chart) chart.destroy();
+                });
+                analyticsCharts = {};
+
+                // Fetch analytics data with individual error handling
+                let projects = [];
+                let tasks = [];
+                let attendance = [];
+                let leaves = [];
+                let timesheets = [];
+                let meetings = [];
+
+                try {
+                    projects = await api('/projects');
+                    console.log('✅ Projects loaded:', projects?.length);
+                } catch (err) {
+                    console.error('❌ Failed to load projects:', err.message);
+                }
+
+                try {
+                    tasks = await api('/tasks');
+                    console.log('✅ Tasks loaded:', tasks?.length);
+                } catch (err) {
+                    console.error('❌ Failed to load tasks:', err.message);
+                }
+
+                try {
+                    attendance = await api('/attendance?limit=100');
+                    console.log('✅ Attendance loaded:', attendance?.length);
+                } catch (err) {
+                    console.error('❌ Failed to load attendance:', err.message);
+                }
+
+                try {
+                    leaves = await api('/leave');
+                    console.log('✅ Leaves loaded:', leaves?.length);
+                } catch (err) {
+                    console.error('❌ Failed to load leaves:', err.message);
+                }
+
+                try {
+                    timesheets = await api('/timesheets');
+                    console.log('✅ Timesheets loaded:', timesheets?.length);
+                } catch (err) {
+                    console.error('❌ Failed to load timesheets:', err.message);
+                }
+
+                try {
+                    meetings = await api('/meetings-v2');
+                    console.log('✅ Meetings loaded:', meetings?.length);
+                } catch (err) {
+                    console.error('❌ Failed to load meetings:', err.message);
+                    // Try alternative endpoint
+                    try {
+                        meetings = await api('/meetings');
+                        console.log('✅ Meetings loaded from /meetings:', meetings?.length);
+                    } catch (err2) {
+                        console.error('❌ Failed to load from /meetings too:', err2.message);
+                    }
+                }
+
+                console.log('📊 Data loaded successfully');
+
+                // Project distribution
+                const projectData = projects.data || projects || [];
+                const projectCanvas = document.getElementById('projectChart');
+                if (projectCanvas) {
+                    if (analyticsCharts.project) {
+                        analyticsCharts.project.destroy();
+                        analyticsCharts.project = null;
+                    }
+                    if (projectData.length > 0) {
+                        analyticsCharts.project = new Chart(projectCanvas, {
+                            type: 'pie',
+                            data: {
+                                labels: projectData.map(p => p.name),
+                                datasets: [{
+                                    data: projectData.map(p => (p.employees || []).length),
+                                    backgroundColor: ['#3498db', '#e74c3c', '#2ecc71', '#f39c12', '#9b59b6', '#1abc9c']
+                                }]
+                            },
+                            options: {
+                                responsive: true,
+                                plugins: {
+                                    legend: {
+                                        position: 'bottom'
+                                    }
+                                }
+                            }
+                        });
+                    } else {
+                        projectCanvas.parentElement.innerHTML = '<h3>Project Distribution</h3><p style="text-align:center;color:#7f8c8d;padding:40px;">No projects available</p>';
+                    }
+                }
+
+                // Task status
+                const taskData = tasks.data || tasks || [];
+                const taskStatuses = {};
+                taskData.forEach(t => {
+                    (t.assignments || []).forEach(a => {
+                        taskStatuses[a.status] = (taskStatuses[a.status] || 0) + 1;
+                    });
+                });
+                const taskCanvas = document.getElementById('taskStatusChart');
+                if (taskCanvas) {
+                    if (analyticsCharts.task) {
+                        analyticsCharts.task.destroy();
+                        analyticsCharts.task = null;
+                    }
+                    if (Object.keys(taskStatuses).length > 0) {
+                        analyticsCharts.task = new Chart(taskCanvas, {
+                            type: 'doughnut',
+                            data: {
+                                labels: Object.keys(taskStatuses),
+                                datasets: [{
+                                    data: Object.values(taskStatuses),
+                                    backgroundColor: ['#3498db', '#f39c12', '#2ecc71', '#e74c3c', '#9b59b6']
+                                }]
+                            },
+                            options: {
+                                responsive: true,
+                                plugins: {
+                                    legend: {
+                                        position: 'bottom'
+                                    }
+                                }
+                            }
+                        });
+                    }
+                }
+
+                // Attendance trend
+                const attendanceData = attendance.data || attendance || [];
+                console.log('📅 Processing attendance data:', attendanceData.length, 'records');
+
+                const last7Days = [...Array(7)].map((_, i) => {
+                    const d = new Date();
+                    d.setDate(d.getDate() - i);
+                    return d.toISOString().split('T')[0];
+                }).reverse();
+
+                const attendanceCounts = last7Days.map(date => {
+                    const count = attendanceData.filter(a => {
+                        const aDate = new Date(a.date).toISOString().split('T')[0];
+                        return aDate === date && a.status === 'checked_out';
+                    }).length;
+                    console.log(`  ${date}: ${count} present`);
+                    return count;
+                });
+
+                const attendanceCanvas = document.getElementById('attendanceTrendChart');
+                if (attendanceCanvas) {
+                    if (analyticsCharts.attendance) {
+                        analyticsCharts.attendance.destroy();
+                        analyticsCharts.attendance = null;
+                    }
+                    if (attendanceData.length > 0) {
+                        analyticsCharts.attendance = new Chart(attendanceCanvas, {
+                            type: 'line',
+                            data: {
+                                labels: last7Days.map(d => new Date(d).toLocaleDateString('en-US', {
+                                    month: 'short',
+                                    day: 'numeric'
+                                })),
+                                datasets: [{
+                                    label: 'Employees Present',
+                                    data: attendanceCounts,
+                                    borderColor: '#2ecc71',
+                                    backgroundColor: 'rgba(46, 204, 113, 0.1)',
+                                    tension: 0.4,
+                                    fill: true
+                                }]
+                            },
+                            options: {
+                                responsive: true,
+                                maintainAspectRatio: true,
+                                scales: {
+                                    y: {
+                                        beginAtZero: true,
+                                        ticks: {
+                                            stepSize: 1
+                                        }
+                                    }
+                                },
+                                plugins: {
+                                    legend: {
+                                        display: true,
+                                        position: 'bottom'
+                                    }
+                                }
+                            }
+                        });
+                        console.log('✅ Attendance chart created');
+                    } else {
+                        attendanceCanvas.parentElement.innerHTML = '<h3 style="color: #2c3e50; margin-bottom: 8px;">📅 Attendance Trends (Last 7 Days)</h3><p style="font-size: 13px; color: #7f8c8d; margin-bottom: 15px;">Daily attendance count for the past week. Track employee presence patterns and identify trends.</p><p style="text-align:center;color:#e74c3c;padding:40px;font-weight:600;">📭 No attendance data available</p>';
+                    }
+                }
+
+                // Leave utilization
+                const leaveRecords = (leaves.data || leaves || []).filter(l => l.status === 'approved' || l.status === 'approved_final');
+                console.log('🏖️ Processing leave data:', leaveRecords.length, 'approved leaves');
+
+                const leaveTypes = {};
+                leaveRecords.forEach(l => {
+                    const type = l.leaveType || 'Unknown';
+                    leaveTypes[type] = (leaveTypes[type] || 0) + (l.numberOfDays || 1);
+                });
+
+                console.log('🏖️ Leave types:', leaveTypes);
+
+                const leaveCanvas = document.getElementById('leaveChart');
+                if (leaveCanvas) {
+                    if (analyticsCharts.leave) {
+                        analyticsCharts.leave.destroy();
+                        analyticsCharts.leave = null;
+                    }
+                    if (Object.keys(leaveTypes).length > 0) {
+                        analyticsCharts.leave = new Chart(leaveCanvas, {
+                            type: 'bar',
+                            data: {
+                                labels: Object.keys(leaveTypes).map(t => {
+                                    const labels = {
+                                        'CL': 'Casual Leave',
+                                        'SL': 'Sick Leave',
+                                        'EL': 'Earned Leave',
+                                        'WFH': 'Work From Home',
+                                        'PERMISSION': 'Permission'
+                                    };
+                                    return labels[t] || t;
+                                }),
+                                datasets: [{
+                                    label: 'Days Used',
+                                    data: Object.values(leaveTypes),
+                                    backgroundColor: ['#f39c12', '#e74c3c', '#3498db', '#2ecc71', '#9b59b6']
+                                }]
+                            },
+                            options: {
+                                responsive: true,
+                                maintainAspectRatio: true,
+                                scales: {
+                                    y: {
+                                        beginAtZero: true,
+                                        ticks: {
+                                            stepSize: 1
+                                        }
+                                    }
+                                },
+                                plugins: {
+                                    legend: {
+                                        display: false
+                                    }
+                                }
+                            }
+                        });
+                        console.log('✅ Leave chart created');
+                    } else {
+                        leaveCanvas.parentElement.innerHTML = '<h3 style="color: #2c3e50; margin-bottom: 8px;">🏖️ Leave Utilization</h3><p style="font-size: 13px; color: #7f8c8d; margin-bottom: 15px;">Total days taken by leave type (Sick, Vacation, Personal, etc.). Monitor leave usage across the organization.</p><p style="text-align:center;color:#e74c3c;padding:40px;font-weight:600;">📭 No leave data available</p>';
+                    }
+                }
+
+                // Timesheet approval
+                const tsData = timesheets.data || timesheets || [];
+                const tsStatuses = {};
+                tsData.forEach(ts => {
+                    tsStatuses[ts.status] = (tsStatuses[ts.status] || 0) + 1;
+                });
+                const timesheetCanvas = document.getElementById('timesheetChart');
+                if (timesheetCanvas) {
+                    if (analyticsCharts.timesheet) {
+                        analyticsCharts.timesheet.destroy();
+                        analyticsCharts.timesheet = null;
+                    }
+                    if (Object.keys(tsStatuses).length > 0) {
+                        analyticsCharts.timesheet = new Chart(timesheetCanvas, {
+                            type: 'pie',
+                            data: {
+                                labels: Object.keys(tsStatuses),
+                                datasets: [{
+                                    data: Object.values(tsStatuses),
+                                    backgroundColor: ['#2ecc71', '#f39c12', '#e74c3c', '#3498db']
+                                }]
+                            },
+                            options: {
+                                responsive: true,
+                                plugins: {
+                                    legend: {
+                                        position: 'bottom'
+                                    }
+                                }
+                            }
+                        });
+                    } else {
+                        timesheetCanvas.parentElement.innerHTML = '<h3 style="color: #2c3e50; margin-bottom: 8px;">⏱️ Timesheet Approval Rate</h3><p style="font-size: 13px; color: #7f8c8d; margin-bottom: 15px;">Status distribution of timesheets (Pending, Approved, Rejected). Track timesheet processing efficiency.</p><p style="text-align:center;color:#e74c3c;padding:40px;font-weight:600;">📭 No timesheet data available</p>';
+                    }
+                }
+
+                // Meeting participation
+                const meetingData = meetings.data || meetings || [];
+                console.log('📞 Processing meeting data:', meetingData.length, 'meetings');
+
+                const participationCounts = meetingData.map(m => {
+                    // Check both attendance array and recipients array
+                    const attendees = (m.attendance || []).length;
+                    const recipients = (m.recipients || []).length;
+                    const count = Math.max(attendees, recipients);
+
+                    console.log(`  Meeting: "${m.title}" - ${count} participants`);
+
+                    return {
+                        title: m.title?.substring(0, 20) || 'Meeting',
+                        count: count
+                    };
+                }).filter(p => p.count > 0).slice(0, 10); // Only show meetings with participants
+
+                console.log('📞 Participation counts:', participationCounts);
+
+                const meetingCanvas = document.getElementById('meetingChart');
+                if (meetingCanvas) {
+                    if (analyticsCharts.meeting) {
+                        analyticsCharts.meeting.destroy();
+                        analyticsCharts.meeting = null;
+                    }
+                    if (participationCounts.length > 0) {
+                        analyticsCharts.meeting = new Chart(meetingCanvas, {
+                            type: 'bar',
+                            data: {
+                                labels: participationCounts.map(p => p.title),
+                                datasets: [{
+                                    label: 'Participants',
+                                    data: participationCounts.map(p => p.count),
+                                    backgroundColor: '#9b59b6'
+                                }]
+                            },
+                            options: {
+                                responsive: true,
+                                maintainAspectRatio: true,
+                                scales: {
+                                    y: {
+                                        beginAtZero: true,
+                                        ticks: {
+                                            stepSize: 1
+                                        }
+                                    }
+                                },
+                                plugins: {
+                                    legend: {
+                                        display: false
+                                    }
+                                }
+                            }
+                        });
+                        console.log('✅ Meeting chart created');
+                    } else {
+                        meetingCanvas.parentElement.innerHTML = '<h3 style="color: #2c3e50; margin-bottom: 8px;">📞 Meeting Participation</h3><p style="font-size: 13px; color: #7f8c8d; margin-bottom: 15px;">Number of attendees per meeting. Analyze meeting engagement and participation rates.</p><p style="text-align:center;color:#e74c3c;padding:40px;font-weight:600;">📭 No meeting data available</p>';
+                    }
+                }
+
+                console.log('✅ System analytics loaded successfully');
+            } catch (err) {
+                console.error('❌ Error loading analytics:', err);
+                alert('Failed to load analytics: ' + err.message);
+            }
+        }
+
+        window.addEventListener('DOMContentLoaded', function () {
+            loadAnalytics();
+        }); // ========== MANAGER ANALYTICS REPORTS FUNCTIONS ==========
+
+        async function loadManagerAnalyticsReports() {
+            try {
+                console.log('📊 Loading analytics reports from managers...');
+                const response = await api('/analytics-report/admin/all');
+                const reports = response.data || response || [];
+                console.log('📊 Reports received:', reports);
+
+                const container = document.getElementById('managerReportsContainer');
+
+                if (!container) {
+                    console.error('❌ managerReportsContainer element not found');
+                    return;
+                }
+
+                if (!reports || reports.length === 0) {
+                    container.innerHTML = `
+                        <div style="text-align: center; padding: 60px 20px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 12px; color: white;">
+                            <div style="font-size: 64px; margin-bottom: 20px;">📊</div>
+                            <h3 style="margin-bottom: 15px;">No Reports Available Yet</h3>
+                            <p style="opacity: 0.9; max-width: 500px; margin: 0 auto;">
+                                Managers haven't sent any analytics reports yet. 
+                                Reports will appear here once managers generate and send them from their analytics tab.
+                            </p>
+                        </div>
+                    `;
+                    return;
+                }
+
+                let html = '<div style="display: grid; gap: 20px;">';
+
+                reports.forEach(report => {
+                    const statusColor = report.status === 'downloaded' ? '#10b981' : report.status === 'viewed' ? '#3b82f6' : '#f59e0b';
+                    const statusText = report.status === 'downloaded' ? '💾 Downloaded' : report.status === 'viewed' ? '👀 Viewed' : '📤 New';
+
+                    html += `
+                        <div style="border: 1px solid #ddd; padding: 20px; border-radius: 8px; background: white; border-left: 4px solid ${statusColor};">
+                            <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 12px;">
+                                <div style="flex: 1;">
+                                    <h3 style="margin: 0 0 8px 0;">${report.title || 'Analytics Report'}</h3>
+                                    <p style="color: #7f8c8d; font-size: 14px; margin: 0;">${report.description || 'No description'}</p>
+                                </div>
+                                <span style="background: ${statusColor}; color: white; padding: 4px 12px; border-radius: 12px; font-size: 12px; font-weight: 600;">
+                                    ${statusText}
+                                </span>
+                            </div>
+                            
+                            <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; margin: 15px 0; padding: 15px; background: #f9f9f9; border-radius: 8px;">
+                                <div>
+                                    <div style="font-size: 12px; color: #7f8c8d;">Manager</div>
+                                    <div style="font-weight: 600;">${report.manager?.name || 'Unknown'}</div>
+                                    <div style="font-size: 11px; color: #95a5a6;">${report.manager?.department || ''}</div>
+                                </div>
+                                <div>
+                                    <div style="font-size: 12px; color: #7f8c8d;">Date Range</div>
+                                    <div style="font-weight: 600;">${new Date(report.dateRange.startDate).toLocaleDateString()}</div>
+                                    <div style="font-size: 11px; color: #95a5a6;">to ${new Date(report.dateRange.endDate).toLocaleDateString()}</div>
+                                </div>
+                                <div>
+                                    <div style="font-size: 12px; color: #7f8c8d;">Sent At</div>
+                                    <div style="font-weight: 600;">${new Date(report.sentAt).toLocaleDateString()}</div>
+                                    <div style="font-size: 11px; color: #95a5a6;">${new Date(report.sentAt).toLocaleTimeString()}</div>
+                                </div>
+                            </div>
+                            
+                            <div style="display: flex; gap: 10px;">
+                                <button class="btn" onclick="viewManagerReport('${report._id}')" style="flex: 1; background: #3498db;">
+                                    📊 View Report
+                                </button>
+                                <button class="btn" onclick="downloadManagerReport('${report._id}')" style="flex: 1; background: #2ecc71;">
+                                    💾 Download
+                                </button>
+                            </div>
+                        </div>
+                    `;
+                });
+
+                html += '</div>';
+                container.innerHTML = html;
+
+            } catch (err) {
+                console.error('❌ Load manager analytics reports error:', err);
+                const container = document.getElementById('managerReportsContainer');
+                if (container) {
+                    container.innerHTML = `
+                        <p style="color: #e74c3c; text-align: center; padding: 40px;">
+                            Failed to load reports<br>
+                            <small style="color: #7f8c8d;">${err.message || 'Unknown error'}</small>
+                        </p>`;
+                }
+            }
+        }
+
+        async function viewManagerReport(reportId) {
+            try {
+                console.log('📊 Fetching report:', reportId);
+                const response = await api(`/analytics-report/admin/view/${reportId}`);
+                const report = response.data || response;
+
+                console.log('📊 Full Report Data:', report);
+                console.log('📊 Manager:', report.manager);
+                console.log('📊 Date Range:', report.dateRange);
+                console.log('📊 Data Object:', report.data);
+                console.log('📊 Timesheets:', report.data?.timesheets);
+                console.log('📊 Rankings:', report.data?.rankings);
+
+                // Extract data safely
+                const manager = report.manager || {};
+                const dateRange = report.dateRange || {};
+                const data = report.data || {};
+                const timesheets = data.timesheets || {};
+                const rankings = data.rankings || {};
+                const topPerformers = rankings.topPerformers || [];
+                const byProject = timesheets.byProject || [];
+
+                // Format functions
+                const formatDate = (dateStr) => {
+                    if (!dateStr) return 'N/A';
+                    try {
+                        return new Date(dateStr).toLocaleDateString();
+                    } catch {
+                        return 'N/A';
+                    }
+                };
+
+                const formatDateTime = (dateStr) => {
+                    if (!dateStr) return 'N/A';
+                    try {
+                        return new Date(dateStr).toLocaleString();
+                    } catch {
+                        return 'N/A';
+                    }
+                };
+
+                // Create detailed modal
+                const modal = document.createElement('div');
+                modal.className = 'modal';
+                modal.style.display = 'flex';
+                modal.style.position = 'fixed';
+                modal.style.top = '0';
+                modal.style.left = '0';
+                modal.style.width = '100%';
+                modal.style.height = '100%';
+                modal.style.background = 'rgba(0,0,0,0.5)';
+                modal.style.alignItems = 'center';
+                modal.style.justifyContent = 'center';
+                modal.style.zIndex = '10000';
+
+                modal.innerHTML = `
+                    <div style="background: white; border-radius: 12px; width: 90%; max-width: 1000px; max-height: 90vh; overflow-y: auto; padding: 30px; color: #2c3e50;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 2px solid #3498db; padding-bottom: 15px;">
+                            <h2 style="margin: 0; color: #2c3e50;">📊 ${report.title || 'Analytics Report'}</h2>
+                            <button onclick="this.closest('.modal').remove()" style="background: #e74c3c; color: white; border: none; padding: 8px 15px; border-radius: 6px; cursor: pointer; font-weight: bold;">✕ Close</button>
+                        </div>
+                        
+                        <!-- Report Header -->
+                        <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 20px; border-radius: 8px; margin-bottom: 20px;">
+                            <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px;">
+                                <div>
+                                    <div style="font-size: 12px; opacity: 0.9;">Manager</div>
+                                    <div style="font-size: 18px; font-weight: 700;">${manager.name || 'Unknown'}</div>
+                                    <div style="font-size: 12px; opacity: 0.8;">${manager.email || ''}</div>
+                                    <div style="font-size: 12px; opacity: 0.8;">${manager.department || ''}</div>
+                                </div>
+                                <div>
+                                    <div style="font-size: 12px; opacity: 0.9;">Report Period</div>
+                                    <div style="font-size: 16px; font-weight: 700;">${formatDate(dateRange.startDate)} - ${formatDate(dateRange.endDate)}</div>
+                                    <div style="font-size: 12px; opacity: 0.8; margin-top: 8px;">Sent: ${formatDateTime(report.sentAt)}</div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Timesheet Analytics -->
+                        <div style="background: #ecf0f1; padding: 20px; border-radius: 8px; margin-bottom: 15px;">
+                            <h3 style="margin: 0 0 15px 0; color: #2c3e50;">⏱️ Timesheet Analytics</h3>
+                            <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px;">
+                                <div style="background: white; padding: 15px; border-radius: 6px; text-align: center;">
+                                    <div style="font-size: 28px; font-weight: 700; color: #3498db;">${timesheets.total || 0}</div>
+                                    <div style="font-size: 12px; color: #7f8c8d;">Total Timesheets</div>
+                                </div>
+                                <div style="background: white; padding: 15px; border-radius: 6px; text-align: center;">
+                                    <div style="font-size: 28px; font-weight: 700; color: #2ecc71;">${timesheets.totalHours ? timesheets.totalHours.toFixed(1) : 0}h</div>
+                                    <div style="font-size: 12px; color: #7f8c8d;">Total Hours</div>
+                                </div>
+                                <div style="background: white; padding: 15px; border-radius: 6px; text-align: center;">
+                                    <div style="font-size: 28px; font-weight: 700; color: #f39c12;">${timesheets.approved || 0}</div>
+                                    <div style="font-size: 12px; color: #7f8c8d;">Approved</div>
+                                </div>
+                                <div style="background: white; padding: 15px; border-radius: 6px; text-align: center;">
+                                    <div style="font-size: 28px; font-weight: 700; color: #9b59b6;">${timesheets.pending || 0}</div>
+                                    <div style="font-size: 12px; color: #7f8c8d;">Pending</div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Top Performers -->
+                        <div style="background: #d5f4e6; padding: 20px; border-radius: 8px; margin-bottom: 15px;">
+                            <h3 style="margin: 0 0 15px 0; color: #2c3e50;">🏆 Top Performers</h3>
+                            <table style="width: 100%; border-collapse: collapse;">
+                                <thead>
+                                    <tr style="background: rgba(46, 204, 113, 0.2);">
+                                        <th style="padding: 10px; text-align: left; border-bottom: 2px solid #2ecc71;">Rank</th>
+                                        <th style="padding: 10px; text-align: left; border-bottom: 2px solid #2ecc71;">Employee</th>
+                                        <th style="padding: 10px; text-align: right; border-bottom: 2px solid #2ecc71;">Total Hours</th>
+                                        <th style="padding: 10px; text-align: right; border-bottom: 2px solid #2ecc71;">Timesheets</th>
+                                        <th style="padding: 10px; text-align: right; border-bottom: 2px solid #2ecc71;">Avg Hours</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    ${topPerformers.length > 0 ? topPerformers.map((emp, idx) => `
+                                        <tr style="border-bottom: 1px solid rgba(0,0,0,0.1);">
+                                            <td style="padding: 10px; font-weight: 700;">#${idx + 1}</td>
+                                            <td style="padding: 10px;">${emp.name || 'Unknown'}</td>
+                                            <td style="padding: 10px; text-align: right; font-weight: 600;">${emp.metrics && emp.metrics.totalHours ? emp.metrics.totalHours.toFixed(1) : emp.score || 0}h</td>
+                                            <td style="padding: 10px; text-align: right;">-</td>
+                                            <td style="padding: 10px; text-align: right;">${emp.metrics && emp.metrics.avgHoursPerDay ? emp.metrics.avgHoursPerDay.toFixed(1) : 0}h</td>
+                                        </tr>
+                                    `).join('') : '<tr><td colspan="5" style="padding: 20px; text-align: center; color: #7f8c8d;">No data available</td></tr>'}
+                                </tbody>
+                            </table>
+                        </div>
+                        
+                        <!-- Project Analytics -->
+                        <div style="background: #fff3cd; padding: 20px; border-radius: 8px; margin-bottom: 15px;">
+                            <h3 style="margin: 0 0 15px 0; color: #2c3e50;">🎯 Top Projects</h3>
+                            <table style="width: 100%; border-collapse: collapse;">
+                                <thead>
+                                    <tr style="background: rgba(243, 156, 18, 0.2);">
+                                        <th style="padding: 10px; text-align: left; border-bottom: 2px solid #f39c12;">Project</th>
+                                        <th style="padding: 10px; text-align: right; border-bottom: 2px solid #f39c12;">Total Hours</th>
+                                        <th style="padding: 10px; text-align: right; border-bottom: 2px solid #f39c12;">Percentage</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    ${byProject.length > 0 ? byProject.slice(0, 5).map(proj => `
+                                        <tr style="border-bottom: 1px solid rgba(0,0,0,0.1);">
+                                            <td style="padding: 10px;">${proj.name || 'Unknown'}</td>
+                                            <td style="padding: 10px; text-align: right; font-weight: 600;">${proj.hours ? proj.hours.toFixed(1) : 0}h</td>
+                                            <td style="padding: 10px; text-align: right;">${proj.percentage || 0}%</td>
+                                        </tr>
+                                    `).join('') : '<tr><td colspan="3" style="padding: 20px; text-align: center; color: #7f8c8d;">No data available</td></tr>'}
+                                </tbody>
+                            </table>
+                        </div>
+                        
+                        <div style="margin-top: 20px; text-align: center;">
+                            <button onclick="downloadManagerReport('${reportId}')" style="background: #2ecc71; color: white; border: none; padding: 12px 30px; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 14px;">💾 Download as CSV</button>
+                        </div>
+                    </div>
+                `;
+
+                document.body.appendChild(modal);
+
+                // Reload to update status
+                loadManagerAnalyticsReports();
+
+            } catch (err) {
+                console.error('View report error:', err);
+                alert('❌ Failed to view report: ' + err.message);
+            }
+        }
+
+        async function downloadManagerReport(reportId) {
+            try {
+                console.log('💾 Downloading report:', reportId);
+                const response = await api(`/analytics-report/admin/view/${reportId}`);
+                const report = response.data || response;
+
+                // Generate CSV content
+                let csv = 'Analytics Report\n';
+                csv += `Title,${report.title || 'Untitled Report'}\n`;
+                csv += `Manager,${report.manager?.name || 'Unknown'}\n`;
+                csv += `Department,${report.manager?.department || 'N/A'}\n`;
+                csv += `Email,${report.manager?.email || 'N/A'}\n`;
+                csv += `Period Start,${new Date(report.dateRange?.startDate).toLocaleDateString()}\n`;
+                csv += `Period End,${new Date(report.dateRange?.endDate).toLocaleDateString()}\n`;
+                csv += `Generated,${new Date(report.sentAt).toLocaleString()}\n`;
+                csv += '\n';
+
+                // Timesheet Analytics
+                csv += 'Timesheet Analytics\n';
+                csv += 'Metric,Value\n';
+                csv += `Total Timesheets,${report.timesheetAnalytics?.totalTimesheets || 0}\n`;
+                csv += `Total Hours,${(report.data && report.data.timesheets && report.data.timesheets.totalHours) || 0}\n`;
+                csv += `Approved,${(report.data && report.data.timesheets && report.data.timesheets.approved) || 0}\n`;
+                csv += `Pending,${(report.data && report.data.timesheets && report.data.timesheets.pending) || 0}\n`;
+                csv += `Rejected,${(report.data && report.data.timesheets && report.data.timesheets.rejected) || 0}\n`;
+                csv += '\n';
+
+                // Top Performers
+                csv += 'Top Performers\n';
+                csv += 'Rank,Employee,Total Hours,Avg Hours/Day\n';
+                ((report.data && report.data.rankings && report.data.rankings.topPerformers) || []).forEach((emp, idx) => {
+                    const hours = (emp.metrics && emp.metrics.totalHours) || emp.score || 0;
+                    const avgHours = (emp.metrics && emp.metrics.avgHoursPerDay) || 0;
+                    csv += `${idx + 1},${emp.name || 'Unknown'},${hours.toFixed(1)},${avgHours.toFixed(1)}\n`;
+                });
+                csv += '\n';
+
+                // Needs Improvement
+                if (report.data && report.data.rankings && report.data.rankings.needsImprovement && report.data.rankings.needsImprovement.length > 0) {
+                    csv += 'Needs Improvement\n';
+                    csv += 'Employee,Issues\n';
+                    (report.data.rankings.needsImprovement || []).forEach(emp => {
+                        csv += `${emp.name || 'Unknown'},"${(emp.issues || []).join('; ')}"\n`;
+                    });
+                    csv += '\n';
+                }
+
+                // Project Analytics
+                csv += 'Project Analytics\n';
+                csv += 'Project Name,Total Hours,Percentage\n';
+                ((report.data && report.data.timesheets && report.data.timesheets.byProject) || []).slice(0, 10).forEach(proj => {
+                    csv += `${proj.name || 'Unknown'},${(proj.hours || 0).toFixed(1)},${proj.percentage || 0}%\n`;
+                });
+                csv += '\n';
+
+                // Create download
+                const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+                const link = document.createElement('a');
+                const url = URL.createObjectURL(blob);
+                link.setAttribute('href', url);
+                link.setAttribute('download', `Analytics_Report_${(report.manager && report.manager.name) || 'Unknown'}_${new Date().toISOString().split('T')[0]}.csv`);
+                link.style.visibility = 'hidden';
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+
+                // Mark as downloaded on server
+                await api(`/analytics-report/admin/download/${reportId}`, 'POST');
+
+                alert('✅ Report downloaded successfully as CSV!');
+                loadManagerAnalyticsReports();
+
+            } catch (err) {
+                console.error('Download report error:', err);
+                alert('❌ Failed to download report: ' + err.message);
+            }
+        }
+
+        // ========== PROJECT COMPLETION REVIEW FUNCTIONS ==========
+
+        async function loadPendingProjectReviews() {
+            try {
+                console.log('Loading pending project reviews...');
+                const response = await api('/project-completion/pending-reviews');
+                const projects = response.data || response || [];
+                console.log('Received projects:', projects);
+
+                // Update stats
+                const pendingCount = projects.filter(p => p.status === 'pending_review').length;
+                const reworkCount = projects.filter(p => p.status === 'rework_required').length;
+
+                // Get all approved projects count
+                const allProjects = await api('/project-completion/all');
+                const approvedCount = (allProjects.data || allProjects || []).filter(p => p.status === 'approved').length;
+
+                console.log('Stats:', {
+                    pendingCount,
+                    reworkCount,
+                    approvedCount
+                });
+
+                document.getElementById('adminPendingProjectsCount').textContent = pendingCount;
+                document.getElementById('adminReworkProjectsCount').textContent = reworkCount;
+                document.getElementById('adminApprovedProjectsCount').textContent = approvedCount;
+
+                renderProjectReviews(projects);
+            } catch (err) {
+                console.error('Load project reviews error:', err);
+                document.getElementById('projectReviewsList').innerHTML =
+                    '<tr><td colspan="7" style="text-align: center; color: #e74c3c;">❌ ' + err.message + '</td></tr>';
+            }
+        }
+
+        function renderProjectReviews(projects) {
+            console.log('Rendering projects:', projects);
+            if (!projects || projects.length === 0) {
+                document.getElementById('projectReviewsList').innerHTML =
+                    '<tr><td colspan="7" style="text-align: center; padding: 40px; color: #7f8c8d;"><div style="font-size: 48px; margin-bottom: 10px;">📦</div><div>No pending project reviews</div></td></tr>';
+                return;
+            }
+
+            let html = '';
+            projects.forEach(proj => {
+                console.log('Rendering project:', proj.name, 'ID:', proj.projectId);
+                const managerName = proj.manager?.name || 'Unknown';
+                const managerEmail = proj.manager?.email || '';
+                const submittedAt = proj.submittedAt ? new Date(proj.submittedAt).toLocaleString() : 'N/A';
+                const defectCount = proj.defectCount || 0;
+
+                let statusBadge = '';
+                switch (proj.status) {
+                    case 'pending_review':
+                        statusBadge = '<span class="badge badge-warning">⏳ Pending</span>';
+                        break;
+                    case 'rework_required':
+                        statusBadge = '<span class="badge badge-danger">🔄 Rework Required</span>';
+                        break;
+                    default:
+                        statusBadge = `<span class="badge">${proj.status}</span>`;
+                }
+
+                let proofLinks = '';
+                if (proj.completionProof) {
+                    const proof = proj.completionProof;
+                    proofLinks = '<div style="display: flex; flex-direction: column; gap: 5px;">';
+                    if (proof.githubLink) {
+                        proofLinks += `<a href="${proof.githubLink}" target="_blank" class="btn btn-sm" style="background: #333; color: white;">🔗 GitHub</a>`;
+                    }
+                    if (proof.demoVideoLink) {
+                        proofLinks += `<a href="${proof.demoVideoLink}" target="_blank" class="btn btn-sm" style="background: #e74c3c; color: white;">🎥 Demo</a>`;
+                    }
+                    if (proof.documentationLink) {
+                        proofLinks += `<a href="${proof.documentationLink}" target="_blank" class="btn btn-sm" style="background: #3498db; color: white;">📄 Docs</a>`;
+                    }
+                    if (proof.completionNotes) {
+                        proofLinks += `<button class="btn btn-sm" onclick="viewProjectNotes('${proj.projectId}')" style="background: #95a5a6; color: white;">📝 Notes</button>`;
+                    }
+                    proofLinks += '</div>';
+                } else {
+                    proofLinks = '<span style="color: #7f8c8d;">No proof</span>';
+                }
+
+                let actionButtons = '';
+                if (proj.status === 'pending_review' || proj.status === 'rework_required') {
+                    actionButtons = `
+                        <div style="display: flex; flex-direction: column; gap: 5px;">
+                            <button class="btn btn-sm" onclick="reviewProject('${proj.projectId}', 'approve')" style="background: #27ae60; color: white;">
+                                ✅ Approve
+                            </button>
+                            <button class="btn btn-sm" onclick="reviewProject('${proj.projectId}', 'rework')" style="background: #f39c12; color: white;">
+                                🔄 Rework
+                            </button>
+                            <button class="btn btn-sm" onclick="reviewProject('${proj.projectId}', 'reject')" style="background: #e74c3c; color: white;">
+                                ❌ Reject
+                            </button>
+                        </div>
+                    `;
+                } else {
+                    actionButtons = '<span style="color: #7f8c8d;">-</span>';
+                }
+
+                html += `
+                <tr>
+                    <td>
+                        <strong>${proj.name}</strong><br>
+                        <small style="color: #7f8c8d;">${proj.description || ''}</small>
+                    </td>
+                    <td>
+                        ${managerName}<br>
+                        <small style="color: #7f8c8d;">${managerEmail}</small>
+                    </td>
+                    <td>${statusBadge}</td>
+                    <td>${proofLinks}</td>
+                    <td><small>${submittedAt}</small></td>
+                    <td>${defectCount > 0 ? `<span class="badge badge-danger">${defectCount}</span>` : '-'}</td>
+                    <td>${actionButtons}</td>
+                </tr>`;
+            });
+
+            document.getElementById('projectReviewsList').innerHTML = html;
+        }
+
+        async function viewProjectNotes(projectId) {
+            try {
+                const response = await api('/project-completion/pending-reviews');
+                const projects = response.data || response || [];
+                const project = projects.find(p => String(p.projectId) === String(projectId));
+
+                if (!project || !project.completionProof) {
+                    alert('❌ Project notes not found');
+                    return;
+                }
+
+                const notes = project.completionProof.completionNotes || 'No notes provided';
+                const submittedBy = project.completionProof.submittedBy?.name || 'Unknown';
+                const submittedAt = project.completionProof.submittedAt ?
+                    new Date(project.completionProof.submittedAt).toLocaleString() : 'N/A';
+
+                alert(`📝 Project Completion Notes\n\nProject: ${project.name}\nSubmitted by: ${submittedBy}\nSubmitted at: ${submittedAt}\n\n${notes}`);
+            } catch (err) {
+                console.error('View notes error:', err);
+                alert('❌ Failed to load project notes');
+            }
+        }
+
+        async function reviewProject(projectId, action) {
+            console.log('Review project called:', projectId, action);
+            let defectDescription = '';
+            let comments = '';
+
+            if (action === 'approve') {
+                comments = prompt('✅ Approval Comments (optional):');
+                if (!confirm('Approve this project?')) {
+                    return;
+                }
+            } else if (action === 'rework') {
+                defectDescription = prompt('🔄 Describe defects found and rework required:\n(Be specific about what needs to be fixed)');
+                if (!defectDescription || defectDescription.trim() === '') {
+                    alert('❌ Defect description is required for rework');
+                    return;
+                }
+                comments = prompt('Additional comments (optional):');
+                if (!confirm('Send this project back for rework?')) {
+                    return;
+                }
+            } else if (action === 'reject') {
+                defectDescription = prompt('❌ Reason for rejection:\n(Explain why the project is being rejected)');
+                if (!defectDescription || defectDescription.trim() === '') {
+                    alert('❌ Rejection reason is required');
+                    return;
+                }
+                comments = prompt('Additional comments (optional):');
+                if (!confirm('Reject this project? This is a strong action.')) {
+                    return;
+                }
+            }
+
+            try {
+                console.log('Sending review request:', { projectId, action, defectDescription, comments });
+                const response = await fetch(`/api/project-completion/review/${projectId}`, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        action,
+                        defectDescription: defectDescription?.trim() || null,
+                        comments: comments?.trim() || null
+                    })
+                });
+
+                const data = await response.json();
+                console.log('Review response:', response.status, data);
+
+                if (response.ok) {
+                    let message = '';
+                    if (action === 'approve') {
+                        message = '✅ Project approved! Manager has been notified.';
+                    } else if (action === 'rework') {
+                        message = '🔄 Project sent for rework. Manager has been notified.';
+                    } else {
+                        message = '❌ Project rejected. Manager has been notified.';
+                    }
+                    alert(message);
+                    loadPendingProjectReviews(); // Reload
+                } else {
+                    alert('❌ ' + (data.message || 'Failed to review project'));
+                }
+            } catch (err) {
+                console.error('Review project error:', err);
+                alert('❌ Failed to submit review: ' + err.message);
+            }
+        }
+
+        // ========== END PROJECT REVIEW FUNCTIONS ==========
+    </script>
+    
+    <!-- AI Chatbot -->
+    <link rel="stylesheet" href="chatbot.css">
+    <script src="chatbot.js"></script>
+</body>
+
+</html>

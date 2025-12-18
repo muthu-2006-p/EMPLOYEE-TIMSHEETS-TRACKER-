@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Feedback — ETT</title>
+    <link rel="stylesheet" href="assets/css/style.css">
+    <link rel="stylesheet" href="assets/css/dashboard.css">
+</head>
+
+<body class="bg-gradient">
+    <nav class="navbar">
+        <div class="nav-brand">
+            <img src="assets/images/logo.svg" alt="logo" class="logo-sm">
+            <span>Send Feedback</span>
+        </div>
+        <a href="dashboard_employee.html" class="nav-link">Back</a>
+    </nav>
+
+    <main class="dashboard">
+        <div class="card">
+            <h2>Send Feedback to Manager</h2>
+            <form id="feedbackForm" class="form">
+                <div class="input-group">
+                    <label>To (manager email)</label>
+                    <input type="email" id="to" required>
+                </div>
+                <div class="input-group">
+                    <label>Subject</label>
+                    <input type="text" id="subject" required>
+                </div>
+                <div class="input-group">
+                    <label>Message</label>
+                    <textarea id="message" rows="6" required></textarea>
+                </div>
+                <button type="submit" class="btn primary btn-animated">Send Feedback</button>
+            </form>
+            <div id="fbResult"></div>
+        </div>
+    </main>
+
+    <script src="assets/js/auth.js"></script>
+    <script>
+        document.getElementById('feedbackForm').addEventListener('submit', async(e) => {
+            e.preventDefault();
+            const to = document.getElementById('to').value;
+            const subject = document.getElementById('subject').value;
+            const message = document.getElementById('message').value;
+            const res = await apiCall('/feedback', 'POST', {
+                to,
+                subject,
+                message
+            });
+            const out = document.getElementById('fbResult');
+            if (res._id) {
+                out.innerHTML = '<p class="success">Feedback sent successfully.</p>';
+                document.getElementById('feedbackForm').reset();
+            } else {
+                out.innerHTML = `<p class="error">Failed: ${res.message || 'unknown'}</p>`;
+            }
+        });
+    </script>
+</body>
+
+</html>

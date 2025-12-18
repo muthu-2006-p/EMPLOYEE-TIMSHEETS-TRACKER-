@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Profile — ETT</title>
+    <link rel="stylesheet" href="assets/css/style.css">
+    <link rel="stylesheet" href="assets/css/dashboard.css">
+</head>
+
+<body class="bg-gradient">
+    <nav class="navbar">
+        <div class="nav-brand">
+            <img src="assets/images/logo.svg" alt="logo" class="logo-sm">
+            <span>Profile</span>
+        </div>
+        <div class="nav-menu">
+            <a href="dashboard_employee.html" class="nav-link">Back</a>
+            <button class="btn small" onclick="logout()">Logout</button>
+        </div>
+    </nav>
+
+    <main class="dashboard">
+        <div class="card profile-card">
+            <img id="profilePhoto" class="profile-photo" src="assets/images/avatar-placeholder.png" alt="avatar">
+            <h2 id="profileName">User Name</h2>
+            <p id="profileEmail">email@example.com</p>
+            <p id="profileRole">Role</p>
+            <p id="profileDesignation"></p>
+            <p id="profileDepartment"></p>
+            <div class="input-row">
+                <a id="githubLink" href="#" target="_blank" class="muted">GitHub Profile (optional)</a>
+            </div>
+        </div>
+    </main>
+
+    <script src="assets/js/auth.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', async() => {
+            const user = getUser();
+            if (!user || !user.id) return window.location.href = 'index.html';
+            document.getElementById('profileName').textContent = user.name;
+            document.getElementById('profileEmail').textContent = user.email;
+            document.getElementById('profileRole').textContent = user.role;
+            document.getElementById('profileDesignation').textContent = user.designation || '';
+            document.getElementById('profileDepartment').textContent = user.department || '';
+            if (user.photo) document.getElementById('profilePhoto').src = user.photo;
+            if (user.github) {
+                document.getElementById('githubLink').href = user.github;
+                document.getElementById('githubLink').textContent = user.github;
+            }
+            if (user.linkedin) {
+                const li = document.createElement('div');
+                li.innerHTML = `<a href="${user.linkedin}" target="_blank">${user.linkedin}</a>`;
+                document.getElementById('githubLink').insertAdjacentElement('afterend', li);
+            }
+        });
+    </script>
+</body>
+
+</html>

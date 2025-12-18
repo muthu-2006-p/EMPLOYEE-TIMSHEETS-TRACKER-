@@ -1,0 +1,773 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Employee Analytics Dashboard</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@3.9.1"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+        
+        .navbar {
+            background: rgba(0, 0, 0, 0.3);
+            backdrop-filter: blur(10px);
+            color: white;
+            padding: 15px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        
+        .navbar h1 {
+            font-size: 24px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .nav-links {
+            display: flex;
+            gap: 15px;
+        }
+        
+        .nav-btn {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            padding: 8px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-decoration: none;
+            font-size: 14px;
+        }
+        
+        .nav-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateY(-2px);
+        }
+        
+        .logout-btn {
+            background: #e74c3c;
+            border: none;
+        }
+        
+        .container {
+            max-width: 1600px;
+            margin: 20px auto;
+            padding: 0 20px;
+        }
+        
+        .welcome-card {
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+        }
+        
+        .welcome-card h2 {
+            color: #2c3e50;
+            margin-bottom: 10px;
+        }
+        
+        .welcome-card p {
+            color: #7f8c8d;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .stat-card {
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            transition: transform 0.3s;
+        }
+        
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+        }
+        
+        .stat-card .icon {
+            font-size: 40px;
+            margin-bottom: 10px;
+        }
+        
+        .stat-card .number {
+            font-size: 32px;
+            font-weight: bold;
+            color: #3498db;
+            margin: 10px 0;
+        }
+        
+        .stat-card .label {
+            color: #7f8c8d;
+            font-size: 14px;
+        }
+        
+        .filters {
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+        
+        .filter-group {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+        
+        .filter-group label {
+            font-weight: 600;
+            color: #2c3e50;
+            font-size: 14px;
+        }
+        
+        .filter-group select,
+        .filter-group input {
+            padding: 10px;
+            border: 2px solid #ecf0f1;
+            border-radius: 6px;
+            font-size: 14px;
+            transition: border 0.3s;
+        }
+        
+        .filter-group select:focus,
+        .filter-group input:focus {
+            outline: none;
+            border-color: #3498db;
+        }
+        
+        .filter-actions {
+            display: flex;
+            gap: 10px;
+            align-items: flex-end;
+        }
+        
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s;
+            font-size: 14px;
+        }
+        
+        .btn-primary {
+            background: #3498db;
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background: #2980b9;
+            transform: translateY(-2px);
+        }
+        
+        .btn-secondary {
+            background: #95a5a6;
+            color: white;
+        }
+        
+        .btn-secondary:hover {
+            background: #7f8c8d;
+        }
+        
+        .btn-success {
+            background: #27ae60;
+            color: white;
+        }
+        
+        .btn-success:hover {
+            background: #229954;
+        }
+        
+        .btn-download {
+            background: #e74c3c;
+            color: white;
+        }
+        
+        .btn-download:hover {
+            background: #c0392b;
+        }
+        
+        .charts-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(500px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .chart-card {
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            min-height: 400px;
+        }
+        
+        .chart-card h3 {
+            color: #2c3e50;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 18px;
+        }
+        
+        .chart-container {
+            position: relative;
+            height: 350px;
+        }
+        
+        canvas {
+            max-width: 100%;
+        }
+        
+        .export-buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+            flex-wrap: wrap;
+        }
+        
+        .export-buttons button {
+            font-size: 12px;
+            padding: 6px 12px;
+        }
+        
+        .quick-actions {
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+        
+        .quick-actions h3 {
+            color: #2c3e50;
+            margin-bottom: 15px;
+        }
+        
+        .action-buttons {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+        
+        .action-btn {
+            flex: 1;
+            min-width: 150px;
+            padding: 15px 20px;
+            border-radius: 8px;
+            border: none;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            justify-content: center;
+        }
+        
+        .action-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2);
+        }
+        
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: white;
+            font-size: 18px;
+        }
+        
+        @media (max-width: 768px) {
+            .charts-grid {
+                grid-template-columns: 1fr;
+            }
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+            .navbar {
+                flex-direction: column;
+                gap: 15px;
+            }
+            .nav-links {
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="navbar">
+        <h1>📊 Employee Analytics Dashboard</h1>
+        <div class="nav-links">
+            <a href="/employee.html" class="nav-btn">📋 Dashboard</a>
+            <a href="/employee-feedback.html" class="nav-btn">💬 Messages</a>
+            <a href="/employee-meetings.html" class="nav-btn">📅 Meetings</a>
+            <button class="nav-btn logout-btn" onclick="logout()">Logout</button>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="welcome-card">
+            <h2>Welcome, <span id="userName">Employee</span>! 👋</h2>
+            <p>Here's your performance overview and analytics</p>
+        </div>
+
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="icon">⏱️</div>
+                <div class="number" id="totalHours">0</div>
+                <div class="label">Total Hours This Month</div>
+            </div>
+            <div class="stat-card">
+                <div class="icon">✅</div>
+                <div class="number" id="completedTasks">0</div>
+                <div class="label">Completed Tasks</div>
+            </div>
+            <div class="stat-card">
+                <div class="icon">🔄</div>
+                <div class="number" id="pendingTasks">0</div>
+                <div class="label">Pending Tasks</div>
+            </div>
+            <div class="stat-card">
+                <div class="icon">📈</div>
+                <div class="number" id="avgDaily">0</div>
+                <div class="label">Avg Hours/Day</div>
+            </div>
+        </div>
+
+        <div class="quick-actions">
+            <h3>Quick Actions</h3>
+            <div class="action-buttons">
+                <button class="action-btn" style="background: #3498db; color: white;" onclick="window.location.href='/employee.html'">
+                    📝 Log Hours
+                </button>
+                <button class="action-btn" style="background: #27ae60; color: white;" onclick="window.location.href='/employee-feedback.html'">
+                    💬 Send Message
+                </button>
+                <button class="action-btn" style="background: #e74c3c; color: white;" onclick="exportData('xlsx')">
+                    📥 Export Data
+                </button>
+                <button class="action-btn" style="background: #9b59b6; color: white;" onclick="window.location.href='/employee-meetings.html'">
+                    📅 View Meetings
+                </button>
+            </div>
+        </div>
+
+        <div class="filters">
+            <div class="filter-group">
+                <label>Date Range</label>
+                <select id="dateRange" onchange="applyFilters()">
+                    <option value="today">Today</option>
+                    <option value="week">This Week</option>
+                    <option value="month" selected>This Month</option>
+                    <option value="custom">Custom Range</option>
+                </select>
+            </div>
+            <div class="filter-group">
+                <label>From Date</label>
+                <input type="date" id="fromDate" onchange="applyFilters()" disabled>
+            </div>
+            <div class="filter-group">
+                <label>To Date</label>
+                <input type="date" id="toDate" onchange="applyFilters()" disabled>
+            </div>
+            <div class="filter-actions">
+                <button class="btn btn-primary" onclick="applyFilters()">🔍 Apply</button>
+                <button class="btn btn-secondary" onclick="resetFilters()">🔄 Reset</button>
+            </div>
+        </div>
+
+        <div class="charts-grid">
+            <div class="chart-card">
+                <h3>📊 Daily Hours Trend (Last 30 Days)</h3>
+                <div class="chart-container">
+                    <canvas id="dailyTrendChart"></canvas>
+                </div>
+                <div class="export-buttons">
+                    <button class="btn btn-download" onclick="exportChartData('daily-trend')">📥 Export CSV</button>
+                </div>
+            </div>
+
+            <div class="chart-card">
+                <h3>🎯 Task Status Distribution</h3>
+                <div class="chart-container">
+                    <canvas id="taskStatusChart"></canvas>
+                </div>
+                <div class="export-buttons">
+                    <button class="btn btn-download" onclick="exportChartData('task-status')">📥 Export CSV</button>
+                </div>
+            </div>
+
+            <div class="chart-card">
+                <h3>⏰ Overtime Hours (This Month)</h3>
+                <div class="chart-container">
+                    <canvas id="overtimeChart"></canvas>
+                </div>
+                <div class="export-buttons">
+                    <button class="btn btn-download" onclick="exportChartData('overtime')">📥 Export CSV</button>
+                </div>
+            </div>
+
+            <div class="chart-card">
+                <h3>📈 Productivity Overview</h3>
+                <div class="chart-container">
+                    <canvas id="productivityChart"></canvas>
+                </div>
+                <div class="export-buttons">
+                    <button class="btn btn-download" onclick="exportChartData('productivity')">📥 Export CSV</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE = '/api';
+        let currentUser = null;
+        let charts = {};
+
+        // Auth check
+        async function checkAuth() {
+            const token = localStorage.getItem('auth_token');
+            if (!token) {
+                window.location.href = '/login.html';
+                return null;
+            }
+
+            try {
+                const res = await fetch(`${API_BASE}/auth/me`, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+
+                if (!res.ok) throw new Error('Auth failed');
+
+                const user = await res.json();
+                if (user.role !== 'employee') {
+                    alert('This page is for employees only');
+                    window.location.href = '/login.html';
+                    return null;
+                }
+
+                currentUser = user;
+                document.getElementById('userName').textContent = user.name;
+                return user;
+            } catch (err) {
+                console.error('Auth error:', err);
+                window.location.href = '/login.html';
+                return null;
+            }
+        }
+
+        // Load stats
+        async function loadStats() {
+            const token = localStorage.getItem('auth_token');
+
+            try {
+                // Get timesheets
+                const tsRes = await fetch(`${API_BASE}/timesheets?from=${getFirstDayOfMonth()}`, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+                const timesheets = await tsRes.json();
+
+                // Get tasks
+                const taskRes = await fetch(`${API_BASE}/tasks/mine`, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+                const tasks = await taskRes.json();
+
+                // Calculate stats
+                const totalHours = timesheets.data ? timesheets.data.reduce((sum, ts) => sum + (ts.totalHours || 0), 0) : 0;
+                const completedTasks = tasks.filter ? tasks.filter(t => {
+                    const myAssignment = t.assignments.find(a => String(a.employee._id) === currentUser._id);
+                    return myAssignment && myAssignment.status === 'completed';
+                }).length : 0;
+
+                const pendingTasks = tasks.filter ? tasks.filter(t => {
+                    const myAssignment = t.assignments.find(a => String(a.employee._id) === currentUser._id);
+                    return myAssignment && ['pending', 'in_progress'].includes(myAssignment.status);
+                }).length : 0;
+
+                const daysWorked = timesheets.data ? new Set(timesheets.data.map(ts => new Date(ts.date).toDateString())).size : 1;
+                const avgDaily = totalHours / (daysWorked || 1);
+
+                document.getElementById('totalHours').textContent = totalHours.toFixed(1);
+                document.getElementById('completedTasks').textContent = completedTasks;
+                document.getElementById('pendingTasks').textContent = pendingTasks;
+                document.getElementById('avgDaily').textContent = avgDaily.toFixed(1);
+
+            } catch (err) {
+                console.error('Error loading stats:', err);
+            }
+        }
+
+        // Load charts
+        async function loadCharts() {
+            const token = localStorage.getItem('auth_token');
+            const range = document.getElementById('dateRange').value;
+
+            try {
+                // Daily Trend
+                const trendRes = await fetch(`${API_BASE}/charts/chart/daily-trend?employeeId=${currentUser._id}&days=30`, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+                const trendData = await trendRes.json();
+                renderDailyTrend(trendData.data);
+
+                // Task Status
+                const statusRes = await fetch(`${API_BASE}/charts/chart/task-status?employeeId=${currentUser._id}`, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+                const statusData = await statusRes.json();
+                renderTaskStatus(statusData.data);
+
+                // Productivity (hours)
+                const prodRes = await fetch(`${API_BASE}/charts/chart/productivity?range=${range}`, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+                const prodData = await prodRes.json();
+
+                // Filter for current user
+                const myData = prodData.data.find(d => d.name === currentUser.name) || {
+                    hours: 0
+                };
+                renderProductivity([myData]);
+
+                // Overtime
+                const overtimeRes = await fetch(`${API_BASE}/charts/chart/overtime?range=${range}`, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+                const overtimeData = await overtimeRes.json();
+                const myOvertime = overtimeData.data.find(d => d.name === currentUser.name) || {
+                    overtime: 0
+                };
+                renderOvertime([myOvertime]);
+
+            } catch (err) {
+                console.error('Error loading charts:', err);
+            }
+        }
+
+        function renderDailyTrend(data) {
+            const ctx = document.getElementById('dailyTrendChart').getContext('2d');
+            if (charts.dailyTrend) charts.dailyTrend.destroy();
+
+            charts.dailyTrend = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: data.map(d => d.date),
+                    datasets: [{
+                        label: 'Hours Worked',
+                        data: data.map(d => d.hours),
+                        borderColor: '#3498db',
+                        backgroundColor: 'rgba(52, 152, 219, 0.1)',
+                        fill: true,
+                        tension: 0.4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    }
+                }
+            });
+        }
+
+        function renderTaskStatus(data) {
+            const ctx = document.getElementById('taskStatusChart').getContext('2d');
+            if (charts.taskStatus) charts.taskStatus.destroy();
+
+            charts.taskStatus = new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: data.map(d => d.name),
+                    datasets: [{
+                        data: data.map(d => d.value),
+                        backgroundColor: ['#27ae60', '#f39c12', '#3498db', '#e74c3c']
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false
+                }
+            });
+        }
+
+        function renderProductivity(data) {
+            const ctx = document.getElementById('productivityChart').getContext('2d');
+            if (charts.productivity) charts.productivity.destroy();
+
+            charts.productivity = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: data.map(d => d.name),
+                    datasets: [{
+                        label: 'Total Hours',
+                        data: data.map(d => d.hours),
+                        backgroundColor: '#3498db'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    }
+                }
+            });
+        }
+
+        function renderOvertime(data) {
+            const ctx = document.getElementById('overtimeChart').getContext('2d');
+            if (charts.overtime) charts.overtime.destroy();
+
+            charts.overtime = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: data.map(d => d.name),
+                    datasets: [{
+                        label: 'Overtime Hours',
+                        data: data.map(d => d.overtime),
+                        backgroundColor: '#e74c3c'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    }
+                }
+            });
+        }
+
+        function applyFilters() {
+            const dateRange = document.getElementById('dateRange').value;
+            if (dateRange === 'custom') {
+                document.getElementById('fromDate').disabled = false;
+                document.getElementById('toDate').disabled = false;
+            } else {
+                document.getElementById('fromDate').disabled = true;
+                document.getElementById('toDate').disabled = true;
+            }
+            loadCharts();
+        }
+
+        function resetFilters() {
+            document.getElementById('dateRange').value = 'month';
+            document.getElementById('fromDate').value = '';
+            document.getElementById('toDate').value = '';
+            document.getElementById('fromDate').disabled = true;
+            document.getElementById('toDate').disabled = true;
+            applyFilters();
+        }
+
+        async function exportData(format) {
+            const token = localStorage.getItem('auth_token');
+            const range = document.getElementById('dateRange').value;
+
+            try {
+                const res = await fetch(`${API_BASE}/charts/export/${format}?range=${range}`, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+
+                if (!res.ok) throw new Error('Export failed');
+
+                const blob = await res.blob();
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `employee_data_${Date.now()}.${format}`;
+                document.body.appendChild(a);
+                a.click();
+                a.remove();
+
+                alert(`Data exported successfully as ${format.toUpperCase()}`);
+            } catch (err) {
+                console.error('Export error:', err);
+                alert('Failed to export data');
+            }
+        }
+
+        async function exportChartData(chartType) {
+            alert(`Exporting ${chartType} data as CSV...`);
+            const token = localStorage.getItem('auth_token');
+            window.location.href = `${API_BASE}/charts/export/csv?type=${chartType}`;
+        }
+
+        function getFirstDayOfMonth() {
+            const now = new Date();
+            return new Date(now.getFullYear(), now.getMonth(), 1).toISOString().split('T')[0];
+        }
+
+        function logout() {
+            localStorage.removeItem('auth_token');
+            localStorage.removeItem('token');
+            window.location.href = '/login.html';
+        }
+
+        // Initialize
+        (async() => {
+            const user = await checkAuth();
+            if (user) {
+                await loadStats();
+                await loadCharts();
+            }
+        })();
+    </script>
+</body>
+
+</html>

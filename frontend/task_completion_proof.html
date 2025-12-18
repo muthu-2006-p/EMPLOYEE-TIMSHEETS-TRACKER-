@@ -1,0 +1,983 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Task Completion & Proof Submission - ETT</title>
+    <link rel="stylesheet" href="assets/css/style.css">
+    <link rel="stylesheet" href="assets/css/dashboard.css">
+    <style>
+        /* Proof Submission Styles */
+        
+        .proof-section {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 20px;
+            border-radius: 12px;
+            margin: 20px 0;
+            color: white;
+        }
+        
+        .proof-form {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            background: white;
+            padding: 24px;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+        }
+        
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        
+        .form-group label {
+            font-weight: 600;
+            color: #333;
+            font-size: 14px;
+        }
+        
+        .form-group input,
+        .form-group textarea {
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 14px;
+            font-family: inherit;
+            transition: all 0.3s ease;
+        }
+        
+        .form-group input:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+        
+        .form-group textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+        
+        .status-badge {
+            display: inline-block;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-weight: 600;
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .status-submitted {
+            background: #e3f2fd;
+            color: #1976d2;
+        }
+        
+        .status-pending {
+            background: #fff3e0;
+            color: #f57c00;
+            animation: pulse 2s infinite;
+        }
+        
+        .status-approved {
+            background: #e8f5e9;
+            color: #388e3c;
+        }
+        
+        .status-defect {
+            background: #ffebee;
+            color: #c62828;
+        }
+        
+        @keyframes pulse {
+            0%,
+            100% {
+                opacity: 1;
+            }
+            50% {
+                opacity: 0.7;
+            }
+        }
+        
+        .task-card {
+            background: white;
+            border: 2px solid #e0e0e0;
+            border-radius: 12px;
+            padding: 20px;
+            margin: 16px 0;
+            transition: all 0.3s ease;
+        }
+        
+        .task-card:hover {
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+            border-color: #667eea;
+        }
+        
+        .task-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+        
+        .task-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: #333;
+        }
+        
+        .proof-links {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-top: 12px;
+        }
+        
+        .proof-link-item {
+            padding: 12px;
+            background: #f5f5f5;
+            border-radius: 8px;
+            border-left: 4px solid #667eea;
+        }
+        
+        .proof-link-label {
+            font-size: 12px;
+            font-weight: 600;
+            color: #666;
+            text-transform: uppercase;
+            margin-bottom: 6px;
+        }
+        
+        .proof-link-value {
+            color: #667eea;
+            text-decoration: none;
+            word-break: break-all;
+            font-size: 13px;
+        }
+        
+        .proof-link-value:hover {
+            text-decoration: underline;
+        }
+        
+        .attachment-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+            gap: 12px;
+            margin-top: 12px;
+        }
+        
+        .attachment-item {
+            padding: 12px;
+            background: #f5f5f5;
+            border-radius: 8px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .attachment-item:hover {
+            background: #e0e0e0;
+        }
+        
+        .attachment-icon {
+            font-size: 24px;
+            margin-bottom: 8px;
+        }
+        
+        .attachment-name {
+            font-size: 12px;
+            color: #333;
+            word-break: break-word;
+        }
+        
+        .review-section {
+            background: #f9f9f9;
+            padding: 16px;
+            border-radius: 8px;
+            margin-top: 16px;
+            border-left: 4px solid #f57c00;
+        }
+        
+        .review-badge {
+            display: inline-block;
+            padding: 6px 12px;
+            background: #fff3e0;
+            color: #f57c00;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+        
+        .defect-comment {
+            background: #ffebee;
+            padding: 12px;
+            border-radius: 8px;
+            border-left: 4px solid #c62828;
+            margin: 8px 0;
+            color: #c62828;
+        }
+        
+        .rework-counter {
+            display: inline-block;
+            padding: 4px 8px;
+            background: #ffe0b2;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 600;
+            margin-left: 8px;
+        }
+        
+        .timeline {
+            position: relative;
+            padding-left: 30px;
+        }
+        
+        .timeline-item {
+            position: relative;
+            padding-bottom: 20px;
+        }
+        
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            left: -30px;
+            top: 4px;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: #667eea;
+            border: 2px solid white;
+        }
+        
+        .timeline-item.completed::before {
+            background: #4caf50;
+        }
+        
+        .timeline-item.defect::before {
+            background: #f44336;
+        }
+        
+        .timeline-label {
+            font-size: 12px;
+            font-weight: 600;
+            color: #666;
+            text-transform: uppercase;
+            margin-bottom: 4px;
+        }
+        
+        .timeline-time {
+            font-size: 13px;
+            color: #999;
+        }
+        
+        .button-group {
+            display: flex;
+            gap: 12px;
+            margin-top: 16px;
+            flex-wrap: wrap;
+        }
+        
+        .btn {
+            padding: 12px 24px;
+            border-radius: 8px;
+            border: none;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 14px;
+        }
+        
+        .btn-primary {
+            background: #667eea;
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background: #5568d3;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+        }
+        
+        .btn-secondary {
+            background: #e0e0e0;
+            color: #333;
+        }
+        
+        .btn-secondary:hover {
+            background: #d0d0d0;
+        }
+        
+        .btn-success {
+            background: #4caf50;
+            color: white;
+        }
+        
+        .btn-success:hover {
+            background: #45a049;
+        }
+        
+        .btn-danger {
+            background: #f44336;
+            color: white;
+        }
+        
+        .btn-danger:hover {
+            background: #da190b;
+        }
+        
+        .progress-bar {
+            width: 100%;
+            height: 6px;
+            background: #e0e0e0;
+            border-radius: 3px;
+            overflow: hidden;
+            margin: 8px 0;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #667eea, #764ba2);
+            transition: width 0.3s ease;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 12px;
+            margin-top: 16px;
+        }
+        
+        .stat-card {
+            background: #f5f5f5;
+            padding: 16px;
+            border-radius: 8px;
+            text-align: center;
+        }
+        
+        .stat-number {
+            font-size: 28px;
+            font-weight: 700;
+            color: #667eea;
+        }
+        
+        .stat-label {
+            font-size: 12px;
+            color: #666;
+            margin-top: 4px;
+            text-transform: uppercase;
+        }
+        
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .modal-overlay.active {
+            display: flex;
+        }
+        
+        .modal-content {
+            background: white;
+            border-radius: 12px;
+            padding: 32px;
+            max-width: 600px;
+            width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        }
+        
+        .modal-header {
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 28px;
+            cursor: pointer;
+            color: #666;
+        }
+        
+        .modal-close:hover {
+            color: #000;
+        }
+        
+        .upload-area {
+            border: 2px dashed #667eea;
+            border-radius: 8px;
+            padding: 32px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background: #f9f9f9;
+        }
+        
+        .upload-area:hover {
+            background: #f0f0f0;
+            border-color: #764ba2;
+        }
+        
+        .upload-icon {
+            font-size: 48px;
+            margin-bottom: 12px;
+        }
+        
+        .file-list {
+            margin-top: 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        
+        .file-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px;
+            background: #f5f5f5;
+            border-radius: 8px;
+        }
+        
+        .file-remove {
+            background: #f44336;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            padding: 4px 8px;
+            cursor: pointer;
+            font-size: 12px;
+        }
+    </style>
+</head>
+
+<body class="bg-gradient">
+    <nav class="navbar">
+        <div class="nav-brand">
+            <span>Task Completion & Proof Submission</span>
+        </div>
+        <div class="nav-menu">
+            <button class="btn small" onclick="logout()">Logout</button>
+        </div>
+    </nav>
+
+    <main class="dashboard">
+        <div class="layout">
+            <div id="content">
+                <!-- ============================================================
+                     SECTION 1: EMPLOYEE TASK COMPLETION
+                     ============================================================ -->
+                <div id="employeeSection" style="display: none;">
+                    <div class="card proof-section">
+                        <h2>📋 Submit Proof of Work</h2>
+                        <p>Complete your task by uploading proof including GitHub link, demo video, and detailed notes.</p>
+                    </div>
+
+                    <div id="taskList"></div>
+
+                    <!-- Proof Submission Modal -->
+                    <div id="proofModal" class="modal-overlay">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <span>📤 Submit Proof of Work</span>
+                                <button class="modal-close" onclick="closeProofModal()">✕</button>
+                            </div>
+
+                            <form id="proofForm" onsubmit="submitProof(event)">
+                                <div class="form-group">
+                                    <label>GitHub Repository Link *</label>
+                                    <input type="url" id="githubLink" placeholder="https://github.com/username/repo" required />
+                                    <small>Must be a valid GitHub, GitLab, or Bitbucket link</small>
+                                </div>
+
+                                <div class="form-group">
+                                    <label>Demo/Working Video Link *</label>
+                                    <input type="url" id="demoVideoLink" placeholder="https://youtube.com/watch?v=..." required />
+                                    <small>YouTube, Vimeo, or Loom video</small>
+                                </div>
+
+                                <div class="form-group">
+                                    <label>Completion Notes *</label>
+                                    <textarea id="completionNotes" placeholder="Describe what you completed, challenges faced, and solutions implemented (minimum 20 characters)..." minlength="20" required></textarea>
+                                    <small id="notesCount">0 / 2000 characters</small>
+                                </div>
+
+                                <div class="form-group">
+                                    <label>Upload Files/Screenshots *</label>
+                                    <div class="upload-area" onclick="document.getElementById('fileInput').click()">
+                                        <div class="upload-icon">📁</div>
+                                        <div>Click to upload or drag files here</div>
+                                        <small>PNG, JPG, PDF, DOC supported</small>
+                                    </div>
+                                    <input type="file" id="fileInput" multiple accept=".png,.jpg,.jpeg,.pdf,.doc,.docx" style="display: none;" onchange="handleFileUpload(event)" />
+                                    <div id="fileList" class="file-list"></div>
+                                </div>
+
+                                <div class="button-group">
+                                    <button type="submit" class="btn btn-primary">✅ Submit Proof</button>
+                                    <button type="button" class="btn btn-secondary" onclick="closeProofModal()">Cancel</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ============================================================
+                     SECTION 2: MANAGER/ADMIN REVIEW
+                     ============================================================ -->
+                <div id="managerSection" style="display: none;">
+                    <div class="card proof-section">
+                        <h2>🔍 Review Proof Submissions</h2>
+                        <p>Review submitted proofs and approve or request rework with detailed feedback.</p>
+                    </div>
+
+                    <div id="pendingProofsList"></div>
+
+                    <!-- Review Modal -->
+                    <div id="reviewModal" class="modal-overlay">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <span>📋 Review Proof Submission</span>
+                                <button class="modal-close" onclick="closeReviewModal()">✕</button>
+                            </div>
+
+                            <div id="reviewDetails"></div>
+
+                            <form id="reviewForm" onsubmit="submitReview(event)">
+                                <div class="form-group">
+                                    <label>Decision *</label>
+                                    <div style="display: flex; gap: 12px;">
+                                        <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
+                                            <input type="radio" name="decision" value="approved" required />
+                                            ✅ Approve
+                                        </label>
+                                        <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
+                                            <input type="radio" name="decision" value="defect_found" required />
+                                            ⚠️ Request Rework
+                                        </label>
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    <label>Review Comments *</label>
+                                    <textarea id="reviewComments" placeholder="Provide constructive feedback..." minlength="5" required></textarea>
+                                </div>
+
+                                <div id="defectSection" style="display: none;">
+                                    <div class="form-group">
+                                        <label>Defect Description *</label>
+                                        <textarea id="defectDescription" placeholder="Describe what needs to be fixed or improved..."></textarea>
+                                    </div>
+                                </div>
+
+                                <div class="button-group">
+                                    <button type="submit" class="btn btn-primary">📨 Submit Review</button>
+                                    <button type="button" class="btn btn-secondary" onclick="closeReviewModal()">Cancel</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ============================================================
+                     SECTION 3: ANALYTICS DASHBOARD
+                     ============================================================ -->
+                <div id="analyticsSection" style="display: none;">
+                    <div class="card proof-section">
+                        <h2>📊 Review Cycle Analytics</h2>
+                        <p>View metrics and performance data for the review cycle.</p>
+                    </div>
+
+                    <div class="card">
+                        <div class="stats-grid" id="analyticsStats"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // =====================================================================
+        // UTILITY FUNCTIONS
+        // =====================================================================
+
+        const BASE_URL = 'http://localhost:4000/api';
+        let currentUser = null;
+        let selectedTaskId = null;
+        let uploadedFiles = [];
+
+        // Get auth token
+        function getToken() {
+            return localStorage.getItem('auth_token');
+        }
+
+        // API Request
+        async function apiRequest(method, endpoint, body = null) {
+            const options = {
+                method,
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${getToken()}`
+                }
+            };
+            if (body) options.body = JSON.stringify(body);
+
+            const response = await fetch(`${BASE_URL}${endpoint}`, options);
+            const data = await response.json();
+            return {
+                status: response.status,
+                data
+            };
+        }
+
+        // Load current user
+        async function loadCurrentUser() {
+            const {
+                status,
+                data
+            } = await apiRequest('GET', '/auth/me');
+            if (status === 200) {
+                currentUser = data;
+                showAppropriateSection();
+                loadDashboard();
+            } else {
+                window.location.href = '/login.html';
+            }
+        }
+
+        // Show appropriate section based on role
+        function showAppropriateSection() {
+            document.getElementById('employeeSection').style.display = currentUser.role === 'employee' ? 'block' : 'none';
+            document.getElementById('managerSection').style.display = ['manager', 'admin'].includes(currentUser.role) ? 'block' : 'none';
+            document.getElementById('analyticsSection').style.display = currentUser.role === 'admin' ? 'block' : 'none';
+        }
+
+        // Load Dashboard Content
+        async function loadDashboard() {
+            if (currentUser.role === 'employee') {
+                loadEmployeeTasks();
+            } else if (['manager', 'admin'].includes(currentUser.role)) {
+                loadPendingProofs();
+                loadAnalytics();
+            }
+        }
+
+        // =====================================================================
+        // EMPLOYEE FUNCTIONS
+        // =====================================================================
+
+        async function loadEmployeeTasks() {
+            const {
+                status,
+                data
+            } = await apiRequest('GET', '/tasks/mine');
+            if (status === 200 && Array.isArray(data)) {
+                const html = data.map(task => {
+                            const assignment = task.assignments[0];
+                            const statusColor = {
+                                'assigned': '#e3f2fd',
+                                'in_progress': '#fff3e0',
+                                'pending_review': '#fff3e0',
+                                'approved': '#e8f5e9',
+                                'defect_found': '#ffebee',
+                                'rework_required': '#ffebee',
+                                'completed': '#e8f5e9'
+                            };
+
+                            return `
+                        <div class="task-card" style="border-left: 4px solid ${statusColor[assignment.status] || '#e0e0e0'}">
+                            <div class="task-header">
+                                <div class="task-title">${task.title}</div>
+                                <span class="status-badge status-${assignment.status.replace(/_/g, '-')}">${assignment.status.replace(/_/g, ' ')}</span>
+                            </div>
+                            <p style="color: #666; margin: 8px 0;">${task.description}</p>
+
+                            ${assignment.status === 'assigned' || assignment.status === 'in_progress' ? `
+                                <button class="btn btn-primary" onclick="openProofModal('${task._id}')">
+                                    📤 Submit Proof of Work
+                                </button>
+                            ` : ''}
+
+                            ${assignment.status === 'pending_review' ? `
+                                <div class="review-section">
+                                    <div class="review-badge">⏳ AWAITING REVIEW</div>
+                                    <p>Your proof has been submitted and is waiting for manager approval.</p>
+                                </div>
+                            ` : ''}
+
+                            ${assignment.status === 'defect_found' || assignment.status === 'rework_required' ? `
+                                <div class="review-section" style="border-left-color: #f44336;">
+                                    <div style="color: #f44336; font-weight: 600; margin-bottom: 8px;">⚠️ REWORK REQUIRED</div>
+                                    ${assignment.reviewCycle?.defectDescription ? `
+                                        <div class="defect-comment">${assignment.reviewCycle.defectDescription}</div>
+                                    ` : ''}
+                                    <button class="btn btn-primary" style="margin-top: 12px;" onclick="openProofModal('${task._id}')">
+                                        🔄 Resubmit Proof
+                                    </button>
+                                </div>
+                            ` : ''}
+
+                            ${assignment.status === 'approved' || assignment.status === 'completed' ? `
+                                <div class="review-section" style="border-left-color: #4caf50;">
+                                    <div style="color: #4caf50; font-weight: 600;">✅ APPROVED</div>
+                                    <p>Great work! Your proof has been approved. Waiting for next task assignment.</p>
+                                </div>
+                            ` : ''}
+                        </div>
+                    `;
+                }).join('');
+
+                document.getElementById('taskList').innerHTML = html || '<p>No tasks assigned.</p>';
+            }
+        }
+
+        function openProofModal(taskId) {
+            selectedTaskId = taskId;
+            uploadedFiles = [];
+            document.getElementById('proofForm').reset();
+            document.getElementById('fileList').innerHTML = '';
+            document.getElementById('proofModal').classList.add('active');
+        }
+
+        function closeProofModal() {
+            document.getElementById('proofModal').classList.remove('active');
+        }
+
+        function handleFileUpload(event) {
+            const files = Array.from(event.target.files);
+            uploadedFiles = files.map(file => ({
+                name: file.name,
+                type: file.type,
+                size: file.size,
+                file: file
+            }));
+
+            const html = uploadedFiles.map((f, idx) => `
+                <div class="file-item">
+                    <span>📄 ${f.name} (${(f.size / 1024).toFixed(2)} KB)</span>
+                    <button type="button" class="file-remove" onclick="removeFile(${idx})">Remove</button>
+                </div>
+            `).join('');
+
+            document.getElementById('fileList').innerHTML = html;
+        }
+
+        function removeFile(index) {
+            uploadedFiles.splice(index, 1);
+            handleFileUpload({ target: { files: uploadedFiles.map(f => f.file) } });
+        }
+
+        // Track notes character count
+        document.addEventListener('input', (e) => {
+            if (e.target.id === 'completionNotes') {
+                const count = e.target.value.length;
+                document.getElementById('notesCount').textContent = `${count} / 2000 characters`;
+            }
+        });
+
+        async function submitProof(event) {
+            event.preventDefault();
+
+            const proof = {
+                taskId: selectedTaskId,
+                githubLink: document.getElementById('githubLink').value,
+                demoVideoLink: document.getElementById('demoVideoLink').value,
+                completionNotes: document.getElementById('completionNotes').value,
+                attachments: uploadedFiles.map(f => ({
+                    fileName: f.name,
+                    fileUrl: `file://${f.name}`, // In production, upload to storage
+                    fileType: f.type.includes('image') ? 'image' : f.type.includes('pdf') ? 'pdf' : 'document'
+                }))
+            };
+
+            const { status, data } = await apiRequest('POST', '/proof/submit', proof);
+
+            if (status === 201) {
+                alert('✅ Proof submitted successfully!\nYour manager will review it shortly.');
+                closeProofModal();
+                loadEmployeeTasks();
+            } else {
+                alert('❌ Error: ' + data.message);
+            }
+        }
+
+        // =====================================================================
+        // MANAGER/ADMIN FUNCTIONS
+        // =====================================================================
+
+        async function loadPendingProofs() {
+            const { status, data } = await apiRequest('GET', '/proof/pending');
+            if (status === 200 && Array.isArray(data)) {
+                const html = data.map(proof => `
+                    <div class="task-card">
+                        <div class="task-header">
+                            <div>
+                                <div class="task-title">${proof.task.title}</div>
+                                <small style="color: #666;">Employee: ${proof.employee.name}</small>
+                            </div>
+                            <span class="status-badge status-pending">⏳ PENDING REVIEW</span>
+                        </div>
+
+                        <div class="proof-links">
+                            <div class="proof-link-item">
+                                <div class="proof-link-label">GitHub</div>
+                                <a href="${proof.githubLink}" target="_blank" class="proof-link-value">View Repository</a>
+                            </div>
+                            <div class="proof-link-item">
+                                <div class="proof-link-label">Demo Video</div>
+                                <a href="${proof.demoVideoLink}" target="_blank" class="proof-link-value">Watch Video</a>
+                            </div>
+                        </div>
+
+                        <div style="margin-top: 12px; padding: 12px; background: #f5f5f5; border-radius: 8px;">
+                            <strong>Completion Notes:</strong>
+                            <p style="margin: 8px 0; color: #666; font-size: 14px;">${proof.completionNotes}</p>
+                        </div>
+
+                        ${proof.attachments.length > 0 ? `
+                            <div style="margin-top: 12px;">
+                                <strong>Attachments (${proof.attachments.length}):</strong>
+                                <div class="attachment-list">
+                                    ${proof.attachments.map(att => `
+                                        <div class="attachment-item">
+                                            <div class="attachment-icon">📎</div>
+                                            <div class="attachment-name">${att.fileName}</div>
+                                        </div>
+                                    `).join('')}
+                                </div>
+                            </div>
+                        ` : ''}
+
+                        <div class="button-group">
+                            <button class="btn btn-primary" onclick="openReviewModal('${proof._id}', '${proof.task.title}', '${proof.githubLink}', '${proof.demoVideoLink}')">
+                                📋 Review & Decide
+                            </button>
+                        </div>
+                    </div>
+                `).join('');
+
+                document.getElementById('pendingProofsList').innerHTML = html || '<p>No pending proofs to review.</p>';
+            }
+        }
+
+        function openReviewModal(proofId, taskTitle, githubLink, demoVideoLink) {
+            document.getElementById('reviewDetails').innerHTML = `
+                <div style="margin-bottom: 16px; padding: 12px; background: #f5f5f5; border-radius: 8px;">
+                    <div><strong>Task:</strong> ${taskTitle}</div>
+                    <div style="margin-top: 8px;"><strong>GitHub:</strong> <a href="${githubLink}" target="_blank">${githubLink}</a></div>
+                    <div style="margin-top: 8px;"><strong>Demo:</strong> <a href="${demoVideoLink}" target="_blank">${demoVideoLink}</a></div>
+                </div>
+            `;
+
+            document.getElementById('reviewForm').reset();
+            document.getElementById('reviewForm').dataset.proofId = proofId;
+
+            // Show/hide defect section based on radio selection
+            const radios = document.querySelectorAll('input[name="decision"]');
+            radios.forEach(radio => {
+                radio.addEventListener('change', () => {
+                    document.getElementById('defectSection').style.display = radio.value === 'defect_found' ? 'block' : 'none';
+                    if (radio.value === 'defect_found') {
+                        document.getElementById('defectDescription').required = true;
+                    } else {
+                        document.getElementById('defectDescription').required = false;
+                    }
+                });
+            });
+
+            document.getElementById('reviewModal').classList.add('active');
+        }
+
+        function closeReviewModal() {
+            document.getElementById('reviewModal').classList.remove('active');
+        }
+
+        async function submitReview(event) {
+            event.preventDefault();
+
+            const proofId = document.getElementById('reviewForm').dataset.proofId;
+            const decision = document.querySelector('input[name="decision"]:checked').value;
+            const comments = document.getElementById('reviewComments').value;
+            const defectDescription = document.getElementById('defectDescription').value;
+
+            const review = {
+                decision,
+                comments,
+                defectDescription: decision === 'defect_found' ? defectDescription : null
+            };
+
+            const { status, data } = await apiRequest('POST', `/proof/${proofId}/review`, review);
+
+            if (status === 200) {
+                alert(`✅ Review submitted - Proof ${decision}`);
+                closeReviewModal();
+                loadPendingProofs();
+                loadAnalytics();
+            } else {
+                alert('❌ Error: ' + data.message);
+            }
+        }
+
+        async function loadAnalytics() {
+            const { status, data } = await apiRequest('GET', '/proof/analytics/metrics?days=30');
+            if (status === 200) {
+                const html = `
+                    <div class="stat-card">
+                        <div class="stat-number">${data.totalSubmissions}</div>
+                        <div class="stat-label">Total Submissions</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number" style="color: #4caf50;">${data.approved}</div>
+                        <div class="stat-label">Approved ✅</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number" style="color: #f44336;">${data.defects}</div>
+                        <div class="stat-label">Defects Found ⚠️</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number" style="color: #f57c00;">${data.pending}</div>
+                        <div class="stat-label">Pending Review</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number" style="color: #667eea;">${data.approvalRate}%</div>
+                        <div class="stat-label">Approval Rate</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number" style="color: #764ba2;">${data.avgReworkAttempts}</div>
+                        <div class="stat-label">Avg Rework Attempts</div>
+                    </div>
+                `;
+
+                document.getElementById('analyticsStats').innerHTML = html;
+            }
+        }
+
+        function logout() {
+            localStorage.removeItem('auth_token');
+            window.location.href = '/login.html';
+        }
+
+        // Initialize
+        window.addEventListener('load', loadCurrentUser);
+    </script>
+</body>
+
+</html>
