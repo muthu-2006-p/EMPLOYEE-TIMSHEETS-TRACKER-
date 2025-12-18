@@ -2955,13 +2955,13 @@
         }
 
         async function viewManagerReport(reportId) {
-    try {
-        console.log('📊 Fetching report:', reportId);
-        // FIX: Changed API path from /analytics-report/admin/view/ to /analytics-report/view/
-        const response = await api(`/analytics-report/view/${reportId}`);
-        const report = response.data || response;
+            try {
+                console.log('📊 Fetching report:', reportId);
+                // FIX: Changed API path from /analytics-report/admin/view/ to /analytics-report/view/
+                const response = await api(`/analytics-report/view/${reportId}`);
+                const report = response.data || response;
 
-        console.log('📊 Full Report Data:', report);
+                console.log('📊 Full Report Data:', report);
                 console.log('📊 Manager:', report.manager);
                 console.log('📊 Date Range:', report.dateRange);
                 console.log('📊 Data Object:', report.data);
@@ -3127,7 +3127,8 @@
         async function downloadManagerReport(reportId) {
             try {
                 console.log('💾 Downloading report:', reportId);
-                const response = await api(`/analytics-report/admin/view/${reportId}`);
+                // FIX: Changed API path from /analytics-report/admin/view/ to /analytics-report/view/
+                const response = await api(`/analytics-report/view/${reportId}`);
                 const report = response.data || response;
 
                 // Generate CSV content
