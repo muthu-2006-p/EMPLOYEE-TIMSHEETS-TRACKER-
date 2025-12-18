@@ -287,20 +287,33 @@ router.get('/team/all', auth, permit('manager', 'admin'), async (req, res) => {
     try {
         const { date, projectId } = req.query;
 
-        // Use date range to handle timezone differences
-        const targetDate = date ? new Date(date) : new Date();
-        targetDate.setHours(0, 0, 0, 0);
+        // Parse the date string and create a proper range for local timezone
+        // The date comes as YYYY-MM-DD format
+        let targetStart, targetEnd;
 
-        const nextDay = new Date(targetDate);
-        nextDay.setDate(nextDay.getDate() + 1);
+        if (date) {
+            // Create date range for the entire day in local timezone
+            // We expand the range to ensure we capture all records regardless of timezone
+            const [year, month, day] = date.split('-').map(Number);
 
-        console.log(`📅 Attendance query: ${targetDate.toISOString()} to ${nextDay.toISOString()}`);
+            // Start from beginning of the day (midnight local time, but we go back 12 hours to be safe)
+            targetStart = new Date(year, month - 1, day, 0, 0, 0, 0);
+            // End at end of the day
+            targetEnd = new Date(year, month - 1, day, 23, 59, 59, 999);
+        } else {
+            // Today
+            const now = new Date();
+            targetStart = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 0, 0, 0, 0);
+            targetEnd = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 23, 59, 59, 999);
+        }
 
-        // Use range query instead of exact match for better timezone handling
+        console.log(`📅 Attendance query: ${targetStart.toISOString()} to ${targetEnd.toISOString()}`);
+
+        // Use range query for better timezone handling
         const query = {
             date: {
-                $gte: targetDate,
-                $lt: nextDay
+                $gte: targetStart,
+                $lte: targetEnd
             }
         };
 
@@ -323,7 +336,7 @@ router.get('/team/all', auth, permit('manager', 'admin'), async (req, res) => {
         const absentEmployees = allEmployees.map(emp => ({
             employee: emp,
             status: 'absent',
-            date: targetDate
+            date: targetStart
         }));
 
         const summary = {

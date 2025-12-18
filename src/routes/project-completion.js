@@ -27,7 +27,7 @@ router.post('/submit/:projectId', auth, permit('manager'), async (req, res) => {
         // Exception: if manager has no projects assigned, allow them to submit for any project
         const managerProjectCount = await Project.countDocuments({ manager: req.user._id });
         const isProjectManager = String(project.manager) === String(req.user._id);
-        
+
         // Only block if manager HAS projects but this isn't one of them
         if (managerProjectCount > 0 && !isProjectManager) {
             return res.status(403).json({ message: 'Only the project manager can submit completion proof' });
@@ -92,7 +92,7 @@ router.post('/submit/:projectId', auth, permit('manager'), async (req, res) => {
 router.get('/my-projects', auth, permit('manager', 'admin'), async (req, res) => {
     try {
         let query = {};
-        
+
         // For managers: first check if they have projects, if not show all (fallback)
         if (req.user.role === 'manager') {
             const managerProjectCount = await Project.countDocuments({ manager: req.user._id });
@@ -202,6 +202,10 @@ router.post('/review/:projectId', auth, permit('admin'), async (req, res) => {
         const project = await Project.findById(projectId).populate('manager', 'name email');
         if (!project) {
             return res.status(404).json({ message: 'Project not found' });
+        }
+
+        if (!project.manager) {
+            return res.status(400).json({ message: 'Project manager not found (user account may be deleted)' });
         }
 
         if (!project.completionProof || !project.completionProof.submittedAt) {

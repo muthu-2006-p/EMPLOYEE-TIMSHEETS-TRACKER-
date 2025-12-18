@@ -98,10 +98,10 @@ async function loadManagerDashboard() {
             projectList.innerHTML = projects.map(p => `
         <div class="stat-card project-card">
           <div style="display:flex;align-items:center;gap:12px">
-            <div class="project-icon">${p.icon || (p.name ? p.name.split(' ').map(w=>w[0]).join('').slice(0,2).toUpperCase() : 'P')}</div>
+            <div class="project-icon">${p.icon || (p.name ? p.name.split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase() : 'P')}</div>
             <div style="flex:1">
               <div class="label">${p.name}</div>
-              <div class="muted" style="font-size:13px">${p.description ? (p.description.substring(0,80) + '...') : ''}</div>
+              <div class="muted" style="font-size:13px">${p.description ? (p.description.substring(0, 80) + '...') : ''}</div>
             </div>
             <div style="text-align:right">
               <button class="btn" onclick="remindProject('${p._id}', '${escape(p.name)}')">Remind Team</button>
@@ -135,7 +135,7 @@ async function loadManagerDashboard() {
                 teamList.innerHTML = team.length ? team.map(m => `
           <div class="stat-card employee-card">
             <div style="display:flex;gap:12px;align-items:center">
-              <img src="${m.photo || 'assets/images/avatar-placeholder.png'}" style="width:56px;height:56px;border-radius:8px;object-fit:cover" />
+              <img src="${m.photo || 'assets/images/avatar-placeholder.svg'}" style="width:56px;height:56px;border-radius:8px;object-fit:cover" />
               <div style="flex:1">
                 <div style="font-weight:700">${m.name}</div>
                 <div class="muted" style="font-size:13px">${m.designation || ''} · ${m.department || ''}</div>
@@ -179,7 +179,7 @@ async function loadManagerDashboard() {
         }
 
         // expose export function
-        window.exportManagerReport = async function() {
+        window.exportManagerReport = async function () {
             // build worksheet from pending
             const rows = pending.map(t => ({ Employee: t.employee ? .name || '', Date: t.date, Hours: t.totalHours, Status: t.status }));
             const ws = XLSX.utils.json_to_sheet(rows);
@@ -210,12 +210,12 @@ async function loadTimesheetHistory() {
       ${timesheets.map(ts => `<tr><td>${ts.date}</td><td>${ts.startTime}</td><td>${ts.endTime}</td><td>${ts.totalHours}</td><td><span class="badge ${ts.status}">${ts.status}</span></td></tr>`).join('')}
     </table>
   `;
-  document.getElementById('timesheetHistory').innerHTML = html || '<p>No timesheets</p>';
+    document.getElementById('timesheetHistory').innerHTML = html || '<p>No timesheets</p>';
 }
 
 async function loadPendingTimesheets() {
-  const timesheets = await apiCall('/timesheets/pending');
-  const html = timesheets.map(ts => `
+    const timesheets = await apiCall('/timesheets/pending');
+    const html = timesheets.map(ts => `
     <div class="card" style="margin-bottom: 12px; border-left: 4px solid #f59e0b;">
       <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px;">
         <div>
@@ -233,101 +233,101 @@ async function loadPendingTimesheets() {
       </div>
     </div>
   `).join('');
-  document.getElementById('pendingData').innerHTML = html || '<p>No pending timesheets</p>';
+    document.getElementById('pendingData').innerHTML = html || '<p>No pending timesheets</p>';
 }
 
 async function approveTimesheet(id, approve) {
-  const remarks = prompt('Add remarks (optional):');
-  const result = await apiCall(`/timesheets/${id}/approve`, 'PUT', { approve, remarks });
-  alert(approve ? '✅ Approved!' : '❌ Rejected!');
-  loadPendingTimesheets();
+    const remarks = prompt('Add remarks (optional):');
+    const result = await apiCall(`/timesheets/${id}/approve`, 'PUT', { approve, remarks });
+    alert(approve ? '✅ Approved!' : '❌ Rejected!');
+    loadPendingTimesheets();
 }
 
 function showTimesheetDetails(tsId) {
-  alert('Opening timesheet details for: ' + tsId + '\n\n(Feature: Show full timesheet details in modal)');
+    alert('Opening timesheet details for: ' + tsId + '\n\n(Feature: Show full timesheet details in modal)');
 }
 
 // Initialize on load
 document.addEventListener('DOMContentLoaded', () => {
-  const user = getUser();
-  if (!user.id) window.location.href = 'index.html';
-  navigate('dashboard');
+    const user = getUser();
+    if (!user.id) window.location.href = 'index.html';
+    navigate('dashboard');
 });
 
 // send reminder to all team members for a project
 async function remindProject(projectId, projectNameEscaped) {
-  const projectName = unescape(projectNameEscaped);
-  const defaultMsg = `Hi team, please share your project ideas or updates for ${projectName}.`;
-  const message = prompt('Message to team:', defaultMsg);
-  if (!message) return;
-  try {
-    const team = await apiCall('/employees/team');
-    if (!team || !team.length) return alert('No team members to remind.');
-    for (const member of team) {
-      await apiCall('/feedback', 'POST', { to: member.email, subject: `Reminder: ${projectName}`, message });
+    const projectName = unescape(projectNameEscaped);
+    const defaultMsg = `Hi team, please share your project ideas or updates for ${projectName}.`;
+    const message = prompt('Message to team:', defaultMsg);
+    if (!message) return;
+    try {
+        const team = await apiCall('/employees/team');
+        if (!team || !team.length) return alert('No team members to remind.');
+        for (const member of team) {
+            await apiCall('/feedback', 'POST', { to: member.email, subject: `Reminder: ${projectName}`, message });
+        }
+        alert('Reminders sent to team members');
+    } catch (err) {
+        console.error('Remind error', err);
+        alert('Failed to send reminders');
     }
-    alert('Reminders sent to team members');
-  } catch (err) {
-    console.error('Remind error', err);
-    alert('Failed to send reminders');
-  }
 }
 
 // open quick message composer to a single user by email
 async function openMessageTo(email) {
-  const message = prompt('Message to ' + email + ':', 'Hi, just a quick note regarding the project.');
-  if (!message) return;
-  try {
-    await apiCall('/feedback', 'POST', { to: email, subject: 'Message from manager', message });
-    alert('Message sent');
-  } catch (err) {
-    console.error('Send message error', err);
-    alert('Failed to send message');
-  }
+    const message = prompt('Message to ' + email + ':', 'Hi, just a quick note regarding the project.');
+    if (!message) return;
+    try {
+        await apiCall('/feedback', 'POST', { to: email, subject: 'Message from manager', message });
+        alert('Message sent');
+    } catch (err) {
+        console.error('Send message error', err);
+        alert('Failed to send message');
+    }
 }
 
 // Send warning to employee
 async function sendWarningToEmployee(email) {
-  const message = prompt('Warning message to ' + email + ':', 'Please note: Your recent timesheet submission was late.');
-  if (!message) return;
-  try {
-    await apiCall('/feedback', 'POST', { to: email, subject: '⚠️ WARNING: ' + (prompt('Warning type:', 'Late Submission')), message });
-    alert('Warning sent');
-  } catch (err) {
-    console.error('Send warning error', err);
-    alert('Failed to send warning');
-  }
+    const message = prompt('Warning message to ' + email + ':', 'Please note: Your recent timesheet submission was late.');
+    if (!message) return;
+    try {
+        await apiCall('/feedback', 'POST', { to: email, subject: '⚠️ WARNING: ' + (prompt('Warning type:', 'Late Submission')), message });
+        alert('Warning sent');
+    } catch (err) {
+        console.error('Send warning error', err);
+        alert('Failed to send warning');
+    }
 }
 
 // Send meeting link to employee
 async function sendMeetingLinkToEmployee(email) {
-  const title = prompt('Meeting title:', 'Team Standup');
-  if (!title) return;
-  const link = prompt('Meeting link:', 'https://meet.google.com/');
-  if (!link) return;
-  const message = `You are invited to a meeting.\n\nTitle: ${title}\nLink: ${link}\n\nPlease join on time.`;
-  try {
-    await apiCall('/feedback', 'POST', { to: email, subject: '📅 Meeting Invite: ' + title, message });
-    alert('Meeting invitation sent');
-  } catch (err) {
-    console.error('Send meeting error', err);
-    alert('Failed to send meeting invitation');
-  }
+    const title = prompt('Meeting title:', 'Team Standup');
+    if (!title) return;
+    const link = prompt('Meeting link:', 'https://meet.google.com/');
+    if (!link) return;
+    const message = `You are invited to a meeting.\n\nTitle: ${title}\nLink: ${link}\n\nPlease join on time.`;
+    try {
+        await apiCall('/feedback', 'POST', { to: email, subject: '📅 Meeting Invite: ' + title, message });
+        alert('Meeting invitation sent');
+    } catch (err) {
+        console.error('Send meeting error', err);
+        alert('Failed to send meeting invitation');
+    }
 }
 
 // Send feedback to employee
 async function sendFeedbackToEmployee(email) {
-  const subject = prompt('Feedback subject:', 'Performance feedback');
-  if (!subject) return;
-  const message = prompt('Feedback message:', 'Great work on the recent project!');
-  if (!message) return;
-  try {
-    await apiCall('/feedback', 'POST', { to: email, subject: '💬 ' + subject, message });
-    alert('Feedback sent');
-  } catch (err) {
-    console.error('Send feedback error', err);
-    alert('Failed to send feedback');
-  }
+    const subject = prompt('Feedback subject:', 'Performance feedback');
+    if (!subject) return;
+    const message = prompt('Feedback message:', 'Great work on the recent project!');
+    if (!message) return;
+    try {
+        await apiCall('/feedback', 'POST', { to: email, subject: '💬 ' + subject, message });
+        alert('Feedback sent');
+    } catch (err) {
+        console.error('Send feedback error', err);
+        alert('Failed to send feedback');
+    }
 }
 
 // ===== ANALYTICS REPORTS FROM MANAGERS =====
@@ -336,14 +336,14 @@ async function loadAnalyticsReports() {
         console.log('📊 Loading analytics reports from managers...');
         const reports = await apiCall('/analytics-report/admin/all');
         console.log('📊 Reports received:', reports);
-        
+
         const container = document.getElementById('analyticsReportsContainer');
-        
+
         if (!container) {
             console.error('❌ analyticsReportsContainer element not found');
             return;
         }
-        
+
         if (!reports || reports.length === 0) {
             container.innerHTML = `
                 <div style="text-align: center; padding: 60px 20px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 12px; color: white;">
@@ -357,7 +357,7 @@ async function loadAnalyticsReports() {
             `;
             return;
         }
-        
+
         container.innerHTML = `
             <div style="display: grid; gap: 20px;">
                 ${reports.map(report => `
@@ -407,13 +407,13 @@ async function loadAnalyticsReports() {
                 `).join('')}
             </div>
         `;
-        
+
     } catch (err) {
         console.error('❌ Load analytics reports error:', err);
         console.error('Error details:', err.message, err.stack);
         const container = document.getElementById('analyticsReportsContainer');
         if (container) {
-            container.innerHTML = 
+            container.innerHTML =
                 `<p style="color: #ef4444; text-align: center; padding: 40px;">
                     Failed to load reports<br>
                     <small style="color: #6b7280;">${err.message || 'Unknown error'}</small>
@@ -425,7 +425,7 @@ async function loadAnalyticsReports() {
 async function viewAdminReport(reportId) {
     try {
         const report = await apiCall(`/analytics-report/admin/view/${reportId}`);
-        
+
         // Create modal for viewing report
         const modal = document.createElement('div');
         modal.className = 'modal';
@@ -517,9 +517,9 @@ async function viewAdminReport(reportId) {
                                 <tr>
                                     <td><strong>${emp.name}</strong></td>
                                     <td>
-                                        ${emp.issues.map(issue => 
-                                            `<span style="background: #fef3c7; color: #92400e; padding: 4px 8px; border-radius: 6px; font-size: 12px; margin-right: 5px; display: inline-block; margin-bottom: 5px;">${issue}</span>`
-                                        ).join('')}
+                                        ${emp.issues.map(issue =>
+            `<span style="background: #fef3c7; color: #92400e; padding: 4px 8px; border-radius: 6px; font-size: 12px; margin-right: 5px; display: inline-block; margin-bottom: 5px;">${issue}</span>`
+        ).join('')}
                                     </td>
                                 </tr>
                             `).join('')}
@@ -537,9 +537,9 @@ async function viewAdminReport(reportId) {
                 </div>
             </div>
         `;
-        
+
         document.body.appendChild(modal);
-        
+
     } catch (err) {
         console.error('View report error:', err);
         alert('Failed to load report details');
@@ -550,21 +550,21 @@ async function downloadAdminReport(reportId) {
     try {
         // Mark as downloaded
         await apiCall(`/analytics-report/admin/download/${reportId}`, 'POST');
-        
+
         // Get report data
         const report = await apiCall(`/analytics-report/admin/view/${reportId}`);
-        
+
         // Generate CSV content
         let csv = `Analytics Report: ${report.title}\n`;
         csv += `Manager: ${report.manager.name}\n`;
         csv += `Date Range: ${new Date(report.dateRange.startDate).toLocaleDateString()} - ${new Date(report.dateRange.endDate).toLocaleDateString()}\n\n`;
-        
+
         csv += `TOP PERFORMERS\n`;
         csv += `Rank,Employee,Score,Task Completion,Attendance,Avg Hours/Day\n`;
         report.data.rankings.topPerformers.forEach((p, idx) => {
             csv += `${idx + 1},${p.name},${p.score}%,${p.metrics.taskCompletionRate}%,${p.metrics.attendanceRate}%,${p.metrics.avgHoursPerDay}\n`;
         });
-        
+
         if (report.data.rankings.needsImprovement.length > 0) {
             csv += `\nNEEDS IMPROVEMENT\n`;
             csv += `Employee,Issues\n`;
@@ -572,7 +572,7 @@ async function downloadAdminReport(reportId) {
                 csv += `${emp.name},"${emp.issues.join(', ')}"\n`;
             });
         }
-        
+
         // Download
         const blob = new Blob([csv], { type: 'text/csv' });
         const url = URL.createObjectURL(blob);
@@ -581,10 +581,10 @@ async function downloadAdminReport(reportId) {
         a.download = `${report.title.replace(/[^a-z0-9]/gi, '_')}_${Date.now()}.csv`;
         a.click();
         URL.revokeObjectURL(url);
-        
+
         alert('✅ Report downloaded successfully!');
         loadAnalyticsReports(); // Refresh the list
-        
+
     } catch (err) {
         console.error('Download report error:', err);
         alert('Failed to download report');
@@ -594,18 +594,18 @@ async function downloadAdminReport(reportId) {
 async function openFeedbackModal(reportId) {
     const notes = prompt('Enter your feedback/notes for this report:');
     const rating = prompt('Rate this report (1-5):', '5');
-    
+
     if (!notes && !rating) return;
-    
+
     try {
         await apiCall(`/analytics-report/admin/feedback/${reportId}`, 'PUT', {
             adminNotes: notes,
             adminRating: parseInt(rating)
         });
-        
+
         alert('✅ Feedback added successfully!');
         loadAnalyticsReports();
-        
+
     } catch (err) {
         console.error('Add feedback error:', err);
         alert('Failed to add feedback');

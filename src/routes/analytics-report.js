@@ -10,7 +10,7 @@ const Project = require('../models/Project');
 const { auth, permit } = require('../middleware/auth');
 
 // ===== CREATE NEW ANALYTICS REPORT (Manager or Employee) =====
-router.post('/create', auth, permit('manager', 'employee'), async(req, res) => {
+router.post('/create', auth, permit('manager', 'employee'), async (req, res) => {
     try {
         const { title, description, reportType, dateRange, filters, data } = req.body;
 
@@ -56,7 +56,7 @@ router.post('/create', auth, permit('manager', 'employee'), async(req, res) => {
 });
 
 // ===== GENERATE REPORT DATA (Manager) =====
-router.post('/generate/:id', auth, permit('manager'), async(req, res) => {
+router.post('/generate/:id', auth, permit('manager'), async (req, res) => {
     try {
         const report = await AnalyticsReport.findById(req.params.id);
 
@@ -386,7 +386,7 @@ router.post('/generate/:id', auth, permit('manager'), async(req, res) => {
 });
 
 // ===== SEND REPORT TO ADMIN (Manager) =====
-router.post('/send/:id', auth, permit('manager', 'employee'), async(req, res) => {
+router.post('/send/:id', auth, permit('manager', 'employee'), async (req, res) => {
     try {
         const report = await AnalyticsReport.findById(req.params.id);
 
@@ -428,7 +428,7 @@ router.post('/send/:id', auth, permit('manager', 'employee'), async(req, res) =>
 });
 
 // ===== GET ALL MANAGER'S REPORTS (Manager) =====
-router.get('/my-reports', auth, permit('manager'), async(req, res) => {
+router.get('/my-reports', auth, permit('manager'), async (req, res) => {
     try {
         const reports = await AnalyticsReport.find({ manager: req.user._id })
             .populate('manager', 'name email')
@@ -443,7 +443,7 @@ router.get('/my-reports', auth, permit('manager'), async(req, res) => {
 });
 
 // ===== GET ALL REPORTS SENT TO ADMIN (Admin) =====
-router.get('/admin/all', auth, permit('admin'), async(req, res) => {
+router.get('/admin/all', auth, permit('admin'), async (req, res) => {
     try {
         const reports = await AnalyticsReport.find({ sentToAdmin: true })
             .populate('manager', 'name email department')
@@ -459,10 +459,10 @@ router.get('/admin/all', auth, permit('admin'), async(req, res) => {
     }
 });
 
-// ===== VIEW REPORT DETAILS (Admin) =====
-router.get('/admin/view/:id', auth, permit('admin'), async(req, res) => {
+// ===== VIEW REPORT DETAILS (Admin & Manager) =====
+router.get('/view/:id', auth, permit('admin', 'manager'), async (req, res) => {
     try {
-        console.log('👀 Admin viewing report:', req.params.id);
+        console.log('👀 Viewing report:', req.params.id, 'by user:', req.user.role);
 
         const report = await AnalyticsReport.findById(req.params.id)
             .populate('manager', 'name email department role');
@@ -472,11 +472,17 @@ router.get('/admin/view/:id', auth, permit('admin'), async(req, res) => {
             return res.status(404).json({ message: 'Report not found' });
         }
 
+        // Access Control
+        if (req.user.role === 'manager' && String(report.manager._id) !== String(req.user._id)) {
+            console.log('❌ IDs dont match:', report.manager._id, req.user._id);
+            return res.status(403).json({ message: 'Not authorized to view this report' });
+        }
+
         console.log('📊 Report found:', {
             id: report._id,
             title: report.title,
             type: report.reportType,
-            manager: report.manager ?.name,
+            manager: report.manager?.name,
             hasData: !!report.data,
             dataKeys: report.data ? Object.keys(report.data) : [],
             status: report.status
@@ -486,8 +492,8 @@ router.get('/admin/view/:id', auth, permit('admin'), async(req, res) => {
             console.log('📊 Report data structure:', JSON.stringify(report.data, null, 2).substring(0, 500));
         }
 
-        // Mark as viewed
-        if (!report.viewedByAdmin) {
+        // Mark as viewed ONLY if Admin
+        if (req.user.role === 'admin' && !report.viewedByAdmin) {
             report.viewedByAdmin = true;
             report.viewedAt = new Date();
             if (report.status === 'sent') {
@@ -496,8 +502,7 @@ router.get('/admin/view/:id', auth, permit('admin'), async(req, res) => {
             await report.save();
         }
 
-        console.log('👀 Admin viewing report:', report._id);
-        console.log('✅ Sending report data to admin with keys:', report.data ? Object.keys(report.data) : 'no data');
+        console.log('✅ Sending report data');
 
         res.json({ data: report });
 
@@ -508,7 +513,7 @@ router.get('/admin/view/:id', auth, permit('admin'), async(req, res) => {
 });
 
 // ===== MARK REPORT AS DOWNLOADED (Admin) =====
-router.post('/admin/download/:id', auth, permit('admin'), async(req, res) => {
+router.post('/admin/download/:id', auth, permit('admin'), async (req, res) => {
     try {
         const report = await AnalyticsReport.findById(req.params.id);
 
@@ -535,7 +540,7 @@ router.post('/admin/download/:id', auth, permit('admin'), async(req, res) => {
 });
 
 // ===== ADD ADMIN NOTES/RATING (Admin) =====
-router.put('/admin/feedback/:id', auth, permit('admin'), async(req, res) => {
+router.put('/admin/feedback/:id', auth, permit('admin'), async (req, res) => {
     try {
         const { adminNotes, adminRating } = req.body;
 
@@ -564,7 +569,7 @@ router.put('/admin/feedback/:id', auth, permit('admin'), async(req, res) => {
 });
 
 // ===== DELETE REPORT (Manager) =====
-router.delete('/:id', auth, permit('manager'), async(req, res) => {
+router.delete('/:id', auth, permit('manager'), async (req, res) => {
     try {
         const report = await AnalyticsReport.findById(req.params.id);
 

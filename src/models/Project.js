@@ -5,7 +5,7 @@ const ProjectSchema = new mongoose.Schema({
     description: { type: String },
     status: {
         type: String,
-        enum: ['active', 'completed', 'pending_review', 'rework_required', 'approved', 'on-hold'],
+        enum: ['active', 'completed', 'pending_review', 'rework_required', 'approved', 'rejected', 'on-hold'],
         default: 'active'
     },
     startDate: { type: Date },

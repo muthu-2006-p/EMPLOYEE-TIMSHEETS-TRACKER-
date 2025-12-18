@@ -2,6 +2,7 @@ const express = require('express');
 const Timesheet = require('../models/Timesheet');
 const User = require('../models/User');
 const { auth, permit } = require('../middleware/auth');
+const cacheManager = require('../utils/cache-manager');
 
 const router = express.Router();
 
@@ -9,6 +10,16 @@ const router = express.Router();
 router.get('/', auth, permit('employee', 'manager', 'admin'), async (req, res) => {
     try {
         console.log(`🔍 GET /timesheets | Role: ${req.user.role} | ID: ${req.user._id}`);
+
+        // 1. Try to get from cache
+        const cacheContext = { query: req.query, role: req.user.role };
+        const cachedData = cacheManager.getCachedResponse(req.user._id, 'GET_TIMESHEETS', cacheContext);
+
+        if (cachedData && cachedData.payload) {
+            console.log('⚡ Serving timesheets from cache');
+            return res.json(cachedData.payload);
+        }
+
         const mongoose = require('mongoose');
         let query = {};
 
@@ -93,7 +104,15 @@ router.get('/', auth, permit('employee', 'manager', 'admin'), async (req, res) =
         console.log(`✅ Found ${timesheets.length} timesheets | Query:`, JSON.stringify(query));
 
 
-        res.json({ count: timesheets.length, data: timesheets });
+        const responsePayload = { count: timesheets.length, data: timesheets };
+
+        // 2. Save to cache (include userId for invalidation)
+        cacheManager.setCachedResponse(req.user._id, 'GET_TIMESHEETS', {
+            userId: req.user._id,
+            payload: responsePayload
+        }, cacheContext);
+
+        res.json(responsePayload);
     } catch (err) {
         console.error('Get timesheets error:', err);
         res.status(500).json({ message: 'Failed to fetch timesheets', error: err.message });
@@ -162,6 +181,9 @@ router.post('/', auth, permit('employee', 'manager', 'admin'), async (req, res) 
             overtimeHours
         });
 
+        // Invalidate cache on new submission
+        cacheManager.invalidateUserCache(req.user._id);
+
         res.status(201).json(ts);
     } catch (err) {
         console.error('Timesheet POST error:', err);
@@ -169,7 +191,7 @@ router.post('/', auth, permit('employee', 'manager', 'admin'), async (req, res) 
     }
 });
 
-// UPDATE timesheet (save as draft)
+// UPDATE timesheet (save as draft or edit pending)
 router.put('/:id', auth, permit('employee', 'manager', 'admin'), async (req, res) => {
     try {
         const { date, startTime, endTime, breakMinutes = 0, description, project, isDraft = false } = req.body;
@@ -178,6 +200,11 @@ router.put('/:id', auth, permit('employee', 'manager', 'admin'), async (req, res
         if (!ts) return res.status(404).json({ message: 'Timesheet not found' });
         if (String(ts.employee) !== String(req.user._id) && req.user.role !== 'admin') {
             return res.status(403).json({ message: 'Not allowed' });
+        }
+
+        // Only allow editing if pending or draft (unless admin)
+        if (req.user.role !== 'admin' && !['pending', 'draft', 'rework_required'].includes(ts.status)) {
+            return res.status(400).json({ message: 'Cannot edit timesheet after it has been approved or rejected' });
         }
 
         if (date && startTime && endTime) {
@@ -229,10 +256,51 @@ router.put('/:id', auth, permit('employee', 'manager', 'admin'), async (req, res
 
         if (description) ts.description = description;
         if (project) ts.project = project;
-        if (isDraft !== undefined) ts.status = isDraft ? 'draft' : ts.status;
+
+        // If editing, and it was draft, keep it draft unless submitted. 
+        // If it was pending, keep it pending.
+        // If isDraft is strictly passed, update status.
+        if (isDraft !== undefined) {
+            ts.status = isDraft ? 'draft' : (ts.status === 'rework_required' ? 'pending' : ts.status);
+        } else if (ts.status === 'rework_required') {
+            // Use case: fixing rework, automatically set back to pending on save? 
+            // Or keep as rework_required until explicit submit? 
+            // Let's keep status unless isDraft flag changes it.
+        }
 
         await ts.save();
+
+        // Invalidate cache
+        cacheManager.invalidateUserCache(req.user._id);
+
         res.json(ts);
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ message: 'Server error' });
+    }
+});
+
+// DELETE timesheet (cancel)
+router.delete('/:id', auth, permit('employee', 'manager', 'admin'), async (req, res) => {
+    try {
+        const ts = await Timesheet.findById(req.params.id);
+        if (!ts) return res.status(404).json({ message: 'Timesheet not found' });
+
+        if (String(ts.employee) !== String(req.user._id) && req.user.role !== 'admin') {
+            return res.status(403).json({ message: 'Not allowed' });
+        }
+
+        // Only allow deleting if pending or draft (unless admin)
+        if (req.user.role !== 'admin' && !['pending', 'draft', 'rework_required'].includes(ts.status)) {
+            return res.status(400).json({ message: 'Cannot delete timesheet after it has been approved or rejected' });
+        }
+
+        await Timesheet.deleteOne({ _id: req.params.id });
+
+        // Invalidate cache
+        cacheManager.invalidateUserCache(req.user._id);
+
+        res.json({ message: 'Timesheet deleted successfully' });
     } catch (err) {
         console.error(err);
         res.status(500).json({ message: 'Server error' });
@@ -255,6 +323,10 @@ router.post('/:id/submit', auth, permit('employee', 'manager', 'admin'), async (
 
         ts.status = 'pending';
         await ts.save();
+
+        // Invalidate cache on submit
+        cacheManager.invalidateUserCache(req.user._id);
+
         res.json(ts);
     } catch (err) {
         console.error('Submit error:', err);

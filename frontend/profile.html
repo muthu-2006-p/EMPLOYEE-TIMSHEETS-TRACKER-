@@ -23,7 +23,7 @@
 
     <main class="dashboard">
         <div class="card profile-card">
-            <img id="profilePhoto" class="profile-photo" src="assets/images/avatar-placeholder.png" alt="avatar">
+            <img id="profilePhoto" class="profile-photo" src="assets/images/avatar-placeholder.svg" alt="avatar">
             <h2 id="profileName">User Name</h2>
             <p id="profileEmail">email@example.com</p>
             <p id="profileRole">Role</p>
@@ -37,7 +37,7 @@
 
     <script src="assets/js/auth.js"></script>
     <script>
-        document.addEventListener('DOMContentLoaded', async() => {
+        document.addEventListener('DOMContentLoaded', async () => {
             const user = getUser();
             if (!user || !user.id) return window.location.href = 'index.html';
             document.getElementById('profileName').textContent = user.name;

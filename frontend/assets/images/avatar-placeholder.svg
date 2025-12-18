@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="120" height="120" viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background circle -->
+  <circle cx="60" cy="60" r="60" fill="#e0e0e0"/>
+  
+  <!-- User silhouette - head -->
+  <circle cx="60" cy="45" r="20" fill="#9e9e9e"/>
+  
+  <!-- User silhouette - body -->
+  <path d="M 30 105 Q 30 75 60 75 Q 90 75 90 105" fill="#9e9e9e"/>
+</svg>

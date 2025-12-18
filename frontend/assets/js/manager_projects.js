@@ -1,5 +1,5 @@
 // Manager projects page script
-document.addEventListener('DOMContentLoaded', async() => {
+document.addEventListener('DOMContentLoaded', async () => {
     const user = getUser();
     if (!user || !user.id) return window.location.href = 'index.html';
     // populate nav/profile
@@ -15,7 +15,7 @@ document.addEventListener('DOMContentLoaded', async() => {
     // wire create project modal
     const openBtn = document.getElementById('openCreateProject');
     if (openBtn) {
-        openBtn.addEventListener('click', async() => {
+        openBtn.addEventListener('click', async () => {
             console.log('Opening create project modal');
             // refresh team before showing modal so the checkbox list is up-to-date
             try {
@@ -59,13 +59,13 @@ function projectCardHtml(p) {
         <div class="project-icon">${initials}</div>
         <div style="flex:1">
           <div style="font-weight:700">${p.name}</div>
-                    <div class="muted" style="font-size:13px">${p.description ? (p.description.substring(0,120) + '...') : ''}</div>
+                    <div class="muted" style="font-size:13px">${p.description ? (p.description.substring(0, 120) + '...') : ''}</div>
                     <div style="margin-top:8px; display:flex; align-items:center; gap:8px;">
                         ${Array.isArray(p.employees) && p.employees.length ? (`
                             <div style="display:flex;align-items:center;gap:6px">
-                                ${p.employees.slice(0,4).map(emp => `<img src="${emp.photo || 'assets/images/avatar-placeholder.png'}" title="${emp.name}" style="width:28px;height:28px;border-radius:6px;object-fit:cover;border:1px solid rgba(0,0,0,0.06)" />`).join('')}
+                                ${p.employees.slice(0, 4).map(emp => `<img src="${emp.photo || 'assets/images/avatar-placeholder.svg'}" title="${emp.name}" style="width:28px;height:28px;border-radius:6px;object-fit:cover;border:1px solid rgba(0,0,0,0.06)" />`).join('')}
                             </div>
-                            <div class="muted" style="font-size:12px">${p.employees.length} member${p.employees.length>1?'s':''}</div>
+                            <div class="muted" style="font-size:12px">${p.employees.length} member${p.employees.length > 1 ? 's' : ''}</div>
                         `) : '<div class="muted" style="font-size:12px">No members assigned</div>'}
                     </div>
         </div>
@@ -190,23 +190,23 @@ async function loadTeam() {
         const countEl = document.getElementById('projEmployeesCount');
         if (list) {
             list.innerHTML = '';
-                    console.log('Populating employee checkboxes, team count:', team.length);
-                    // populate debug view for easier troubleshooting
-                    const dbg = document.getElementById('projEmployeesDebug');
-                    if (dbg) {
-                        try {
-                            if (team && team.length) {
-                                dbg.style.display = 'none';
-                                dbg.textContent = '';
-                            } else {
-                                dbg.style.display = 'block';
-                                dbg.textContent = JSON.stringify(team, null, 2);
-                            }
-                        } catch (e) {
-                            dbg.style.display = 'block';
-                            dbg.textContent = 'Failed to render debug data: ' + (e.message || e);
-                        }
+            console.log('Populating employee checkboxes, team count:', team.length);
+            // populate debug view for easier troubleshooting
+            const dbg = document.getElementById('projEmployeesDebug');
+            if (dbg) {
+                try {
+                    if (team && team.length) {
+                        dbg.style.display = 'none';
+                        dbg.textContent = '';
+                    } else {
+                        dbg.style.display = 'block';
+                        dbg.textContent = JSON.stringify(team, null, 2);
                     }
+                } catch (e) {
+                    dbg.style.display = 'block';
+                    dbg.textContent = 'Failed to render debug data: ' + (e.message || e);
+                }
+            }
             team.forEach(m => {
                 const id = m._id;
                 const wrapper = document.createElement('label');
@@ -220,7 +220,7 @@ async function loadTeam() {
                 cb.value = id;
                 cb.className = 'proj-emp-cb';
                 const img = document.createElement('img');
-                img.src = m.photo || 'assets/images/avatar-placeholder.png';
+                img.src = m.photo || 'assets/images/avatar-placeholder.svg';
                 img.style.width = '36px';
                 img.style.height = '36px';
                 img.style.borderRadius = '6px';
@@ -251,7 +251,7 @@ function teamCardHtml(m) {
     return `
     <div class="stat-card employee-card">
       <div style="display:flex;gap:12px;align-items:center">
-        <img src="${m.photo || 'assets/images/avatar-placeholder.png'}" style="width:56px;height:56px;border-radius:8px;object-fit:cover" />
+        <img src="${m.photo || 'assets/images/avatar-placeholder.svg'}" style="width:56px;height:56px;border-radius:8px;object-fit:cover" />
         <div style="flex:1">
           <div style="font-weight:700">${m.name}</div>
           <div class="muted" style="font-size:13px">${m.designation || ''} · ${m.department || ''}</div>
@@ -344,8 +344,10 @@ async function createProject() {
 
     // disable button
     const saveBtn = document.getElementById('createSave');
-    if (saveBtn) { saveBtn.disabled = true;
-        saveBtn.textContent = 'Creating...'; }
+    if (saveBtn) {
+        saveBtn.disabled = true;
+        saveBtn.textContent = 'Creating...';
+    }
     try {
         const payload = { name, description, startDate, endDate, employees };
         const res = await apiCall('/projects', 'POST', payload);
@@ -364,8 +366,10 @@ async function createProject() {
         console.error('createProject', err);
         if (msgEl) msgEl.innerHTML = '<div class="error">Failed to create project. See console for details.</div>';
     } finally {
-        if (saveBtn) { saveBtn.disabled = false;
-            saveBtn.textContent = 'Create'; }
+        if (saveBtn) {
+            saveBtn.disabled = false;
+            saveBtn.textContent = 'Create';
+        }
     }
 }
 

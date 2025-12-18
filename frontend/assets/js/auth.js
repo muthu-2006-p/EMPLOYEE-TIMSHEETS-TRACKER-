@@ -97,7 +97,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (photoInput && preview) {
         photoInput.addEventListener('change', () => {
             const f = photoInput.files[0];
-            if (!f) return preview.src = 'assets/images/avatar-placeholder.png';
+            if (!f) return preview.src = 'assets/images/avatar-placeholder.svg';
             const reader = new FileReader();
             reader.onload = () => preview.src = reader.result;
             reader.readAsDataURL(f);

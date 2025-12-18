@@ -341,13 +341,17 @@
         }
 
         .modal-content {
-            background: white;
+            background: rgba(15, 23, 42, 0.95);
+            backdrop-filter: blur(10px);
             padding: 30px;
-            border-radius: 8px;
+            border-radius: 16px;
             max-width: 600px;
             width: 90%;
             max-height: 80vh;
             overflow-y: auto;
+            border: 1px solid rgba(59, 130, 246, 0.2);
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+            color: #e2e8f0;
         }
 
         .modal-header {
@@ -362,7 +366,12 @@
             border: none;
             font-size: 24px;
             cursor: pointer;
-            color: #7f8c8d;
+            color: #94a3b8;
+            transition: color 0.3s ease;
+        }
+
+        .modal-close:hover {
+            color: #fff;
         }
 
         .badge {
@@ -820,10 +829,12 @@
             <div style="display: grid; grid-template-columns: 1fr 2fr; gap: 30px; margin-top: 20px;">
                 <!-- Profile Card -->
                 <div
-                    style="background: linear-gradient(135deg, #667eea, #764ba2); padding: 30px; border-radius: 16px; text-align: center; color: white;">
+                    style="background: rgba(15, 23, 42, 0.95); padding: 30px; border-radius: 16px; text-align: center; color: white;">
                     <div
-                        style="width: 120px; height: 120px; border-radius: 50%; background: white; margin: 0 auto 20px; display: flex; align-items: center; justify-content: center; font-size: 48px;">
-                        <span id="profileAvatar">👤</span>
+                        style="width: 120px; height: 120px; border-radius: 50%; background: white; margin: 0 auto 20px; display: flex; align-items: center; justify-content: center; font-size: 48px; overflow: hidden;">
+                        <img id="profilePhotoImg" src="assets/images/avatar-placeholder.svg" alt="avatar"
+                            style="width: 100%; height: 100%; object-fit: cover; display: none;">
+                        <span id="profileAvatar" style="color: #0f172a;">👤</span>
                     </div>
                     <h2 id="profileName" style="margin-bottom: 10px;">Loading...</h2>
                     <p id="profileRole" style="opacity: 0.9; text-transform: capitalize; font-size: 18px;">-</p>
@@ -837,46 +848,54 @@
                     <form id="profileForm" onsubmit="updateProfile(event)">
                         <div class="form-group">
                             <label>Full Name</label>
-                            <input type="text" id="editName" placeholder="Your full name">
+                            <input type="text" id="editName" placeholder="Your full name"
+                                style="background: rgba(30, 41, 59, 0.8); color: #e2e8f0; border: 1px solid rgba(59, 130, 246, 0.2);">
                         </div>
                         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
                             <div class="form-group">
                                 <label>Phone Number</label>
-                                <input type="tel" id="editPhone" placeholder="+91 1234567890">
+                                <input type="tel" id="editPhone" placeholder="+91 1234567890"
+                                    style="background: rgba(30, 41, 59, 0.8); color: #e2e8f0; border: 1px solid rgba(59, 130, 246, 0.2);">
                             </div>
                             <div class="form-group">
                                 <label>Date of Birth</label>
-                                <input type="date" id="editDOB">
+                                <input type="date" id="editDOB"
+                                    style="background: rgba(30, 41, 59, 0.8); color: #e2e8f0; border: 1px solid rgba(59, 130, 246, 0.2);">
                             </div>
                         </div>
                         <div class="form-group">
                             <label>Address</label>
-                            <input type="text" id="editAddress" placeholder="Your address">
+                            <input type="text" id="editAddress" placeholder="Your address"
+                                style="background: rgba(30, 41, 59, 0.8); color: #e2e8f0; border: 1px solid rgba(59, 130, 246, 0.2);">
                         </div>
                         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
                             <div class="form-group">
                                 <label>Designation</label>
-                                <input type="text" id="editDesignation" placeholder="e.g., Senior Developer">
+                                <input type="text" id="editDesignation" placeholder="e.g., Senior Developer"
+                                    style="background: rgba(30, 41, 59, 0.8); color: #e2e8f0; border: 1px solid rgba(59, 130, 246, 0.2);">
                             </div>
                             <div class="form-group">
                                 <label>Department</label>
                                 <input type="text" id="editDepartment" placeholder="e.g., Engineering" readonly
-                                    style="opacity: 0.6;">
+                                    style="opacity: 0.6; background: rgba(30, 41, 59, 0.8); color: #e2e8f0; border: 1px solid rgba(59, 130, 246, 0.2);">
                             </div>
                         </div>
                         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
                             <div class="form-group">
                                 <label>GitHub Profile</label>
-                                <input type="url" id="editGithub" placeholder="https://github.com/username">
+                                <input type="url" id="editGithub" placeholder="https://github.com/username"
+                                    style="background: rgba(30, 41, 59, 0.8); color: #e2e8f0; border: 1px solid rgba(59, 130, 246, 0.2);">
                             </div>
                             <div class="form-group">
                                 <label>LinkedIn Profile</label>
-                                <input type="url" id="editLinkedin" placeholder="https://linkedin.com/in/username">
+                                <input type="url" id="editLinkedin" placeholder="https://linkedin.com/in/username"
+                                    style="background: rgba(30, 41, 59, 0.8); color: #e2e8f0; border: 1px solid rgba(59, 130, 246, 0.2);">
                             </div>
                         </div>
                         <div class="form-group">
                             <label>Bio / About</label>
-                            <textarea id="editBio" rows="3" placeholder="Tell us about yourself..."></textarea>
+                            <textarea id="editBio" rows="3" placeholder="Tell us about yourself..."
+                                style="background: rgba(30, 41, 59, 0.8); color: #e2e8f0; border: 1px solid rgba(59, 130, 246, 0.2);"></textarea>
                         </div>
                         <div style="margin-top: 20px; display: flex; gap: 15px;">
                             <button type="submit" class="btn btn-primary" style="flex: 1;">💾 Save Changes</button>
@@ -892,18 +911,21 @@
                             <div class="form-group">
                                 <label>Current Password</label>
                                 <input type="password" id="currentPassword" placeholder="Enter current password"
-                                    required>
+                                    required
+                                    style="background: rgba(30, 41, 59, 0.8); color: #e2e8f0; border: 1px solid rgba(59, 130, 246, 0.2);">
                             </div>
                             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
                                 <div class="form-group">
                                     <label>New Password</label>
                                     <input type="password" id="newPassword" placeholder="Min 6 characters" required
-                                        minlength="6">
+                                        minlength="6"
+                                        style="background: rgba(30, 41, 59, 0.8); color: #e2e8f0; border: 1px solid rgba(59, 130, 246, 0.2);">
                                 </div>
                                 <div class="form-group">
                                     <label>Confirm Password</label>
                                     <input type="password" id="confirmPassword" placeholder="Confirm new password"
-                                        required>
+                                        required
+                                        style="background: rgba(30, 41, 59, 0.8); color: #e2e8f0; border: 1px solid rgba(59, 130, 246, 0.2);">
                                 </div>
                             </div>
                             <button type="submit" class="btn btn-success">🔐 Update Password</button>
@@ -1342,6 +1364,7 @@
 
         // ===== TIMESHEETS =====
         let allMyTasks = []; // Store tasks globally for filtering
+        let editingTimesheetId = null; // Track if we are editing
 
         // Auto-calculate total hours
         function calculateHours() {
@@ -1353,7 +1376,10 @@
             if (date && startTime && endTime) {
                 const start = new Date(`${date}T${startTime}`);
                 const end = new Date(`${date}T${endTime}`);
-                const diffMs = end - start;
+                // Handle overnight shift?
+                let diffMs = end - start;
+                if (diffMs < 0) diffMs += 24 * 60 * 60 * 1000; // Assume next day if end < start
+
                 const hours = (diffMs / (1000 * 60 * 60)) - (breakMinutes / 60);
 
                 if (hours > 0) {
@@ -1375,12 +1401,19 @@
                     if (t.status === 'pending') pendingC++;
                     if (t.status === 'approved') approvedC++;
 
+                    const canEdit = t.status === 'pending' || t.status === 'draft' || t.status === 'rework_required';
+
                     html += `<tr>
                         <td>${new Date(t.date).toLocaleDateString()}</td>
                         <td>${t.project?.name || '-'}</td>
                         <td>${t.totalHours}h</td>
-                        <td><span class="badge badge-${t.status === 'approved' ? 'success' : 'warning'}">${t.status}</span></td>
-                        <td><button class="btn btn-sm btn-primary" onclick="editTS('${t._id}')">Edit</button></td>
+                        <td><span class="badge badge-${t.status === 'approved' ? 'success' : t.status === 'rejected' || t.status === 'rework_required' ? 'danger' : 'warning'}">${t.status.replace(/_/g, ' ')}</span></td>
+                        <td>
+                            ${canEdit ?
+                            `<button class="btn btn-sm btn-primary" onclick="editTS('${t._id}')" title="Edit">✏️</button>
+                                 <button class="btn btn-sm btn-danger" onclick="cancelTS('${t._id}')" title="Delete">🗑️</button>`
+                            : '-'}
+                        </td>
                     </tr>`;
                 });
 
@@ -1391,116 +1424,268 @@
                 document.getElementById('timesheetList').innerHTML = html || '<tr><td colspan="5" class="empty-state">No timesheets</td></tr>';
 
                 // Load only assigned projects and tasks
-                allMyTasks = await api('/tasks/mine'); // Store globally
+                try {
+                    allMyTasks = await api('/tasks/mine'); // Store globally
+                } catch (e) { console.error('Error loading tasks for filter', e); }
 
                 // Get unique projects from assigned tasks
                 const assignedProjects = new Set();
-                allMyTasks.forEach(task => {
-                    if (task.project && task.project._id) {
-                        assignedProjects.add(JSON.stringify({
-                            _id: task.project._id,
-                            name: task.project.name
-                        }));
-                    }
+                const projectMap = {}; // id -> name
+
+                if (allMyTasks && Array.isArray(allMyTasks)) {
+                    allMyTasks.forEach(t => {
+                        if (t.project) {
+                            assignedProjects.add(t.project._id || t.project);
+                            projectMap[t.project._id || t.project] = t.project.name || 'Unknown Project';
+                        }
+                    });
+                }
+
+                // Populate project dropdown
+                const pSelect = document.getElementById('project');
+                // Preserve selection if editing
+                const currentSelection = pSelect.value;
+                pSelect.innerHTML = '<option value="">Select Project</option>';
+
+                assignedProjects.forEach(pid => {
+                    pSelect.innerHTML += `<option value="${pid}">${projectMap[pid]}</option>`;
                 });
 
-                const projects = Array.from(assignedProjects).map(p => JSON.parse(p));
+                if (currentSelection) pSelect.value = currentSelection;
 
-                document.getElementById('project').innerHTML = '<option value="">Select Project</option>' +
-                    projects.map(p => `<option value="${p._id}">${p.name}</option>`).join('');
-                document.getElementById('task').innerHTML = '<option value="">Select Task</option>' +
-                    allMyTasks.map(t => `<option value="${t._id}">${t.title}</option>`).join('');
-            } catch (e) {
-                console.error('Error loading timesheets:', e);
+            } catch (err) {
+                console.error(err);
+                document.getElementById('timesheetList').innerHTML = '<tr><td colspan="5" class="empty-state">Error loading timesheets</td></tr>';
             }
         }
 
         // Filter tasks based on selected project
         function filterTimesheetTasks() {
-            const selectedProjectId = document.getElementById('project').value;
-            const taskDropdown = document.getElementById('task');
+            const projectId = document.getElementById('project').value;
+            const taskSelect = document.getElementById('task');
+            taskSelect.innerHTML = '<option value="">Select Task</option>';
 
-            if (!selectedProjectId) {
-                // Show all tasks if no project selected
-                taskDropdown.innerHTML = '<option value="">Select Task</option>' +
-                    allMyTasks.map(t => `<option value="${t._id}">${t.title}</option>`).join('');
-            } else {
-                // Filter tasks by selected project
-                const filteredTasks = allMyTasks.filter(t => {
-                    const projectId = t.project?._id || t.project;
-                    return String(projectId) === String(selectedProjectId);
-                });
+            if (!projectId) return;
 
-                taskDropdown.innerHTML = '<option value="">Select Task</option>' +
-                    filteredTasks.map(t => `<option value="${t._id}">${t.title}</option>`).join('');
+            const filteredTasks = allMyTasks.filter(t =>
+                (t.project._id === projectId || t.project === projectId)
+            );
+
+            filteredTasks.forEach(t => {
+                taskSelect.innerHTML += `<option value="${t._id}">${t.title}</option>`;
+            });
+        }
+
+        async function editTS(id) {
+            try {
+                // We likely already have the data in the list, but fetching fresh is safer or find from cache
+                // For simplicity, let's fetch 'me' again or find from DOM? 
+                // Better to fetch specific TS or find in existing list if we stored it. 
+                // We'll just fetch all again since we don't have local store of full objects easily accessible without query.
+                // Actually, let's just GET /timesheets/me again and find it.
+                const tsList = await api('/timesheets/me');
+                const ts = tsList.find(t => t._id === id);
+
+                if (!ts) { alert('Timesheet not found'); return; }
+
+                editingTimesheetId = id;
+
+                // Populate form
+                document.getElementById('date').value = new Date(ts.date).toISOString().split('T')[0];
+                document.getElementById('startTime').value = ts.startTime;
+                document.getElementById('endTime').value = ts.endTime;
+                document.getElementById('breakMinutes').value = ts.breakMinutes;
+                document.getElementById('notes').value = ts.description || '';
+                document.getElementById('totalHours').value = ts.totalHours;
+
+                // Handle Project & Task population
+                // We need to trigger project change to load tasks, then set task
+                if (ts.project && (ts.project._id || ts.project)) {
+                    document.getElementById('project').value = ts.project._id || ts.project;
+                    filterTimesheetTasks(); // Reload tasks for this project
+
+                    if (ts.task && (ts.task._id || ts.task)) {
+                        document.getElementById('task').value = ts.task._id || ts.task;
+                    }
+                }
+
+                // Change UI to Edit Mode
+                const submitBtn = document.querySelector('button[onclick="submitTimesheet()"]');
+                const saveDraftBtn = document.querySelector('button[onclick="saveDraft()"]');
+
+                submitBtn.textContent = '🔄 Update Timesheet';
+                submitBtn.classList.remove('btn-success');
+                submitBtn.classList.add('btn-warning');
+
+                // Hide save draft if editing? Or allow updating draft?
+                // If status is pending, maybe disable draft? 
+                // Let's keep it simple: "Update" saves and keeps/sets status based on current logic
+
+                // Add cancel edit button
+                let cancelEditBtn = document.getElementById('cancelEditBtn');
+                if (!cancelEditBtn) {
+                    cancelEditBtn = document.createElement('button');
+                    cancelEditBtn.id = 'cancelEditBtn';
+                    cancelEditBtn.className = 'btn btn-secondary';
+                    cancelEditBtn.textContent = '❌ Cancel Edit';
+                    cancelEditBtn.onclick = resetForm;
+                    submitBtn.parentNode.appendChild(cancelEditBtn);
+                }
+                cancelEditBtn.style.display = 'inline-block';
+
+                // Scroll to form
+                document.querySelector('.section h2').scrollIntoView({ behavior: 'smooth' });
+
+            } catch (err) {
+                console.error('Edit error:', err);
+                alert('Failed to load timesheet for editing');
             }
         }
 
-        async function saveDraft() {
-            await submitTimesheetInternal('draft');
+        async function cancelTS(id) {
+            if (!confirm('Are you sure you want to delete this timesheet? This action cannot be undone.')) return;
+
+            try {
+                const res = await fetch(`/api/timesheets/${id}`, {
+                    method: 'DELETE',
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+
+                if (res.ok) {
+                    alert('Timesheet deleted successfully');
+                    loadTimesheets();
+                    // If we were editing this one, reset form
+                    if (editingTimesheetId === id) resetForm();
+                } else {
+                    const data = await res.json();
+                    alert('Failed to delete: ' + data.message);
+                }
+            } catch (err) {
+                console.error('Delete error:', err);
+                alert('Error deleting timesheet');
+            }
+        }
+
+        function resetForm() {
+            editingTimesheetId = null;
+            document.getElementById('date').valueAsDate = new Date();
+            document.getElementById('startTime').value = '09:00';
+            document.getElementById('endTime').value = '17:00';
+            document.getElementById('breakMinutes').value = 0;
+            document.getElementById('project').value = '';
+            document.getElementById('task').innerHTML = '<option value="">Select Task</option>';
+            document.getElementById('notes').value = '';
+            calculateHours();
+
+            const submitBtn = document.querySelector('button[onclick="submitTimesheet()"]');
+            submitBtn.textContent = '✅ Submit';
+            submitBtn.classList.remove('btn-warning');
+            submitBtn.classList.add('btn-success');
+
+            const cancelEditBtn = document.getElementById('cancelEditBtn');
+            if (cancelEditBtn) cancelEditBtn.style.display = 'none';
         }
 
         async function submitTimesheet() {
-            await submitTimesheetInternal('pending');
-        }
-
-        async function submitTimesheetInternal(status) {
             const date = document.getElementById('date').value;
             const startTime = document.getElementById('startTime').value;
             const endTime = document.getElementById('endTime').value;
-            const breakMinutes = parseInt(document.getElementById('breakMinutes').value) || 0;
+            const breakMinutes = document.getElementById('breakMinutes').value;
             const project = document.getElementById('project').value;
             const task = document.getElementById('task').value;
             const notes = document.getElementById('notes').value;
 
             if (!date || !startTime || !endTime) {
-                alert('❌ Date and times are required');
+                alert('Please fill in required fields');
                 return;
             }
 
+            const payload = {
+                date, startTime, endTime, breakMinutes,
+                project, task, description: notes
+            };
+
             try {
-                const res = await fetch('/api/timesheets', {
-                    method: 'POST',
+                let url = '/api/timesheets';
+                let method = 'POST';
+
+                if (editingTimesheetId) {
+                    url = `/api/timesheets/${editingTimesheetId}`;
+                    method = 'PUT';
+                }
+
+                const res = await fetch(url, {
+                    method: method,
                     headers: {
                         'Authorization': `Bearer ${token}`,
                         'Content-Type': 'application/json'
                     },
-                    body: JSON.stringify({
-                        date,
-                        startTime,
-                        endTime,
-                        breakMinutes,
-                        project: project || undefined,
-                        task: task || undefined,
-                        description: notes,
-                        isDraft: status === 'draft'
-                    })
+                    body: JSON.stringify(payload)
                 });
 
+                const data = await res.json();
                 if (res.ok) {
-                    alert(status === 'draft' ? '💾 Saved as draft' : '✅ Timesheet submitted!');
-                    document.getElementById('date').value = '';
-                    document.getElementById('startTime').value = '09:00';
-                    document.getElementById('endTime').value = '17:00';
-                    document.getElementById('breakMinutes').value = '0';
-                    document.getElementById('totalHours').value = '8.00';
-                    document.getElementById('notes').value = '';
-                    document.getElementById('project').value = '';
-                    document.getElementById('task').value = '';
+                    alert(editingTimesheetId ? 'Timesheet updated successfully!' : 'Timesheet submitted successfully!');
+                    resetForm();
                     loadTimesheets();
                 } else {
-                    const error = await res.json();
-                    alert('❌ Error: ' + (error.message || 'Submission failed'));
+                    alert('Error: ' + (data.message || 'Submission failed'));
                 }
-            } catch (e) {
-                console.error('Timesheet submission error:', e);
-                alert('❌ Error submitting timesheet: ' + e.message);
+            } catch (err) {
+                console.error(err);
+                alert('Server error');
             }
         }
 
-        function editTS(id) {
-            alert('Edit functionality: ' + id);
+        async function saveDraft() {
+            const date = document.getElementById('date').value;
+            const startTime = document.getElementById('startTime').value;
+            const endTime = document.getElementById('endTime').value;
+            const breakMinutes = document.getElementById('breakMinutes').value;
+            const project = document.getElementById('project').value;
+            const task = document.getElementById('task').value;
+            const notes = document.getElementById('notes').value;
+
+            const payload = {
+                date, startTime, endTime, breakMinutes,
+                project, task, description: notes,
+                isDraft: true
+            };
+
+            try {
+                let url = '/api/timesheets';
+                let method = 'POST';
+
+                if (editingTimesheetId) {
+                    url = `/api/timesheets/${editingTimesheetId}`;
+                    method = 'PUT'; // Update existing draft
+                }
+
+                const res = await fetch(url, {
+                    method: method,
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(payload)
+                });
+
+                if (res.ok) {
+                    alert('Draft saved!');
+                    resetForm();
+                    loadTimesheets();
+                } else {
+                    const data = await res.json();
+                    alert('Error: ' + data.message);
+                }
+            } catch (err) {
+                console.error(err);
+                alert('Server error');
+            }
         }
+
+
+
 
         // ===== ATTENDANCE =====
         async function loadAttendanceToday() {
@@ -2644,9 +2829,19 @@
                 document.getElementById('profileDepartment').textContent = user.department || '-';
                 document.getElementById('profileEmail').textContent = user.email || '-';
 
-                // Set avatar initial
-                const initial = (user.name || 'U').charAt(0).toUpperCase();
-                document.getElementById('profileAvatar').textContent = initial;
+                // Set avatar - show photo if available, otherwise show initial
+                const photoImg = document.getElementById('profilePhotoImg');
+                const avatarSpan = document.getElementById('profileAvatar');
+                if (user.photo) {
+                    photoImg.src = user.photo;
+                    photoImg.style.display = 'block';
+                    avatarSpan.style.display = 'none';
+                } else {
+                    const initial = (user.name || 'U').charAt(0).toUpperCase();
+                    avatarSpan.textContent = initial;
+                    avatarSpan.style.display = 'block';
+                    photoImg.style.display = 'none';
+                }
 
                 // Fill edit form
                 document.getElementById('editName').value = user.name || '';

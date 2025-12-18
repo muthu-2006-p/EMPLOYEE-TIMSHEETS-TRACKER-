@@ -299,27 +299,31 @@
         }
 
         .modal-content {
-            background-color: #fefefe;
+            background: rgba(15, 23, 42, 0.95);
+            backdrop-filter: blur(10px);
             margin: 5% auto;
             padding: 30px;
-            border: 1px solid #888;
-            border-radius: 10px;
+            border: 1px solid rgba(59, 130, 246, 0.2);
+            border-radius: 16px;
             width: 90%;
             max-width: 600px;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+            color: #e2e8f0;
         }
 
         .close {
-            color: #aaa;
+            color: #94a3b8;
             float: right;
             font-size: 28px;
             font-weight: bold;
             cursor: pointer;
+            transition: color 0.3s ease;
         }
 
         .close:hover,
         .close:focus {
-            color: #000;
+            color: #fff;
+            text-decoration: none;
         }
 
         .form-group {
@@ -328,19 +332,22 @@
 
         .form-group label {
             display: block;
-            margin-bottom: 5px;
-            font-weight: bold;
-            color: white;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #e2e8f0;
         }
 
         .form-group input,
         .form-group select,
         .form-group textarea {
             width: 100%;
-            padding: 10px;
-            border: 1px solid #ddd;
-            border-radius: 5px;
+            padding: 12px;
+            border: 1px solid rgba(59, 130, 246, 0.2);
+            border-radius: 8px;
             font-size: 14px;
+            background: rgba(30, 41, 59, 0.8);
+            color: #e2e8f0;
+            font-family: inherit;
         }
 
         .form-group textarea {
@@ -368,8 +375,7 @@
             <button class="tab-btn" onclick="switchTab('projects')">🎯 Projects</button>
             <button class="tab-btn" onclick="switchTab('tasks')">✓ Tasks</button>
             <button class="tab-btn" onclick="switchTab('employees')">👥 Employees</button>
-            <button class="tab-btn" onclick="switchTab('attendance')">📅 Attendance</button>
-            <button class="tab-btn" onclick="switchTab('leaves')">🏖️ Leave Management</button>
+
             <button class="tab-btn" onclick="switchTab('meetings')">📞 Meetings</button>
             <button class="tab-btn" onclick="switchTab('feedback')">💬 Feedback</button>
             <button class="tab-btn" onclick="switchTab('analytics')">📊 System Analytics</button>
@@ -504,9 +510,9 @@
             </div>
         </div>
 
-        <!-- Workflow 4: Project Management -->
+        <!-- TAB 4: PROJECT MANAGEMENT -->
         <div id="projects" class="section">
-            <h2>🎯 Workflow 4: Project Management</h2>
+            <h2>Project Management</h2>
             <div style="background: rgba(255,255,255,0.05); padding: 15px; border-radius: 8px; margin-bottom: 20px;">
                 <h3>Create New Project</h3>
                 <div class="form-row">
@@ -564,10 +570,10 @@
             </table>
         </div>
 
-        <!-- Workflow 5: Task Management -->
+        <!-- TAB 5: TASK MANAGEMENT -->
         <div id="tasks" class="section">
-            <h2>✓ Workflow 5: Task Management</h2>
-            <div style="background: #ecf0f1; padding: 15px; border-radius: 8px; margin-bottom: 20px;">
+            <h2>Task Management</h2>
+            <div style="background: rgba(255,255,255,0.05); padding: 15px; border-radius: 8px; margin-bottom: 20px;">
                 <h3>Create New Task</h3>
                 <div class="form-row">
                     <div class="form-group">
@@ -622,9 +628,9 @@
             </table>
         </div>
 
-        <!-- Workflow 6: Employee Management -->
+        <!-- TAB 6: EMPLOYEE MANAGEMENT -->
         <div id="employees" class="section">
-            <h2>👥 Workflow 6: Employee Management & Assignment</h2>
+            <h2>Employee Management & Assignment</h2>
 
             <!-- Tab Toggle -->
             <div style="display: flex; gap: 10px; margin-bottom: 20px; border-bottom: 2px solid #ecf0f1;">
@@ -640,7 +646,7 @@
             <div id="existingTab" style="display: block;">
                 <!-- Employee Assignment Section -->
                 <div
-                    style="background: #d5f4e6; padding: 20px; border-radius: 8px; margin-bottom: 20px; border-left: 4px solid #27ae60;">
+                    style="background: rgba(46, 204, 113, 0.15); padding: 20px; border-radius: 8px; margin-bottom: 20px; border-left: 4px solid #27ae60;">
                     <h3>👤 Assign Existing Employee to Project & Task</h3>
                     <p style="font-size: 12px; color: #27ae60; margin-bottom: 15px;">Select from registered employees
                         only</p>
@@ -675,7 +681,7 @@
 
                 <!-- Manager Assignment Section -->
                 <div
-                    style="background: #e8f4fd; padding: 20px; border-radius: 8px; margin-bottom: 20px; border-left: 4px solid #3498db;">
+                    style="background: rgba(52, 152, 219, 0.15); padding: 20px; border-radius: 8px; margin-bottom: 20px; border-left: 4px solid #3498db;">
                     <h3>👔 Assign Existing Manager to Project & Task</h3>
                     <p style="font-size: 12px; color: #3498db; margin-bottom: 15px;">Select from registered managers
                         only</p>
@@ -711,14 +717,15 @@
 
             <!-- TAB 2: Register New & Assign -->
             <div id="newTab"
-                style="background: #ecf0f1; padding: 20px; border-radius: 8px; margin-bottom: 20px; border-left: 4px solid #3498db; display: none;">
+                style="background: rgba(255, 255, 255, 0.05); padding: 20px; border-radius: 8px; margin-bottom: 20px; border-left: 4px solid #3498db; display: none;">
                 <h3>➕ Register New Employee/Manager & Assign to Project & Task</h3>
                 <p style="font-size: 12px; color: #3498db; margin-bottom: 15px;">Complete registration form (like
                     register.html) with project & task assignment</p>
 
                 <!-- Personal Details Section -->
-                <div style="background: white; padding: 15px; border-radius: 5px; margin-bottom: 15px;">
-                    <h4 style="color: #2c3e50; margin-bottom: 10px;">📋 Personal Details</h4>
+                <div
+                    style="background: rgba(255, 255, 255, 0.05); padding: 15px; border-radius: 5px; margin-bottom: 15px;">
+                    <h4 style="color: #e2e8f0; margin-bottom: 10px;">📋 Personal Details</h4>
                     <div class="form-row">
                         <div class="form-group">
                             <label>Name *</label>
@@ -752,8 +759,9 @@
                 </div>
 
                 <!-- Professional Details Section -->
-                <div style="background: white; padding: 15px; border-radius: 5px; margin-bottom: 15px;">
-                    <h4 style="color: #2c3e50; margin-bottom: 10px;">💼 Professional Details</h4>
+                <div
+                    style="background: rgba(255, 255, 255, 0.05); padding: 15px; border-radius: 5px; margin-bottom: 15px;">
+                    <h4 style="color: #e2e8f0; margin-bottom: 10px;">💼 Professional Details</h4>
                     <div class="form-row">
                         <div class="form-group">
                             <label>Department</label>
@@ -779,8 +787,9 @@
                 </div>
 
                 <!-- Social Links Section -->
-                <div style="background: white; padding: 15px; border-radius: 5px; margin-bottom: 15px;">
-                    <h4 style="color: #2c3e50; margin-bottom: 10px;">🔗 Social Links & Media</h4>
+                <div
+                    style="background: rgba(255, 255, 255, 0.05); padding: 15px; border-radius: 5px; margin-bottom: 15px;">
+                    <h4 style="color: #e2e8f0; margin-bottom: 10px;">🔗 Social Links & Media</h4>
                     <div class="form-row">
                         <div class="form-group">
                             <label>GitHub</label>
@@ -802,8 +811,8 @@
 
                 <!-- Assignment Section -->
                 <div
-                    style="background: #fff3cd; padding: 15px; border-radius: 5px; margin-bottom: 15px; border-left: 4px solid #ffc107;">
-                    <h4 style="color: #856404; margin-bottom: 10px;">🎯 Assign to Project & Task</h4>
+                    style="background: rgba(255, 193, 7, 0.15); padding: 15px; border-radius: 5px; margin-bottom: 15px; border-left: 4px solid #ffc107;">
+                    <h4 style="color: #fbbf24; margin-bottom: 10px;">🎯 Assign to Project & Task</h4>
                     <div class="form-row">
                         <div class="form-group">
                             <label>Select Project *</label>
@@ -847,87 +856,9 @@
             </table>
         </div>
 
-        <!-- ATTENDANCE TAB -->
-        <div id="attendance" class="section" style="display:none;">
-            <h2>📅 Attendance System Management</h2>
 
-            <h3>Today's Attendance Overview</h3>
-            <div id="todayAttendanceAdmin" style="margin-bottom: 30px;">
-                <p style="text-align:center; color: #7f8c8d;">Loading attendance data...</p>
-            </div>
 
-            <h3>Attendance Correction Requests</h3>
-            <div id="correctionRequests">
-                <p style="text-align:center; color: #7f8c8d;">Loading correction requests...</p>
-            </div>
 
-            <h3>All Attendance Records (Recent 50)</h3>
-            <table>
-                <thead>
-                    <tr>
-                        <th>Employee</th>
-                        <th>Date</th>
-                        <th>Check-In</th>
-                        <th>Check-Out</th>
-                        <th>Hours Worked</th>
-                        <th>Status</th>
-                    </tr>
-                </thead>
-                <tbody id="allAttendanceTable">
-                    <tr>
-                        <td colspan="6" style="text-align:center;">Loading...</td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
-
-        <!-- LEAVE MANAGEMENT TAB -->
-        <div id="leaves" class="section" style="display:none;">
-            <h2>🏖️ Leave Management System</h2>
-
-            <h3>Pending Leave Requests</h3>
-            <div id="pendingLeavesAdmin">
-                <p style="text-align:center; color: #7f8c8d;">Loading pending leave requests...</p>
-            </div>
-
-            <h3>All Leave Requests (Recent 50)</h3>
-            <table>
-                <thead>
-                    <tr>
-                        <th>Employee</th>
-                        <th>Type</th>
-                        <th>Start Date</th>
-                        <th>End Date</th>
-                        <th>Days</th>
-                        <th>Status</th>
-                        <th>Applied On</th>
-                    </tr>
-                </thead>
-                <tbody id="allLeavesTable">
-                    <tr>
-                        <td colspan="7" style="text-align:center;">Loading...</td>
-                    </tr>
-                </tbody>
-            </table>
-
-            <h3>Employee Leave Balances</h3>
-            <table>
-                <thead>
-                    <tr>
-                        <th>Employee</th>
-                        <th>Total Annual</th>
-                        <th>Used</th>
-                        <th>Remaining</th>
-                        <th>Carry Forward</th>
-                    </tr>
-                </thead>
-                <tbody id="leaveBalancesTable">
-                    <tr>
-                        <td colspan="5" style="text-align:center;">Loading...</td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
 
         <!-- MEETINGS TAB -->
         <div id="meetings" class="section" style="display:none;">
@@ -988,7 +919,7 @@
                         <label>Recipients * <small id="recipientHelpTextAdmin" style="color: #7f8c8d;">You can send to
                                 Managers and Employees</small></label>
                         <div id="recipientsListAdmin"
-                            style="max-height: 150px; overflow-y: auto; border: 1px solid #ddd; padding: 10px; border-radius: 4px; background: #f9f9f9;">
+                            style="max-height: 150px; overflow-y: auto; border: 1px solid rgba(59, 130, 246, 0.3); padding: 10px; border-radius: 4px; background: rgba(30, 41, 59, 0.9);">
                             <p style="color: #95a5a6;">Loading recipients...</p>
                         </div>
                     </div>
@@ -1038,7 +969,7 @@
                 </div>
 
                 <div
-                    style="max-height: 400px; overflow-y: auto; margin-bottom: 20px; padding: 10px; background: #fff; border: 1px solid #ecf0f1; border-radius: 5px;">
+                    style="max-height: 400px; overflow-y: auto; margin-bottom: 20px; padding: 10px; background: rgba(30, 41, 59, 0.9); border: 1px solid rgba(59, 130, 246, 0.3); border-radius: 5px;">
                     <div id="threadMessagesContainerAdmin"></div>
                 </div>
 
@@ -1147,7 +1078,7 @@
                 <div class="form-group">
                     <label>Participants *</label>
                     <div
-                        style="border: 1px solid #ddd; padding: 10px; border-radius: 4px; max-height: 200px; overflow-y: auto; background: #f9f9f9;">
+                        style="border: 1px solid rgba(59, 130, 246, 0.3); padding: 10px; border-radius: 4px; max-height: 200px; overflow-y: auto; background: rgba(30, 41, 59, 0.9);">
                         <div id="participantsList" style="display: flex; flex-direction: column; gap: 5px;">
                             <p style="text-align: center; color: #999;">Loading participants...</p>
                         </div>
@@ -1266,10 +1197,7 @@
                 loadPendingProjectReviews();
             } else if (name === 'managerReports') {
                 loadManagerAnalyticsReports();
-            } else if (name === 'attendance') {
-                loadAttendanceAdmin();
-            } else if (name === 'leaves') {
-                loadLeaveManagement();
+
             } else if (name === 'meetings') {
                 loadMeetingsAdmin();
             } else if (name === 'feedback') {
@@ -1420,15 +1348,15 @@
 
                         if (notif.type === 'proof_approved') {
                             icon = '✅';
-                            bgColor = '#d4edda';
+                            bgColor = 'rgba(40, 167, 69, 0.2)';
                             borderColor = '#28a745';
                         } else if (notif.type === 'proof_rejected') {
                             icon = '⚠️';
-                            bgColor = '#fff3cd';
+                            bgColor = 'rgba(255, 193, 7, 0.2)';
                             borderColor = '#ffc107';
                         } else if (notif.type === 'task_assigned') {
                             icon = '📌';
-                            bgColor = '#cfe2ff';
+                            bgColor = 'rgba(13, 110, 253, 0.2)';
                             borderColor = '#0d6efd';
                         }
 
@@ -1672,6 +1600,7 @@
                         status: 'assigned',
                         progress: 0
                     };
+                    console.log('📌 Adding new assignment:', newAssignment);
                     await api(`/tasks/${taskId}`, 'PUT', {
                         assignments: [...existingAssignments, newAssignment]
                     });
@@ -1719,8 +1648,7 @@
                     const res = await fetch(`/api/users/${id}`, {
                         method: 'DELETE',
                         headers: {
-                            'Authorization': `Bearer ${token}`,
-                            'Content-Type': 'application/json'
+                            'Authorization': `Bearer ${token}`
                         }
                     });
                     if (!res.ok) {
@@ -1914,8 +1842,8 @@
             try {
                 const stats = await api('/analysis/summary');
                 const employees = await api('/admin/employees');
-                const projects = await api('/admin/projects');
-                const tasks = await api('/admin/tasks');
+                const projects = await api('/projects');
+                const tasks = await api('/tasks');
                 document.getElementById('totalEmp').textContent = employees.length;
                 document.getElementById('totalProj').textContent = projects.length;
                 document.getElementById('totalTasks').textContent = tasks.length;
@@ -2086,223 +2014,7 @@
         // ===== NEW ENTERPRISE FUNCTIONS =====
 
         // Load attendance data for admin
-        async function loadAttendanceAdmin() {
-            try {
-                // Load today's attendance
-                const today = new Date().toISOString().split('T')[0];
-                const res = await fetch(`/api/attendance/date/${today}`, {
-                    headers: {
-                        'Authorization': `Bearer ${token}`
-                    }
-                });
-                const data = await res.json();
-                const records = data.data || [];
 
-                let html = '<div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px;">';
-                html += `<div style="background: #d4edda; padding: 20px; border-radius: 8px; text-align: center;">
-                    <h3 style="margin: 0; color: #155724;">Present: ${records.filter(r => r.status === 'checked_out' || r.status === 'present').length}</h3>
-                </div>`;
-                html += `<div style="background: #f8d7da; padding: 20px; border-radius: 8px; text-align: center;">
-                    <h3 style="margin: 0; color: #721c24;">Absent: ${records.filter(r => r.status === 'absent').length}</h3>
-                </div>`;
-                html += '</div>';
-                document.getElementById('todayAttendanceAdmin').innerHTML = html;
-
-                // Load all attendance records
-                const allRes = await fetch('/api/attendance?limit=50', {
-                    headers: {
-                        'Authorization': `Bearer ${token}`
-                    }
-                });
-                const allData = await allRes.json();
-                const allRecords = allData.data || [];
-
-                const tableHtml = allRecords.map(r => `
-                    <tr>
-                        <td>${r.employee?.name || 'Unknown'}</td>
-                        <td>${new Date(r.date).toLocaleDateString()}</td>
-                        <td>${r.checkInTime ? new Date(r.checkInTime).toLocaleTimeString() : '-'}</td>
-                        <td>${r.checkOutTime ? new Date(r.checkOutTime).toLocaleTimeString() : '-'}</td>
-                        <td>${r.hoursWorked?.toFixed(2) || '0.00'}</td>
-                        <td><span style="background: ${r.status === 'checked_out' || r.status === 'present' ? '#d4edda' : r.status === 'checked_in' ? '#fff3cd' : '#f8d7da'}; padding: 4px 8px; border-radius: 4px;">${r.status}</span></td>
-                    </tr>
-                `).join('') || '<tr><td colspan="6" style="text-align:center;">No records</td></tr>';
-                document.getElementById('allAttendanceTable').innerHTML = tableHtml;
-
-                // Load correction requests
-                const corrRes = await fetch('/api/attendance/corrections/pending', {
-                    headers: {
-                        'Authorization': `Bearer ${token}`
-                    }
-                });
-                const corrData = await corrRes.json();
-                const corrections = corrData.data || [];
-
-                let corrHtml = '';
-                if (corrections.length === 0) {
-                    corrHtml = '<p style="text-align:center; color: #7f8c8d;">No pending correction requests</p>';
-                } else {
-                    corrections.forEach(corr => {
-                        corrHtml += `
-                            <div style="border: 1px solid #ddd; padding: 15px; margin: 10px 0; border-radius: 8px; background: #fff3cd;">
-                                <p><strong>${corr.employee?.name || 'Unknown'}</strong> - ${new Date(corr.date).toLocaleDateString()}</p>
-                                <p>Reason: ${corr.reason}</p>
-                                <button onclick="approveCorrection('${corr._id}')" style="background: #27ae60; margin-right: 10px;">Approve</button>
-                                <button onclick="rejectCorrection('${corr._id}')" style="background: #e74c3c;">Reject</button>
-                            </div>
-                        `;
-                    });
-                }
-                document.getElementById('correctionRequests').innerHTML = corrHtml;
-            } catch (err) {
-                console.error('Error loading attendance:', err);
-            }
-        }
-
-        async function approveCorrection(id) {
-            try {
-                await fetch(`/api/attendance/corrections/${id}/approve`, {
-                    method: 'POST',
-                    headers: {
-                        'Authorization': `Bearer ${token}`,
-                        'Content-Type': 'application/json'
-                    }
-                });
-                showAlert('✅ Correction approved', 'success');
-                loadAttendanceAdmin();
-            } catch (err) {
-                showAlert('❌ Error: ' + err.message, 'error');
-            }
-        }
-
-        async function rejectCorrection(id) {
-            try {
-                await fetch(`/api/attendance/corrections/${id}/reject`, {
-                    method: 'POST',
-                    headers: {
-                        'Authorization': `Bearer ${token}`,
-                        'Content-Type': 'application/json'
-                    }
-                });
-                showAlert('✅ Correction rejected', 'success');
-                loadAttendanceAdmin();
-            } catch (err) {
-                showAlert('❌ Error: ' + err.message, 'error');
-            }
-        }
-
-        // Load leave management data
-        async function loadLeaveManagement() {
-            try {
-                // Load pending leave requests
-                const res = await fetch('/api/leave/pending', {
-                    headers: {
-                        'Authorization': `Bearer ${token}`
-                    }
-                });
-                const data = await res.json();
-                const pending = data.data || [];
-
-                let html = '';
-                if (pending.length === 0) {
-                    html = '<p style="text-align:center; color: #7f8c8d;">No pending leave requests</p>';
-                } else {
-                    pending.forEach(leave => {
-                        html += `
-                            <div style="border: 1px solid #ddd; padding: 15px; margin: 10px 0; border-radius: 8px; background: #fff3cd;">
-                                <p><strong>${leave.employee?.name || 'Unknown'}</strong> - ${leave.leaveType}</p>
-                                <p>From: ${new Date(leave.startDate).toLocaleDateString()} To: ${new Date(leave.endDate).toLocaleDateString()}</p>
-                                <p>Days: ${leave.numberOfDays} | Reason: ${leave.reason}</p>
-                                <button onclick="approveLeaveAdmin('${leave._id}')" style="background: #27ae60; margin-right: 10px;">Approve</button>
-                                <button onclick="rejectLeaveAdmin('${leave._id}')" style="background: #e74c3c;">Reject</button>
-                            </div>
-                        `;
-                    });
-                }
-                document.getElementById('pendingLeavesAdmin').innerHTML = html;
-
-                // Load all leave requests
-                const allRes = await fetch('/api/leave?limit=50', {
-                    headers: {
-                        'Authorization': `Bearer ${token}`
-                    }
-                });
-                const allData = await allRes.json();
-                const allLeaves = allData.data || [];
-
-                const tableHtml = allLeaves.map(l => `
-                    <tr>
-                        <td>${l.employee?.name || 'Unknown'}</td>
-                        <td>${l.leaveType}</td>
-                        <td>${new Date(l.startDate).toLocaleDateString()}</td>
-                        <td>${new Date(l.endDate).toLocaleDateString()}</td>
-                        <td>${l.numberOfDays}</td>
-                        <td><span style="background: ${l.status === 'approved' ? '#d4edda' : l.status === 'rejected' ? '#f8d7da' : '#fff3cd'}; padding: 4px 8px; border-radius: 4px;">${l.status}</span></td>
-                        <td>${new Date(l.createdAt).toLocaleDateString()}</td>
-                    </tr>
-                `).join('') || '<tr><td colspan="7" style="text-align:center;">No leave requests</td></tr>';
-                document.getElementById('allLeavesTable').innerHTML = tableHtml;
-
-                // Load leave balances
-                const balRes = await fetch('/api/leave/balances', {
-                    headers: {
-                        'Authorization': `Bearer ${token}`
-                    }
-                });
-                const balData = await balRes.json();
-                const balances = balData.data || [];
-
-                const balHtml = balances.map(b => `
-                    <tr>
-                        <td>${b.employee?.name || 'Unknown'}</td>
-                        <td>${b.totalAnnualLeave}</td>
-                        <td>${b.usedLeave}</td>
-                        <td>${b.remainingLeave}</td>
-                        <td>${b.carryForward}</td>
-                    </tr>
-                `).join('') || '<tr><td colspan="5" style="text-align:center;">No balance data</td></tr>';
-                document.getElementById('leaveBalancesTable').innerHTML = balHtml;
-            } catch (err) {
-                console.error('Error loading leave data:', err);
-            }
-        }
-
-        async function approveLeaveAdmin(id) {
-            try {
-                await fetch(`/api/leave/${id}/approve`, {
-                    method: 'POST',
-                    headers: {
-                        'Authorization': `Bearer ${token}`,
-                        'Content-Type': 'application/json'
-                    }
-                });
-                showAlert('✅ Leave approved', 'success');
-                loadLeaveManagement();
-            } catch (err) {
-                showAlert('❌ Error: ' + err.message, 'error');
-            }
-        }
-
-        async function rejectLeaveAdmin(id) {
-            const reason = prompt('Reason for rejection:');
-            if (!reason) return;
-            try {
-                await fetch(`/api/leave/${id}/reject`, {
-                    method: 'POST',
-                    headers: {
-                        'Authorization': `Bearer ${token}`,
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({
-                        reason
-                    })
-                });
-                showAlert('✅ Leave rejected', 'success');
-                loadLeaveManagement();
-            } catch (err) {
-                showAlert('❌ Error: ' + err.message, 'error');
-            }
-        }
 
         // Load meetings data
         async function loadMeetingsAdmin() {
@@ -2336,12 +2048,12 @@
                         const organizer = m.sender || m.organizer || {};
                         const dateField = m.dateTime || m.startTime;
                         html += `
-                            <div style="border: 1px solid #ddd; padding: 15px; margin: 10px 0; border-radius: 8px; background: #e3f2fd;">
-                                <h4 style="margin: 0;">${m.title}</h4>
-                                <p>📅 ${new Date(dateField).toLocaleString()} | ⏱️ ${m.duration || 60} min</p>
-                                <p>Type: ${m.meetingType || 'other'} | Organizer: ${organizer.name || 'Unknown'}</p>
-                                <p>Participants: ${(m.recipients || m.participants || []).length} | Attendance: ${(m.attendance || []).length}</p>
-                                <button onclick="deleteMeeting('${m._id}')" style="background: #e74c3c;">Delete</button>
+                            <div style="border: 1px solid rgba(59, 130, 246, 0.3); padding: 15px; margin: 10px 0; border-radius: 8px; background: rgba(59, 130, 246, 0.15); color: #e2e8f0;">
+                                <h4 style="margin: 0; color: #fff;">${m.title}</h4>
+                                <p style="color: #cbd5e1;">📅 ${new Date(dateField).toLocaleString()} | ⏱️ ${m.duration || 60} min</p>
+                                <p style="color: #cbd5e1;">Type: ${m.meetingType || 'other'} | Organizer: ${organizer.name || 'Unknown'}</p>
+                                <p style="color: #cbd5e1;">Participants: ${(m.recipients || m.participants || []).length} | Attendance: ${(m.attendance || []).length}</p>
+                                <button onclick="deleteMeeting('${m._id}')" style="background: #e74c3c; padding: 8px 16px; margin-top: 10px;">Delete</button>
                             </div>
                         `;
                     });
@@ -2372,7 +2084,7 @@
 
                 // Show error to user
                 document.getElementById('upcomingMeetingsAdmin').innerHTML =
-                    `<div style="background: #fee; border: 1px solid #fcc; padding: 15px; border-radius: 8px; color: #c33;">
+                    `<div style="background: rgba(231, 76, 60, 0.15); border: 1px solid rgba(231, 76, 60, 0.3); padding: 15px; border-radius: 8px; color: #fca5a5;">
                         <strong>❌ Error Loading Meetings</strong><br>
                         ${err.message || 'Failed to load meetings. Please try again.'}
                     </div>`;
@@ -2460,7 +2172,7 @@
                 } else {
                     participantsList.innerHTML = users.map(user => `
                         <label style="display: flex; align-items: center; gap: 8px; padding: 5px; cursor: pointer; border-radius: 4px; transition: background 0.2s;"
-                               onmouseover="this.style.background='#e8f5e9'" onmouseout="this.style.background='transparent'">
+                               onmouseover="this.style.background='rgba(59, 130, 246, 0.2)'" onmouseout="this.style.background='transparent'">
                             <input type="checkbox" name="participant" value="${user._id}" style="cursor: pointer;">
                             <span style="flex: 1;">
                                 <strong>${user.name}</strong>
@@ -2611,12 +2323,12 @@
                 } else {
                     messages.forEach(m => {
                         html += `
-                            <div style="padding: 15px; margin-bottom: 10px; background: #f8f9fa; border-radius: 5px; border-left: 3px solid #e74c3c;">
+                            <div style="padding: 15px; margin-bottom: 10px; background: rgba(255, 255, 255, 0.05); border-radius: 5px; border-left: 3px solid #e74c3c;">
                                 <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
-                                    <strong style="color: #2c3e50;">${m.sender?.name || 'Unknown'}</strong>
-                                    <span style="color: #7f8c8d; font-size: 12px;">${new Date(m.createdAt).toLocaleString()}</span>
+                                    <strong style="color: #e2e8f0;">${m.sender?.name || 'Unknown'}</strong>
+                                    <span style="color: #94a3b8; font-size: 12px;">${new Date(m.createdAt).toLocaleString()}</span>
                                 </div>
-                                <div style="color: #34495e;">${m.message}</div>
+                                <div style="color: #cbd5e1;">${m.message}</div>
                             </div>
                         `;
                     });
@@ -3166,10 +2878,10 @@
 
                 if (!reports || reports.length === 0) {
                     container.innerHTML = `
-                        <div style="text-align: center; padding: 60px 20px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 12px; color: white;">
+                        <div style="text-align: center; padding: 60px 20px; background: rgba(255, 255, 255, 0.05); border-radius: 12px; color: white;">
                             <div style="font-size: 64px; margin-bottom: 20px;">📊</div>
                             <h3 style="margin-bottom: 15px;">No Reports Available Yet</h3>
-                            <p style="opacity: 0.9; max-width: 500px; margin: 0 auto;">
+                            <p style="opacity: 0.9; max-width: 500px; margin: 0 auto; color: #cbd5e1;">
                                 Managers haven't sent any analytics reports yet. 
                                 Reports will appear here once managers generate and send them from their analytics tab.
                             </p>
@@ -3185,40 +2897,40 @@
                     const statusText = report.status === 'downloaded' ? '💾 Downloaded' : report.status === 'viewed' ? '👀 Viewed' : '📤 New';
 
                     html += `
-                        <div style="border: 1px solid #ddd; padding: 20px; border-radius: 8px; background: white; border-left: 4px solid ${statusColor};">
+                        <div style="border: 1px solid rgba(59, 130, 246, 0.3); padding: 20px; border-radius: 8px; background: rgba(15, 23, 42, 0.6); border-left: 4px solid ${statusColor};">
                             <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 12px;">
                                 <div style="flex: 1;">
-                                    <h3 style="margin: 0 0 8px 0;">${report.title || 'Analytics Report'}</h3>
-                                    <p style="color: #7f8c8d; font-size: 14px; margin: 0;">${report.description || 'No description'}</p>
+                                    <h3 style="margin: 0 0 8px 0; color: #e2e8f0;">${report.title || 'Analytics Report'}</h3>
+                                    <p style="color: #94a3b8; font-size: 14px; margin: 0;">${report.description || 'No description'}</p>
                                 </div>
                                 <span style="background: ${statusColor}; color: white; padding: 4px 12px; border-radius: 12px; font-size: 12px; font-weight: 600;">
                                     ${statusText}
                                 </span>
                             </div>
                             
-                            <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; margin: 15px 0; padding: 15px; background: #f9f9f9; border-radius: 8px;">
+                            <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; margin: 15px 0; padding: 15px; background: rgba(0, 0, 0, 0.3); border-radius: 8px;">
                                 <div>
-                                    <div style="font-size: 12px; color: #7f8c8d;">Manager</div>
-                                    <div style="font-weight: 600;">${report.manager?.name || 'Unknown'}</div>
-                                    <div style="font-size: 11px; color: #95a5a6;">${report.manager?.department || ''}</div>
+                                    <div style="font-size: 12px; color: #94a3b8;">Manager</div>
+                                    <div style="font-weight: 600; color: #e2e8f0;">${report.manager?.name || 'Unknown'}</div>
+                                    <div style="font-size: 11px; color: #64748b;">${report.manager?.department || ''}</div>
                                 </div>
                                 <div>
-                                    <div style="font-size: 12px; color: #7f8c8d;">Date Range</div>
-                                    <div style="font-weight: 600;">${new Date(report.dateRange.startDate).toLocaleDateString()}</div>
-                                    <div style="font-size: 11px; color: #95a5a6;">to ${new Date(report.dateRange.endDate).toLocaleDateString()}</div>
+                                    <div style="font-size: 12px; color: #94a3b8;">Date Range</div>
+                                    <div style="font-weight: 600; color: #e2e8f0;">${new Date(report.dateRange.startDate).toLocaleDateString()}</div>
+                                    <div style="font-size: 11px; color: #64748b;">to ${new Date(report.dateRange.endDate).toLocaleDateString()}</div>
                                 </div>
                                 <div>
-                                    <div style="font-size: 12px; color: #7f8c8d;">Sent At</div>
-                                    <div style="font-weight: 600;">${new Date(report.sentAt).toLocaleDateString()}</div>
-                                    <div style="font-size: 11px; color: #95a5a6;">${new Date(report.sentAt).toLocaleTimeString()}</div>
+                                    <div style="font-size: 12px; color: #94a3b8;">Sent At</div>
+                                    <div style="font-weight: 600; color: #e2e8f0;">${new Date(report.sentAt).toLocaleDateString()}</div>
+                                    <div style="font-size: 11px; color: #64748b;">${new Date(report.sentAt).toLocaleTimeString()}</div>
                                 </div>
                             </div>
                             
                             <div style="display: flex; gap: 10px;">
-                                <button class="btn" onclick="viewManagerReport('${report._id}')" style="flex: 1; background: #3498db;">
+                                <button class="btn" onclick="viewManagerReport('${report._id}')" style="flex: 1; background: #3498db; color: white;">
                                     📊 View Report
                                 </button>
-                                <button class="btn" onclick="downloadManagerReport('${report._id}')" style="flex: 1; background: #2ecc71;">
+                                <button class="btn" onclick="downloadManagerReport('${report._id}')" style="flex: 1; background: #2ecc71; color: white;">
                                     💾 Download
                                 </button>
                             </div>
@@ -3243,12 +2955,13 @@
         }
 
         async function viewManagerReport(reportId) {
-            try {
-                console.log('📊 Fetching report:', reportId);
-                const response = await api(`/analytics-report/admin/view/${reportId}`);
-                const report = response.data || response;
+    try {
+        console.log('📊 Fetching report:', reportId);
+        // FIX: Changed API path from /analytics-report/admin/view/ to /analytics-report/view/
+        const response = await api(`/analytics-report/view/${reportId}`);
+        const report = response.data || response;
 
-                console.log('📊 Full Report Data:', report);
+        console.log('📊 Full Report Data:', report);
                 console.log('📊 Manager:', report.manager);
                 console.log('📊 Date Range:', report.dateRange);
                 console.log('📊 Data Object:', report.data);
@@ -3298,10 +3011,10 @@
                 modal.style.zIndex = '10000';
 
                 modal.innerHTML = `
-                    <div style="background: white; border-radius: 12px; width: 90%; max-width: 1000px; max-height: 90vh; overflow-y: auto; padding: 30px; color: #2c3e50;">
-                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 2px solid #3498db; padding-bottom: 15px;">
-                            <h2 style="margin: 0; color: #2c3e50;">📊 ${report.title || 'Analytics Report'}</h2>
-                            <button onclick="this.closest('.modal').remove()" style="background: #e74c3c; color: white; border: none; padding: 8px 15px; border-radius: 6px; cursor: pointer; font-weight: bold;">✕ Close</button>
+                    <div style="background: rgba(15, 23, 42, 0.95); backdrop-filter: blur(10px); border-radius: 16px; width: 90%; max-width: 1000px; max-height: 90vh; overflow-y: auto; padding: 30px; color: #e2e8f0; border: 1px solid rgba(59, 130, 246, 0.2); box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 2px solid rgba(59, 130, 246, 0.3); padding-bottom: 15px;">
+                            <h2 style="margin: 0; color: #e2e8f0;">📊 ${report.title || 'Analytics Report'}</h2>
+                            <button onclick="this.closest('.modal').remove()" style="background: transparent; color: #94a3b8; border: none; font-size: 24px; cursor: pointer; transition: color 0.3s;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='#94a3b8'">✕</button>
                         </div>
                         
                         <!-- Report Header -->
@@ -3322,74 +3035,74 @@
                         </div>
                         
                         <!-- Timesheet Analytics -->
-                        <div style="background: #ecf0f1; padding: 20px; border-radius: 8px; margin-bottom: 15px;">
-                            <h3 style="margin: 0 0 15px 0; color: #2c3e50;">⏱️ Timesheet Analytics</h3>
+                        <div style="background: rgba(255, 255, 255, 0.05); padding: 20px; border-radius: 8px; margin-bottom: 15px;">
+                            <h3 style="margin: 0 0 15px 0; color: #e2e8f0;">⏱️ Timesheet Analytics</h3>
                             <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px;">
-                                <div style="background: white; padding: 15px; border-radius: 6px; text-align: center;">
+                                <div style="background: rgba(0, 0, 0, 0.2); padding: 15px; border-radius: 6px; text-align: center;">
                                     <div style="font-size: 28px; font-weight: 700; color: #3498db;">${timesheets.total || 0}</div>
-                                    <div style="font-size: 12px; color: #7f8c8d;">Total Timesheets</div>
+                                    <div style="font-size: 12px; color: #94a3b8;">Total Timesheets</div>
                                 </div>
-                                <div style="background: white; padding: 15px; border-radius: 6px; text-align: center;">
+                                <div style="background: rgba(0, 0, 0, 0.2); padding: 15px; border-radius: 6px; text-align: center;">
                                     <div style="font-size: 28px; font-weight: 700; color: #2ecc71;">${timesheets.totalHours ? timesheets.totalHours.toFixed(1) : 0}h</div>
-                                    <div style="font-size: 12px; color: #7f8c8d;">Total Hours</div>
+                                    <div style="font-size: 12px; color: #94a3b8;">Total Hours</div>
                                 </div>
-                                <div style="background: white; padding: 15px; border-radius: 6px; text-align: center;">
+                                <div style="background: rgba(0, 0, 0, 0.2); padding: 15px; border-radius: 6px; text-align: center;">
                                     <div style="font-size: 28px; font-weight: 700; color: #f39c12;">${timesheets.approved || 0}</div>
-                                    <div style="font-size: 12px; color: #7f8c8d;">Approved</div>
+                                    <div style="font-size: 12px; color: #94a3b8;">Approved</div>
                                 </div>
-                                <div style="background: white; padding: 15px; border-radius: 6px; text-align: center;">
+                                <div style="background: rgba(0, 0, 0, 0.2); padding: 15px; border-radius: 6px; text-align: center;">
                                     <div style="font-size: 28px; font-weight: 700; color: #9b59b6;">${timesheets.pending || 0}</div>
-                                    <div style="font-size: 12px; color: #7f8c8d;">Pending</div>
+                                    <div style="font-size: 12px; color: #94a3b8;">Pending</div>
                                 </div>
                             </div>
                         </div>
                         
                         <!-- Top Performers -->
-                        <div style="background: #d5f4e6; padding: 20px; border-radius: 8px; margin-bottom: 15px;">
-                            <h3 style="margin: 0 0 15px 0; color: #2c3e50;">🏆 Top Performers</h3>
+                        <div style="background: rgba(46, 204, 113, 0.15); padding: 20px; border-radius: 8px; margin-bottom: 15px;">
+                            <h3 style="margin: 0 0 15px 0; color: #e2e8f0;">🏆 Top Performers</h3>
                             <table style="width: 100%; border-collapse: collapse;">
                                 <thead>
                                     <tr style="background: rgba(46, 204, 113, 0.2);">
-                                        <th style="padding: 10px; text-align: left; border-bottom: 2px solid #2ecc71;">Rank</th>
-                                        <th style="padding: 10px; text-align: left; border-bottom: 2px solid #2ecc71;">Employee</th>
-                                        <th style="padding: 10px; text-align: right; border-bottom: 2px solid #2ecc71;">Total Hours</th>
-                                        <th style="padding: 10px; text-align: right; border-bottom: 2px solid #2ecc71;">Timesheets</th>
-                                        <th style="padding: 10px; text-align: right; border-bottom: 2px solid #2ecc71;">Avg Hours</th>
+                                        <th style="padding: 10px; text-align: left; border-bottom: 2px solid #2ecc71; color: #e2e8f0;">Rank</th>
+                                        <th style="padding: 10px; text-align: left; border-bottom: 2px solid #2ecc71; color: #e2e8f0;">Employee</th>
+                                        <th style="padding: 10px; text-align: right; border-bottom: 2px solid #2ecc71; color: #e2e8f0;">Total Hours</th>
+                                        <th style="padding: 10px; text-align: right; border-bottom: 2px solid #2ecc71; color: #e2e8f0;">Timesheets</th>
+                                        <th style="padding: 10px; text-align: right; border-bottom: 2px solid #2ecc71; color: #e2e8f0;">Avg Hours</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     ${topPerformers.length > 0 ? topPerformers.map((emp, idx) => `
-                                        <tr style="border-bottom: 1px solid rgba(0,0,0,0.1);">
-                                            <td style="padding: 10px; font-weight: 700;">#${idx + 1}</td>
-                                            <td style="padding: 10px;">${emp.name || 'Unknown'}</td>
-                                            <td style="padding: 10px; text-align: right; font-weight: 600;">${emp.metrics && emp.metrics.totalHours ? emp.metrics.totalHours.toFixed(1) : emp.score || 0}h</td>
-                                            <td style="padding: 10px; text-align: right;">-</td>
-                                            <td style="padding: 10px; text-align: right;">${emp.metrics && emp.metrics.avgHoursPerDay ? emp.metrics.avgHoursPerDay.toFixed(1) : 0}h</td>
+                                        <tr style="border-bottom: 1px solid rgba(255,255,255,0.1);">
+                                            <td style="padding: 10px; font-weight: 700; color: #cbd5e1;">#${idx + 1}</td>
+                                            <td style="padding: 10px; color: #cbd5e1;">${emp.name || 'Unknown'}</td>
+                                            <td style="padding: 10px; text-align: right; font-weight: 600; color: #2ecc71;">${emp.metrics && emp.metrics.totalHours ? emp.metrics.totalHours.toFixed(1) : emp.score || 0}h</td>
+                                            <td style="padding: 10px; text-align: right; color: #cbd5e1;">-</td>
+                                            <td style="padding: 10px; text-align: right; color: #cbd5e1;">${emp.metrics && emp.metrics.avgHoursPerDay ? emp.metrics.avgHoursPerDay.toFixed(1) : 0}h</td>
                                         </tr>
-                                    `).join('') : '<tr><td colspan="5" style="padding: 20px; text-align: center; color: #7f8c8d;">No data available</td></tr>'}
+                                    `).join('') : '<tr><td colspan="5" style="padding: 20px; text-align: center; color: #94a3b8;">No data available</td></tr>'}
                                 </tbody>
                             </table>
                         </div>
                         
                         <!-- Project Analytics -->
-                        <div style="background: #fff3cd; padding: 20px; border-radius: 8px; margin-bottom: 15px;">
-                            <h3 style="margin: 0 0 15px 0; color: #2c3e50;">🎯 Top Projects</h3>
+                        <div style="background: rgba(243, 156, 18, 0.15); padding: 20px; border-radius: 8px; margin-bottom: 15px;">
+                            <h3 style="margin: 0 0 15px 0; color: #e2e8f0;">🎯 Top Projects</h3>
                             <table style="width: 100%; border-collapse: collapse;">
                                 <thead>
                                     <tr style="background: rgba(243, 156, 18, 0.2);">
-                                        <th style="padding: 10px; text-align: left; border-bottom: 2px solid #f39c12;">Project</th>
-                                        <th style="padding: 10px; text-align: right; border-bottom: 2px solid #f39c12;">Total Hours</th>
-                                        <th style="padding: 10px; text-align: right; border-bottom: 2px solid #f39c12;">Percentage</th>
+                                        <th style="padding: 10px; text-align: left; border-bottom: 2px solid #f39c12; color: #e2e8f0;">Project</th>
+                                        <th style="padding: 10px; text-align: right; border-bottom: 2px solid #f39c12; color: #e2e8f0;">Total Hours</th>
+                                        <th style="padding: 10px; text-align: right; border-bottom: 2px solid #f39c12; color: #e2e8f0;">Percentage</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     ${byProject.length > 0 ? byProject.slice(0, 5).map(proj => `
-                                        <tr style="border-bottom: 1px solid rgba(0,0,0,0.1);">
-                                            <td style="padding: 10px;">${proj.name || 'Unknown'}</td>
-                                            <td style="padding: 10px; text-align: right; font-weight: 600;">${proj.hours ? proj.hours.toFixed(1) : 0}h</td>
-                                            <td style="padding: 10px; text-align: right;">${proj.percentage || 0}%</td>
+                                        <tr style="border-bottom: 1px solid rgba(255,255,255,0.1);">
+                                            <td style="padding: 10px; color: #cbd5e1;">${proj.name || 'Unknown'}</td>
+                                            <td style="padding: 10px; text-align: right; font-weight: 600; color: #f39c12;">${proj.hours ? proj.hours.toFixed(1) : 0}h</td>
+                                            <td style="padding: 10px; text-align: right; color: #cbd5e1;">${proj.percentage || 0}%</td>
                                         </tr>
-                                    `).join('') : '<tr><td colspan="3" style="padding: 20px; text-align: center; color: #7f8c8d;">No data available</td></tr>'}
+                                    `).join('') : '<tr><td colspan="3" style="padding: 20px; text-align: center; color: #94a3b8;">No data available</td></tr>'}
                                 </tbody>
                             </table>
                         </div>
@@ -3495,16 +3208,30 @@
             try {
                 console.log('Loading pending project reviews...');
                 const response = await api('/project-completion/pending-reviews');
-                const projects = response.data || response || [];
-                console.log('Received projects:', projects);
+                const pendingProjects = response.data || response || [];
+                console.log('Received pending projects:', pendingProjects);
+
+                // Get all projects to include approved ones
+                const allProjectsResponse = await api('/project-completion/all');
+                const allProjects = allProjectsResponse.data || allProjectsResponse || [];
+
+                // Get approved projects (those not in pending list)
+                const approvedProjects = allProjects
+                    .filter(p => p.status === 'approved')
+                    .map(p => ({
+                        ...p,
+                        projectId: p._id // normalizing _id to projectId
+                    }))
+                    .filter(p => !pendingProjects.find(pp => String(pp.projectId) === String(p.projectId)));
+
+                // Combine all for display: pending first, then approved
+                const projects = [...pendingProjects, ...approvedProjects];
+                console.log('All projects for display:', projects.length);
 
                 // Update stats
                 const pendingCount = projects.filter(p => p.status === 'pending_review').length;
                 const reworkCount = projects.filter(p => p.status === 'rework_required').length;
-
-                // Get all approved projects count
-                const allProjects = await api('/project-completion/all');
-                const approvedCount = (allProjects.data || allProjects || []).filter(p => p.status === 'approved').length;
+                const approvedCount = projects.filter(p => p.status === 'approved').length;
 
                 console.log('Stats:', {
                     pendingCount,
@@ -3548,6 +3275,9 @@
                     case 'rework_required':
                         statusBadge = '<span class="badge badge-danger">🔄 Rework Required</span>';
                         break;
+                    case 'approved':
+                        statusBadge = '<span class="badge badge-success">✅ Approved</span>';
+                        break;
                     default:
                         statusBadge = `<span class="badge">${proj.status}</span>`;
                 }
@@ -3585,6 +3315,15 @@
                             </button>
                             <button class="btn btn-sm" onclick="reviewProject('${proj.projectId}', 'reject')" style="background: #e74c3c; color: white;">
                                 ❌ Reject
+                            </button>
+                        </div>
+                    `;
+                } else if (proj.status === 'approved') {
+                    actionButtons = `
+                        <div style="display: flex; flex-direction: column; gap: 5px;">
+                            <span style="color: #27ae60;">✅ Approved</span>
+                            <button class="btn btn-sm" onclick="reviewProject('${proj.projectId}', 'rework')" style="background: #e67e22; color: white;" title="Found a defect? Send back for rework">
+                                🔍 Find Defect
                             </button>
                         </div>
                     `;
@@ -3698,7 +3437,7 @@
                     alert(message);
                     loadPendingProjectReviews(); // Reload
                 } else {
-                    alert('❌ ' + (data.message || 'Failed to review project'));
+                    alert('❌ ' + (data.message || 'Failed to review project') + (data.error ? '\nDetails: ' + data.error : ''));
                 }
             } catch (err) {
                 console.error('Review project error:', err);
@@ -3708,7 +3447,7 @@
 
         // ========== END PROJECT REVIEW FUNCTIONS ==========
     </script>
-    
+
     <!-- AI Chatbot -->
     <link rel="stylesheet" href="chatbot.css">
     <script src="chatbot.js"></script>
